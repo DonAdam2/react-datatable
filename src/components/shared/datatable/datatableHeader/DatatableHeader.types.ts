@@ -15,7 +15,7 @@ export interface DatatableColumnInterface {
   header?: ReactNode;
   className?: string;
   sortable?: boolean;
-  render?: (rowData: any) => ReactNode;
+  cell?: (rowData: any) => ReactNode;
   width?: string | number;
   noWrap?: boolean;
   minWidth?: string | number;

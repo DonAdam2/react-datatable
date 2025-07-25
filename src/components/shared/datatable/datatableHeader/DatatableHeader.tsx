@@ -37,7 +37,7 @@ const DatatableHeader = ({
       className: '',
       width: actionsColWidth,
       sortable: false,
-      render: (rowData: any) => (
+      cell: (rowData: any) => (
         <>
           {actions?.map((el, i) => (
             <DatatableIconButton
@@ -48,7 +48,7 @@ const DatatableHeader = ({
               onClick={el.onClick}
               rowData={rowData}
               tooltip={el.tooltip}
-              render={el.render}
+              cell={el.cell}
             />
           ))}
         </>
@@ -60,7 +60,7 @@ const DatatableHeader = ({
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
       sortable: false,
-      render: (rowData: any) => (
+      cell: (rowData: any) => (
         <>
           {selection?.onSelectionChange && (
             <>

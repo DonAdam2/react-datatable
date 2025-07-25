@@ -34,7 +34,7 @@ const DatatableBodyRow = ({
       minWidth: undefined,
       maxWidth: undefined,
       className: '',
-      render: (rowData: any) => (
+      cell: (rowData: any) => (
         <>
           {actions?.map((el, i) => (
             <DatatableIconButton
@@ -45,7 +45,7 @@ const DatatableBodyRow = ({
               onClick={el.onClick}
               rowData={rowData}
               tooltip={el.tooltip}
-              render={el.render}
+              cell={el.cell}
             />
           ))}
         </>
@@ -58,7 +58,7 @@ const DatatableBodyRow = ({
       width: selectionsColumnWidth,
       minWidth: undefined,
       maxWidth: undefined,
-      render: (rowData: any) => (
+      cell: (rowData: any) => (
         <>
           {selection?.onSelectionChange && (
             <>
@@ -171,7 +171,7 @@ const DatatableBodyRow = ({
           >
             {colIndex === 0 && col.accessorKey === selectionsColumnName && (
               <div className={`selection-col`}>
-                {col.render ? col.render(row) : getNestedValue({ key: col.accessorKey, obj: row })}
+                {col.cell ? col.cell(row) : getNestedValue({ key: col.accessorKey, obj: row })}
               </div>
             )}
             {colIndex === 0 && row.draggable && !isTouchDevice && (
@@ -187,7 +187,7 @@ const DatatableBodyRow = ({
             )}
             {col.accessorKey !== selectionsColumnName && (
               <div className={`${col.accessorKey === actionsColumnName ? 'actions-col' : ''}`}>
-                {col.render ? col.render(row) : getNestedValue({ key: col.accessorKey, obj: row })}
+                {col.cell ? col.cell(row) : getNestedValue({ key: col.accessorKey, obj: row })}
               </div>
             )}
           </div>

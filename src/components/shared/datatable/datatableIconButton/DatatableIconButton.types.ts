@@ -9,7 +9,7 @@ export interface DatatableIconButtonInterface {
   hidden?: boolean | BooleanFuncType;
   icon?: ReactNode;
   onClick?: (event: MouseEvent<HTMLButtonElement>, rowData: any) => void;
-  render?: (rowData: any) => ReactNode;
+  cell?: (rowData: any) => ReactNode;
   rowData: any;
   tooltip?: ActionTooltipInterface;
 }

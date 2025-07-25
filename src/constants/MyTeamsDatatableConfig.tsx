@@ -12,7 +12,7 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
         accessorKey: 'first_name',
         header: 'Name',
         sortable: true,
-        render: (rowData: any) => (
+        cell: (rowData: any) => (
           <p style={{ margin: 0 }}>
             {rowData.first_name} {rowData.last_name}
           </p>
@@ -27,7 +27,7 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
         accessorKey: 'subscription.status',
         header: 'Status',
         // width: '10%',
-        render: (rowData: any) => (
+        cell: (rowData: any) => (
           <p
             className={`status ${
               rowData.subscription.status.toLowerCase() === 'active'
@@ -66,9 +66,9 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
       {
         //it can be boolean => hidden: true
         hidden: (rowData: any) => rowData.subscription.status.toLowerCase() !== 'idle',
-        //keep in mind that if you use the render function it's your
+        //keep in mind that if you use the cell function it's your
         //responsibility to set the disabled flag and on click event
-        render: (rowData: any) => (
+        cell: (rowData: any) => (
           <Dropdown
             header={{
               trigger: <DotsIcon />,

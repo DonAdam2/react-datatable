@@ -29,7 +29,7 @@ export interface ActionInterface {
   hidden?: boolean | BooleanFuncType;
   tooltip?: ActionTooltipInterface;
   onClick?: (event: MouseEvent<HTMLButtonElement>, rowData: any) => void;
-  render?: (rowData: any) => ReactNode;
+  cell?: (rowData: any) => ReactNode;
 }
 
 export interface DatatableSelectionConfigInterface {

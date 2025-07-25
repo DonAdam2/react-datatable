@@ -8,7 +8,7 @@ const DatatableIconButton = ({
   icon,
   onClick,
   rowData,
-  render,
+  cell,
   tooltip,
 }: DatatableIconButtonInterface) => {
   const disabledBtn = disabled
@@ -33,8 +33,8 @@ const DatatableIconButton = ({
             </>
           )}
         >
-          {render ? (
-            render(rowData)
+          {cell ? (
+            cell(rowData)
           ) : (
             <button
               disabled={disabledBtn}
