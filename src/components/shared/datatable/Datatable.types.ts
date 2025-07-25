@@ -60,7 +60,7 @@ interface UiConfigInterface extends SortIconsInterface {
 
 interface DatatableSearchConfigInterface {
   show?: boolean;
-  onSearch?: (key: string) => void;
+  onSearch?: (key: string) => void | Promise<void>;
   isLocalSearch?: boolean;
   isFullWidth?: boolean;
   placeholder?: string;
@@ -71,7 +71,7 @@ interface DatatableSearchConfigInterface {
 
 interface DatatableSortConfigInterface {
   isLocalSort?: boolean;
-  onSorting?: (field: string, order: ColumnOrderType) => void;
+  onSorting?: (field: string, order: ColumnOrderType) => void | Promise<void>;
 }
 
 interface CommonConfigInterface {
