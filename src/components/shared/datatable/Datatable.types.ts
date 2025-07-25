@@ -71,7 +71,7 @@ interface DatatableSearchConfigInterface {
 
 interface DatatableSortConfigInterface {
   isLocalSort?: boolean;
-  onSorting?: (field: string, order: ColumnOrderType) => void | Promise<void>;
+  onSorting?: (accessorKey: string, order: ColumnOrderType) => void | Promise<void>;
 }
 
 interface CommonConfigInterface {

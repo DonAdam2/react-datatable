@@ -11,7 +11,7 @@ export interface SortIconsInterface {
 }
 
 export interface DatatableColumnInterface {
-  field: string | 'action';
+  accessorKey: string | 'action';
   colName?: string;
   className?: string;
   sortable?: boolean;
@@ -24,11 +24,11 @@ export interface DatatableColumnInterface {
 }
 
 export type ColumnOrderType = 'asc' | 'desc';
-export type FieldType = string | 'actions';
+export type AccessorKeyType = string | 'actions';
 
 export interface DatatableHeaderInterface extends SortIconsInterface {
   columns: DatatableColumnInterface[];
-  onSorting?: (field: string, order: ColumnOrderType) => void;
+  onSorting?: (accessorKey: string, order: ColumnOrderType) => void;
   actions?: ActionInterface[];
   isActionsColumnLast?: boolean;
   actionsColLabel?: string;

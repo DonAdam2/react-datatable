@@ -42,8 +42,8 @@ const RootDatatable = ({
 }: RootDatatableInterface) => {
   const uniqueId = uuidv4(),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
-    [sorting, setSorting] = useState<{ field: string; order: ColumnOrderType }>({
-      field: '',
+    [sorting, setSorting] = useState<{ accessorKey: string; order: ColumnOrderType }>({
+      accessorKey: '',
       order: 'asc',
     }),
     [searchQuery, setSearchQuery] = useState(''),
@@ -113,11 +113,11 @@ const RootDatatable = ({
     let clonedRecords = cloneDeep(records);
 
     //sorting functionality
-    if (isLocalSort && sorting.field) {
+    if (isLocalSort && sorting.accessorKey) {
       const reversed = sorting.order === 'asc' ? 1 : -1;
       clonedRecords = clonedRecords.sort((a, b) => {
-        const valueA = getNestedValue({ key: sorting.field, obj: a });
-        const valueB = getNestedValue({ key: sorting.field, obj: b });
+        const valueA = getNestedValue({ key: sorting.accessorKey, obj: a });
+        const valueB = getNestedValue({ key: sorting.accessorKey, obj: b });
 
         if (typeof valueA === 'number' && typeof valueB === 'number') {
           // Numeric comparison
@@ -136,7 +136,7 @@ const RootDatatable = ({
     if (searchQuery && show && isLocalSearch) {
       clonedRecords = clonedRecords.filter((record) =>
         columns.some((col) =>
-          getNestedValue({ key: col.field, obj: record })
+          getNestedValue({ key: col.accessorKey, obj: record })
             ?.toString()
             .toLowerCase()
             .includes(searchQuery.toString().toLowerCase())
@@ -180,10 +180,10 @@ const RootDatatable = ({
     onUpdateFilteredRecordsCount,
   ]);
 
-  const sortHandler = async (field: string, order: ColumnOrderType) => {
-    await onSorting?.(field, order);
+  const sortHandler = async (accessorKey: string, order: ColumnOrderType) => {
+    await onSorting?.(accessorKey, order);
     if (isLocalSort) {
-      setSorting({ field, order });
+      setSorting({ accessorKey, order });
     }
   };
 

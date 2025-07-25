@@ -28,7 +28,7 @@ const DatatableBodyRow = ({
 }: DatatableBodyRowInterface) => {
   const { isTouchDevice } = useTouchScreenDetect(),
     actionsColumnData = {
-      field: actionsColumnName,
+      accessorKey: actionsColumnName,
       colName: actionsColLabel,
       width: actionsColWidth,
       minWidth: undefined,
@@ -52,7 +52,7 @@ const DatatableBodyRow = ({
       ),
     },
     selectionsColumnData = {
-      field: selectionsColumnName,
+      accessorKey: selectionsColumnName,
       colName: '',
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
@@ -147,19 +147,19 @@ const DatatableBodyRow = ({
           style={{
             width: getTableDataCellWidth({
               width: col.width,
-              field: col.field,
+              accessorKey: col.accessorKey,
               columns: updatedColumns,
               actions,
             }),
             minWidth: col.minWidth ? col.minWidth : 'unset',
             maxWidth: col.maxWidth ? col.maxWidth : 'unset',
           }}
-          key={col.field}
+          key={col.accessorKey}
           className={cx(`${col.className ? col.className : ''}`, {
-            'actions-col-wrapper': col.field === actionsColumnName,
-            'at-start': col.field === actionsColumnName && !isActionsColumnLast,
-            'at-end': col.field === actionsColumnName && isActionsColumnLast,
-            'selections-col-wrapper': col.field === selectionsColumnName,
+            'actions-col-wrapper': col.accessorKey === actionsColumnName,
+            'at-start': col.accessorKey === actionsColumnName && !isActionsColumnLast,
+            'at-end': col.accessorKey === actionsColumnName && isActionsColumnLast,
+            'selections-col-wrapper': col.accessorKey === selectionsColumnName,
           })}
         >
           <div
@@ -169,25 +169,25 @@ const DatatableBodyRow = ({
                 : ''
             }`}
           >
-            {colIndex === 0 && col.field === selectionsColumnName && (
+            {colIndex === 0 && col.accessorKey === selectionsColumnName && (
               <div className={`selection-col`}>
-                {col.render ? col.render(row) : getNestedValue({ key: col.field, obj: row })}
+                {col.render ? col.render(row) : getNestedValue({ key: col.accessorKey, obj: row })}
               </div>
             )}
             {colIndex === 0 && row.draggable && !isTouchDevice && (
               <div
                 style={{
-                  marginInlineStart: col.field === selectionsColumnName ? 10 : 0,
-                  marginInlineEnd: col.field === selectionsColumnName ? 0 : 24,
+                  marginInlineStart: col.accessorKey === selectionsColumnName ? 10 : 0,
+                  marginInlineEnd: col.accessorKey === selectionsColumnName ? 0 : 24,
                   display: 'flex',
                 }}
               >
                 <MoveIcon className="move-element" />
               </div>
             )}
-            {col.field !== selectionsColumnName && (
-              <div className={`${col.field === actionsColumnName ? 'actions-col' : ''}`}>
-                {col.render ? col.render(row) : getNestedValue({ key: col.field, obj: row })}
+            {col.accessorKey !== selectionsColumnName && (
+              <div className={`${col.accessorKey === actionsColumnName ? 'actions-col' : ''}`}>
+                {col.render ? col.render(row) : getNestedValue({ key: col.accessorKey, obj: row })}
               </div>
             )}
           </div>

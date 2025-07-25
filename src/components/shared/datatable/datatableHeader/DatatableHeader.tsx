@@ -32,7 +32,7 @@ const DatatableHeader = ({
   const [sortingField, setSortingField] = useState(''),
     [sortingOrder, setSortingOrder] = useState('asc'),
     actionsColumnData = {
-      field: actionsColumnName,
+      accessorKey: actionsColumnName,
       colName: actionsColLabel,
       className: '',
       width: actionsColWidth,
@@ -55,7 +55,7 @@ const DatatableHeader = ({
       ),
     },
     selectionsColumnData = {
-      field: selectionsColumnName,
+      accessorKey: selectionsColumnName,
       colName: '',
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
@@ -112,11 +112,11 @@ const DatatableHeader = ({
     }
   }, [isSelectAllRecords, selection, candidateRecordsToSelectAll]);
 
-  const onSortingChange = async (field: string) => {
-    const order = field === sortingField && sortingOrder === 'asc' ? 'desc' : 'asc';
+  const onSortingChange = async (accessorKey: string) => {
+    const order = accessorKey === sortingField && sortingOrder === 'asc' ? 'desc' : 'asc';
 
-    await onSorting?.(field, order);
-    setSortingField(field);
+    await onSorting?.(accessorKey, order);
+    setSortingField(accessorKey);
     setSortingOrder(order);
   };
 
@@ -131,25 +131,30 @@ const DatatableHeader = ({
   return (
     <thead className="table-header">
       <tr>
-        {updatedColumns.map(({ field, colName, sortable, width, className = '' }) => (
+        {updatedColumns.map(({ accessorKey, colName, sortable, width, className = '' }) => (
           <th
             style={{
-              width: getTableDataCellWidth({ width, field, columns: updatedColumns, actions }),
+              width: getTableDataCellWidth({
+                width,
+                accessorKey,
+                columns: updatedColumns,
+                actions,
+              }),
             }}
-            key={field}
+            key={accessorKey}
             className={cx(className, {
-              'actions-col-wrapper': field === actionsColumnName,
-              'at-start': field === actionsColumnName && !isActionsColumnLast,
-              'at-end': field === actionsColumnName && isActionsColumnLast,
-              'selections-col-wrapper': field === selectionsColumnName,
+              'actions-col-wrapper': accessorKey === actionsColumnName,
+              'at-start': accessorKey === actionsColumnName && !isActionsColumnLast,
+              'at-end': accessorKey === actionsColumnName && isActionsColumnLast,
+              'selections-col-wrapper': accessorKey === selectionsColumnName,
             })}
           >
             <span
               style={{ cursor: sortable ? 'pointer' : 'initial' }}
-              onClick={() => (sortable ? onSortingChange(field) : null)}
+              onClick={() => (sortable ? onSortingChange(accessorKey) : null)}
               className="table-head-label"
             >
-              {field === selectionsColumnName &&
+              {accessorKey === selectionsColumnName &&
               selection?.mode === 'checkbox' &&
               !selection.selectAllCheckbox?.hidden ? (
                 <input
@@ -166,8 +171,8 @@ const DatatableHeader = ({
               ) : (
                 colName
               )}
-              {sortable && sortingField !== field && sortIcon}
-              {sortingField && sortingField === field && (
+              {sortable && sortingField !== accessorKey && sortIcon}
+              {sortingField && sortingField === accessorKey && (
                 <>{sortingOrder === 'asc' ? ascendingSortIcon : descendingSortIcon}</>
               )}
             </span>

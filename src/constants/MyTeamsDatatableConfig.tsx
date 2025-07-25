@@ -9,7 +9,7 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
   const teamsRecords = teamDetails,
     teamsColumns = [
       {
-        field: 'first_name',
+        accessorKey: 'first_name',
         colName: 'Name',
         sortable: true,
         render: (rowData: any) => (
@@ -19,12 +19,12 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
         ),
       },
       {
-        field: 'employment.title',
+        accessorKey: 'employment.title',
         colName: 'Occupation',
         sortable: true,
       },
       {
-        field: 'subscription.status',
+        accessorKey: 'subscription.status',
         colName: 'Status',
         // width: '10%',
         render: (rowData: any) => (

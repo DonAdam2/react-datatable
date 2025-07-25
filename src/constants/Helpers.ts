@@ -1,6 +1,6 @@
 import { actionsColumnName } from '@/components/shared/datatable/datatableHeader/DatatableHeader';
 import { ActionInterface } from '@/components/shared/datatable/Datatable.types';
-import { FieldType } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+import { AccessorKeyType } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 
 export const getPaginationRange = (fromPageNum: number, toPageNum: number, step = 1): number[] => {
   let i = fromPageNum;
@@ -59,13 +59,13 @@ export const getElementOffset = (el: any) => {
 export function getTableDataCellWidth({
   width,
   actionsColWidth,
-  field,
+  accessorKey,
   columns,
   actions,
 }: {
   width?: number | string;
   actionsColWidth?: number | string;
-  field: FieldType;
+  accessorKey: AccessorKeyType;
   columns: any[];
   actions?: ActionInterface[];
 }) {
@@ -81,14 +81,16 @@ export function getTableDataCellWidth({
 
   return width
     ? width
-    : field === actionsColumnName
+    : accessorKey === actionsColumnName
       ? finalActionsColumnsWidth
       : `calc((100% - ${
-          columns.some((el) => el.field === actionsColumnName)
+          columns.some((el) => el.accessorKey === actionsColumnName)
             ? `${finalActionsColumnsWidth}px`
             : '0'
         }) / ${
-          columns.some((el) => el.field === actionsColumnName) ? columns.length - 1 : columns.length
+          columns.some((el) => el.accessorKey === actionsColumnName)
+            ? columns.length - 1
+            : columns.length
         })`;
 }
 

@@ -790,10 +790,10 @@ export const RemoteControlWithPaginationExample = () => {
     await fetchRemoteData(newParams);
   };
 
-  const onRemoteSort = async (field: string, order: ColumnOrderType) => {
+  const onRemoteSort = async (accessorKey: string, order: ColumnOrderType) => {
     const newParams = cloneDeep(remoteParams);
     newParams.sortOrder = order;
-    newParams.sortField = field as keyof Person;
+    newParams.sortField = accessorKey as keyof Person;
 
     setRemoteParams(newParams);
     await fetchRemoteData(newParams);
