@@ -286,7 +286,7 @@ const RootDatatable = ({
 
 // Local controlled datatable component
 const LocalControlledDatatable = forwardRef<
-  { resetPagination: () => void },
+  { resetPagination: () => { activePage: number; rowsPerPageNum: number } },
   LocalControlledDatatableInterface
 >(({ config, ...rest }, ref) => {
   const { rowsDropdown, enablePagination = true, deepLinking } = config?.pagination ?? {};
@@ -308,7 +308,6 @@ const LocalControlledDatatable = forwardRef<
     navigateToNextPage,
     navigateToFirstPage,
     navigateToLastPage,
-    navigateToPage,
     updateCurrentRowsPerPage,
     firstContentIndex,
     lastContentIndex,
@@ -333,13 +332,17 @@ const LocalControlledDatatable = forwardRef<
     await updateCurrentRowsPerPage(newRowsPerPage);
   };
 
-  const resetPagination = useCallback(async () => {
+  const resetPagination = useCallback(() => {
     if (activePage !== 1 || rowsPerPageNum !== rowsPerPage) {
-      await navigateToPage(1);
+      navigateToFirstPage();
       setRowsPerPageNum(rowsPerPage);
-      await updateCurrentRowsPerPage(rowsPerPage);
     }
-  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToPage, updateCurrentRowsPerPage]);
+
+    return {
+      activePage: 1,
+      rowsPerPageNum: rowsPerPage,
+    };
+  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToFirstPage]);
 
   useImperativeHandle(
     ref,
@@ -398,7 +401,7 @@ const LocalControlledDatatable = forwardRef<
 
 // Remote controlled datatable component
 const RemoteControlledDatatable = forwardRef<
-  { resetPagination: () => void },
+  { resetPagination: () => { activePage: number; rowsPerPageNum: number } },
   RemoteControlledDatatableInterface
 >(({ config, ...rest }, ref) => {
   const {
@@ -432,7 +435,6 @@ const RemoteControlledDatatable = forwardRef<
     navigateToLastPage,
     navigateToPrevPage,
     navigateToNextPage,
-    navigateToPage,
     totalPages,
   } = paginationData;
 
@@ -444,13 +446,18 @@ const RemoteControlledDatatable = forwardRef<
     [optionsList]
   );
 
-  const resetPagination = useCallback(async () => {
+  const resetPagination = useCallback(() => {
     if (activePage !== 1 || rowsPerPageNum !== rowsPerPage) {
-      await navigateToPage(1);
       setRowsPerPageNum(rowsPerPage);
-      await updateCurrentRowsPerPage(rowsPerPage);
+      // Trigger navigation to first page to fetch data (async operation)
+      navigateToFirstPage();
     }
-  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToPage, updateCurrentRowsPerPage]);
+
+    return {
+      activePage: 1,
+      rowsPerPageNum: rowsPerPage,
+    };
+  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToFirstPage]);
 
   useImperativeHandle(
     ref,
@@ -510,32 +517,33 @@ const RemoteControlledDatatable = forwardRef<
 });
 
 // Main Datatable component
-const Datatable = forwardRef<{ resetPagination: () => void }, DatatableInterface>(
-  ({ config, ...rest }, ref) => {
-    const paginationConfig = { enablePagination: true, ...config?.pagination };
-    const enhancedConfig = { ...config, pagination: paginationConfig };
+const Datatable = forwardRef<
+  { resetPagination: () => { activePage: number; rowsPerPageNum: number } },
+  DatatableInterface
+>(({ config, ...rest }, ref) => {
+  const paginationConfig = { enablePagination: true, ...config?.pagination };
+  const enhancedConfig = { ...config, pagination: paginationConfig };
 
-    // Type guards to determine pagination mode
-    const isRemotePagination = !!(paginationConfig as any)?.remoteControl;
-    const isCustomPagination = !!(paginationConfig as any)?.paginationComponent;
+  // Type guards to determine pagination mode
+  const isRemotePagination = !!(paginationConfig as any)?.remoteControl;
+  const isCustomPagination = !!(paginationConfig as any)?.paginationComponent;
 
-    return (
-      <>
-        {enhancedConfig.pagination.enablePagination ? (
-          isCustomPagination ? (
-            <RootDatatable {...rest} config={enhancedConfig as any} />
-          ) : isRemotePagination ? (
-            <RemoteControlledDatatable {...rest} config={enhancedConfig as any} ref={ref} />
-          ) : (
-            <LocalControlledDatatable {...rest} config={enhancedConfig as any} ref={ref} />
-          )
-        ) : (
+  return (
+    <>
+      {enhancedConfig.pagination.enablePagination ? (
+        isCustomPagination ? (
           <RootDatatable {...rest} config={enhancedConfig as any} />
-        )}
-      </>
-    );
-  }
-);
+        ) : isRemotePagination ? (
+          <RemoteControlledDatatable {...rest} config={enhancedConfig as any} ref={ref} />
+        ) : (
+          <LocalControlledDatatable {...rest} config={enhancedConfig as any} ref={ref} />
+        )
+      ) : (
+        <RootDatatable {...rest} config={enhancedConfig as any} />
+      )}
+    </>
+  );
+});
 
 LocalControlledDatatable.displayName = 'LocalControlledDatatable';
 RemoteControlledDatatable.displayName = 'RemoteControlledDatatable';

@@ -84,7 +84,7 @@ interface CommonConfigInterface {
 interface RootPaginationInterface {
   enablePagination?: boolean;
   paginationComponent?: ReactNode;
-  resetPagination?: () => void;
+  resetPagination?: () => { activePage: number; rowsPerPageNum: number } | void | Promise<void>;
   firstContentIndex?: number;
   lastContentIndex?: number;
 }
