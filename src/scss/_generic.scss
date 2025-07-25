@@ -1,2 +1,51 @@
-@use 'generic/typography';
+@forward 'generic/variables';
+@forward 'generic/mixins';
 @use 'generic/normalize';
+@use 'generic/typography';
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #d2d9dc;
+  border-radius: 6px;
+}
+.settings-box__tabs::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.is-flex {
+  display: flex;
+}
+
+.is-justify-content-space-between {
+  justify-content: space-between;
+}
+
+.is-flex-grow-1 {
+  flex-grow: 1;
+}
+
+.is-flex-direction-column {
+  flex-direction: column;
+}
+
+.is-inline-flex {
+  display: inline-flex;
+}
+
+.is-align-items-center {
+  align-items: center;
+}
+
+.is-fullwidth {
+  width: 100%;
+}
+
+.row-reverse {
+  flex-direction: row-reverse;
+}

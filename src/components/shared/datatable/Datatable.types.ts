@@ -10,7 +10,7 @@ import { ButtonInterface } from '@/components/shared/button/Button.types';
 
 export type BooleanFuncType = (rowData: any) => boolean;
 type SelectionModeType = 'radio' | 'checkbox';
-type TitleLocationType = 'searchRow' | 'titleRow';
+export type TitleLocationType = 'searchRow' | 'titleRow';
 
 export interface ActionTooltipInterface {
   tooltipContent: string; //can have jsx => tooltipContent="<em>hi</em>"
@@ -114,4 +114,76 @@ interface CommonDatatableInterface {
 
 export interface RootDatatableInterface extends CommonDatatableInterface {
   config?: RootDatatableConfigInterface;
+}
+
+// New interfaces for enhanced pagination support
+export interface DatatableRowsDropdownOption {
+  value: number;
+  displayValue: string;
+}
+
+interface DeepLinkingConfig {
+  pageNumKey: string;
+}
+
+interface LocalControlledPaginationInterface {
+  enablePagination?: boolean;
+  rowsDropdown?: {
+    enableRowsDropdown?: boolean;
+    rowsPerPage?: number;
+    optionsList?: DatatableRowsDropdownOption[];
+  };
+  deepLinking?: DeepLinkingConfig;
+}
+
+interface RemoteControlledPaginationInterface {
+  enablePagination?: boolean;
+  rowsDropdown?: {
+    enableRowsDropdown?: boolean;
+    rowsPerPage?: number;
+    optionsList?: DatatableRowsDropdownOption[];
+  };
+  remoteControl: {
+    onPaginationDataUpdate: (currentPage: number, rowsPerPageNum: number) => void | Promise<void>;
+    totalRecords: number;
+  };
+  deepLinking?: DeepLinkingConfig;
+}
+
+// Enhanced datatable config interfaces
+interface LocalControlledDatatableConfigInterface extends CommonConfigInterface {
+  pagination?: LocalControlledPaginationInterface;
+}
+
+interface RemoteControlledDatatableConfigInterface extends CommonConfigInterface {
+  pagination?: RemoteControlledPaginationInterface;
+}
+
+// Union type for all possible pagination configurations
+type DatatablePaginationConfig =
+  | RootPaginationInterface
+  | LocalControlledPaginationInterface
+  | RemoteControlledPaginationInterface;
+
+// Enhanced datatable config interface
+interface EnhancedDatatableConfigInterface extends CommonConfigInterface {
+  pagination?: DatatablePaginationConfig;
+}
+
+// Enhanced datatable interface
+export interface DatatableInterface extends CommonDatatableInterface {
+  config?: EnhancedDatatableConfigInterface;
+}
+
+// Individual component interfaces for internal use
+export interface LocalControlledDatatableInterface extends CommonDatatableInterface {
+  config?: LocalControlledDatatableConfigInterface;
+}
+
+export interface RemoteControlledDatatableInterface extends CommonDatatableInterface {
+  config?: RemoteControlledDatatableConfigInterface;
+}
+
+export interface DatatableRef {
+  resetPagination: () => { activePage: number; rowsPerPageNum: number };
 }

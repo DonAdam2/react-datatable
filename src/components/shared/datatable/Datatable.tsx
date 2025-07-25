@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { RootDatatableInterface } from './Datatable.types';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  RootDatatableInterface,
+  DatatableInterface,
+  LocalControlledDatatableInterface,
+  RemoteControlledDatatableInterface,
+} from './Datatable.types';
+import { useEffect, useMemo, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { ColumnOrderType } from './datatableHeader/DatatableHeader.types';
 import LoadingIcon from '@/components/shared/LoadingIcon';
 import cloneDeep from 'lodash/cloneDeep';
@@ -11,6 +16,18 @@ import DatatableTitle from '@/components/shared/datatable/datatableTitle/Datatab
 import DatatableTitleAndSearch from '@/components/shared/datatable/datatableTitleAndSearch/DatatableTitleAndSearch';
 import DatatableHeader from '@/components/shared/datatable/datatableHeader/DatatableHeader';
 import DatatableBodyRow from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow';
+import DatatableFooter from '@/components/shared/datatable/datatableFooter/DatatableFooter';
+import DatatablePagination from '@/components/shared/datatable/datatablePagination/DatatablePagination';
+import usePagination from '@/hooks/usePagination';
+
+// Default rows per page options
+const rowsPerPageOptions: { value: string; displayValue: string }[] = [
+  { value: '5', displayValue: '5 rows' },
+  { value: '10', displayValue: '10 rows' },
+  { value: '20', displayValue: '20 rows' },
+  { value: '30', displayValue: '30 rows' },
+  { value: '40', displayValue: '40 rows' },
+];
 
 const RootDatatable = ({
   columns,
@@ -267,8 +284,261 @@ const RootDatatable = ({
   );
 };
 
-const Datatable = () => {
-  return <div className="datatable-wrapper">Datatable</div>;
-};
+// Local controlled datatable component
+const LocalControlledDatatable = forwardRef<
+  { resetPagination: () => void },
+  LocalControlledDatatableInterface
+>(({ config, ...rest }, ref) => {
+  const { rowsDropdown, enablePagination = true, deepLinking } = config?.pagination ?? {};
+  const { rowsPerPage = 10, enableRowsDropdown = true, optionsList } = rowsDropdown ?? {};
+  const { isLocalSearch = true, ...otherSearchProps } = config?.search ?? {};
+
+  const [rowsPerPageNum, setRowsPerPageNum] = useState(rowsPerPage);
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  const paginationData = usePagination({
+    contentPerPage: rowsPerPageNum,
+    count: totalRecords,
+    deepLinking,
+  });
+
+  const {
+    activePage,
+    navigateToPrevPage,
+    navigateToNextPage,
+    navigateToFirstPage,
+    navigateToLastPage,
+    navigateToPage,
+    updateCurrentRowsPerPage,
+    firstContentIndex,
+    lastContentIndex,
+    totalPages,
+  } = paginationData;
+
+  const modifiedOptionsList = useMemo(
+    () =>
+      optionsList
+        ? optionsList.map((el) => ({ ...el, value: JSON.stringify(el.value) }))
+        : rowsPerPageOptions,
+    [optionsList]
+  );
+
+  useEffect(() => {
+    setTotalRecords(rest.records.length);
+  }, [rest.records.length]);
+
+  const onChangeRowsPerPage = async (value: string | string[]) => {
+    const newRowsPerPage = +value;
+    setRowsPerPageNum(newRowsPerPage);
+    await updateCurrentRowsPerPage(newRowsPerPage);
+  };
+
+  const resetPagination = useCallback(async () => {
+    if (activePage !== 1 || rowsPerPageNum !== rowsPerPage) {
+      await navigateToPage(1);
+      setRowsPerPageNum(rowsPerPage);
+      await updateCurrentRowsPerPage(rowsPerPage);
+    }
+  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToPage, updateCurrentRowsPerPage]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      resetPagination,
+    }),
+    [resetPagination]
+  );
+
+  // Callback function passed to RootDatatable to update totalRecords based on search results
+  const handleUpdateFilteredRecordsCount = useCallback((count: number) => {
+    setTotalRecords(count);
+  }, []);
+
+  return (
+    <RootDatatable
+      {...rest}
+      config={{
+        ...config,
+        search: {
+          ...otherSearchProps,
+          isLocalSearch,
+          onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
+        },
+        pagination: {
+          enablePagination,
+          firstContentIndex,
+          lastContentIndex,
+          resetPagination: enablePagination ? resetPagination : undefined,
+          paginationComponent: enablePagination ? (
+            <DatatableFooter
+              paginationComponent={
+                <DatatablePagination
+                  navigateToFirstPage={navigateToFirstPage}
+                  navigateToLastPage={navigateToLastPage}
+                  navigateToPrevPage={navigateToPrevPage}
+                  navigateToNextPage={navigateToNextPage}
+                  totalPages={totalPages}
+                  totalRecords={totalRecords}
+                  recordsPerPage={rowsPerPageNum}
+                  activePage={activePage}
+                  paginationRangeSeparatorLabel={config?.ui?.paginationRangeSeparatorLabel}
+                />
+              }
+              enableRowsDropdown={enableRowsDropdown}
+              rowsPerPageOptions={modifiedOptionsList}
+              rowsPerPageNum={JSON.stringify(rowsPerPageNum)}
+              onChangeRowsPerPage={onChangeRowsPerPage}
+            />
+          ) : undefined,
+        },
+      }}
+    />
+  );
+});
+
+// Remote controlled datatable component
+const RemoteControlledDatatable = forwardRef<
+  { resetPagination: () => void },
+  RemoteControlledDatatableInterface
+>(({ config, ...rest }, ref) => {
+  const {
+    rowsDropdown,
+    remoteControl,
+    enablePagination = true,
+    deepLinking,
+  } = config?.pagination ?? {};
+  const { isLocalSearch = false, ...otherSearchProps } = config?.search ?? {};
+  const { isLocalSort = false, onSorting } = config?.sort ?? {};
+  const { rowsPerPage = 10, enableRowsDropdown = true, optionsList } = rowsDropdown ?? {};
+  const { onPaginationDataUpdate, totalRecords = 0 } = remoteControl ?? {};
+
+  const [rowsPerPageNum, setRowsPerPageNum] = useState(rowsPerPage);
+
+  const paginationData = usePagination({
+    contentPerPage: rowsPerPageNum,
+    count: totalRecords,
+    fetchData: onPaginationDataUpdate
+      ? async (page, perPage) => {
+          await onPaginationDataUpdate(page, perPage);
+        }
+      : undefined,
+    deepLinking,
+  });
+
+  const {
+    activePage,
+    updateCurrentRowsPerPage,
+    navigateToFirstPage,
+    navigateToLastPage,
+    navigateToPrevPage,
+    navigateToNextPage,
+    navigateToPage,
+    totalPages,
+  } = paginationData;
+
+  const modifiedOptionsList = useMemo(
+    () =>
+      optionsList
+        ? optionsList.map((el) => ({ ...el, value: JSON.stringify(el.value) }))
+        : rowsPerPageOptions,
+    [optionsList]
+  );
+
+  const resetPagination = useCallback(async () => {
+    if (activePage !== 1 || rowsPerPageNum !== rowsPerPage) {
+      await navigateToPage(1);
+      setRowsPerPageNum(rowsPerPage);
+      await updateCurrentRowsPerPage(rowsPerPage);
+    }
+  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToPage, updateCurrentRowsPerPage]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      resetPagination,
+    }),
+    [resetPagination]
+  );
+
+  const onChangeRowsPerPage = async (value: string | string[]) => {
+    const newRowsPerPage = +value;
+    setRowsPerPageNum(newRowsPerPage);
+    await updateCurrentRowsPerPage(newRowsPerPage);
+  };
+
+  return (
+    <RootDatatable
+      {...rest}
+      config={{
+        ...config,
+        search: {
+          ...otherSearchProps,
+          isLocalSearch,
+        },
+        sort: {
+          isLocalSort,
+          onSorting,
+        },
+        pagination: {
+          enablePagination,
+          resetPagination: enablePagination ? resetPagination : undefined,
+          paginationComponent: enablePagination ? (
+            <DatatableFooter
+              paginationComponent={
+                <DatatablePagination
+                  navigateToFirstPage={navigateToFirstPage}
+                  navigateToLastPage={navigateToLastPage}
+                  navigateToPrevPage={navigateToPrevPage}
+                  navigateToNextPage={navigateToNextPage}
+                  totalPages={totalPages}
+                  totalRecords={totalRecords}
+                  recordsPerPage={rowsPerPageNum}
+                  activePage={activePage}
+                  paginationRangeSeparatorLabel={config?.ui?.paginationRangeSeparatorLabel}
+                />
+              }
+              enableRowsDropdown={enableRowsDropdown}
+              rowsPerPageOptions={modifiedOptionsList}
+              rowsPerPageNum={JSON.stringify(rowsPerPageNum)}
+              onChangeRowsPerPage={onChangeRowsPerPage}
+            />
+          ) : undefined,
+        },
+      }}
+    />
+  );
+});
+
+// Main Datatable component
+const Datatable = forwardRef<{ resetPagination: () => void }, DatatableInterface>(
+  ({ config, ...rest }, ref) => {
+    const paginationConfig = { enablePagination: true, ...config?.pagination };
+    const enhancedConfig = { ...config, pagination: paginationConfig };
+
+    // Type guards to determine pagination mode
+    const isRemotePagination = !!(paginationConfig as any)?.remoteControl;
+    const isCustomPagination = !!(paginationConfig as any)?.paginationComponent;
+
+    return (
+      <>
+        {enhancedConfig.pagination.enablePagination ? (
+          isCustomPagination ? (
+            <RootDatatable {...rest} config={enhancedConfig as any} />
+          ) : isRemotePagination ? (
+            <RemoteControlledDatatable {...rest} config={enhancedConfig as any} ref={ref} />
+          ) : (
+            <LocalControlledDatatable {...rest} config={enhancedConfig as any} ref={ref} />
+          )
+        ) : (
+          <RootDatatable {...rest} config={enhancedConfig as any} />
+        )}
+      </>
+    );
+  }
+);
+
+LocalControlledDatatable.displayName = 'LocalControlledDatatable';
+RemoteControlledDatatable.displayName = 'RemoteControlledDatatable';
+Datatable.displayName = 'Datatable';
 
 export default Datatable;

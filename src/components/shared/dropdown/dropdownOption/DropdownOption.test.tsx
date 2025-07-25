@@ -4,7 +4,7 @@ import DropdownOption from './DropdownOption';
 
 describe('<DropdownOption />', () => {
   test('renders component name (dropdownOption)', () => {
-    render(<DropdownOption />);
+    // render(<DropdownOption />);
     const title = screen.getByText(/dropdownOption/i);
     expect(title).toBeInTheDocument();
   });

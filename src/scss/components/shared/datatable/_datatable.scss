@@ -1,0 +1,64 @@
+@use '../../../generic/variables' as *;
+
+.table-wrapper {
+  position: relative;
+  overflow-x: auto;
+
+  .table {
+    width: 100%;
+    display: table;
+    border-spacing: 0;
+    border-collapse: collapse;
+    table-layout: auto;
+
+    tr {
+      td {
+        padding: 12px 24px;
+        font-size: 13px;
+      }
+
+      &.body-tr {
+        &:not(:last-child) {
+          border-bottom: 1px solid $cool-gray-300;
+        }
+      }
+    }
+
+    .actions-col-wrapper {
+      //padding: 12px;
+
+      &.at-start {
+        padding-inline-end: 0;
+        padding-inline-start: 12px;
+      }
+
+      &.at-end {
+        padding-inline-start: 0;
+        padding-inline-end: 12px;
+      }
+
+      .actions-col {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+    }
+
+    .selections-col-wrapper {
+      padding-inline-end: 0;
+      padding-inline-start: 10px;
+
+      .selection-col {
+        display: flex;
+      }
+    }
+
+    .move-element {
+      cursor: move;
+    }
+  }
+
+  .no-data {
+    text-align: center;
+  }
+}

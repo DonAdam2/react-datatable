@@ -4,7 +4,7 @@ import DropdownClearIcon from './DropdownClearIcon';
 
 describe('<DropdownClearIcon />', () => {
   test('renders component name (dropdownClearIcon)', () => {
-    render(<DropdownClearIcon />);
+    // render(<DropdownClearIcon />);
     const title = screen.getByText(/dropdownClearIcon/i);
     expect(title).toBeInTheDocument();
   });

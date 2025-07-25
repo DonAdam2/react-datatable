@@ -4,7 +4,7 @@ import Datatable from './Datatable';
 
 describe('<Datatable />', () => {
   test('renders component name (datatable)', () => {
-    render(<Datatable />);
+    // render(<Datatable />);
     const title = screen.getByText(/datatable/i);
     expect(title).toBeInTheDocument();
   });

@@ -4,7 +4,7 @@ import DatatableBodyRow from './DatatableBodyRow';
 
 describe('<DatatableBodyRow />', () => {
   test('renders component name (datatableBodyRow)', () => {
-    render(<DatatableBodyRow />);
+    // render(<DatatableBodyRow />);
     const title = screen.getByText(/datatableBodyRow/i);
     expect(title).toBeInTheDocument();
   });

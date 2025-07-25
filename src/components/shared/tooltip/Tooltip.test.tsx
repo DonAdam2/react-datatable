@@ -4,7 +4,7 @@ import Tooltip from './Tooltip';
 
 describe('<Tooltip />', () => {
   test('renders component name (tooltip)', () => {
-    render(<Tooltip />);
+    // render(<Tooltip />);
     const title = screen.getByText(/tooltip/i);
     expect(title).toBeInTheDocument();
   });

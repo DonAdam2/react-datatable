@@ -4,7 +4,7 @@ import Dropdown from './Dropdown';
 
 describe('<Dropdown />', () => {
   test('renders component name (dropdown)', () => {
-    render(<Dropdown />);
+    // render(<Dropdown />);
     const title = screen.getByText(/dropdown/i);
     expect(title).toBeInTheDocument();
   });

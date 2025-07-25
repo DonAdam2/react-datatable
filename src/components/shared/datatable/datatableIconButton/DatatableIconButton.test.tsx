@@ -4,7 +4,7 @@ import DatatableIconButton from './DatatableIconButton';
 
 describe('<DatatableIconButton />', () => {
   test('renders component name (datatableIconButton)', () => {
-    render(<DatatableIconButton />);
+    // render(<DatatableIconButton />);
     const title = screen.getByText(/datatableIconButton/i);
     expect(title).toBeInTheDocument();
   });

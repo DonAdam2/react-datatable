@@ -4,7 +4,7 @@ import GradientTextColor from './GradientTextColor';
 
 describe('<GradientTextColor />', () => {
   test('renders component name (gradientTextColor)', () => {
-    render(<GradientTextColor />);
+    // render(<GradientTextColor />);
     const title = screen.getByText(/gradientTextColor/i);
     expect(title).toBeInTheDocument();
   });

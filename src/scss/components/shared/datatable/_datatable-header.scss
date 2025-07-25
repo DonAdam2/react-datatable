@@ -1,0 +1,39 @@
+@use '../../../generic/variables' as *;
+
+.table-header {
+  display: table-header-group;
+  background-color: $blue-gray-100;
+
+  tr {
+    th {
+      user-select: none;
+      text-align: start;
+      padding: 8px 24px;
+
+      &:first-child {
+        border-start-start-radius: $header-radius;
+        border-start-end-radius: 0;
+        border-end-start-radius: $header-radius;
+        border-end-end-radius: 0;
+      }
+
+      &:last-child {
+        border-start-start-radius: 0;
+        border-start-end-radius: $header-radius;
+        border-end-start-radius: 0;
+        border-end-end-radius: $header-radius;
+      }
+
+      .table-head-label {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        gap: 5px;
+        color: $neutral-500;
+        font-size: 14px;
+        line-height: 24px;
+        font-weight: 500;
+      }
+    }
+  }
+}

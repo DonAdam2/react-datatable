@@ -1,13 +1,51 @@
+@use 'generic/variables' as *;
 @use 'generic';
 @use 'components';
 @use 'pages';
 
 .container {
-  margin-right: auto;
-  margin-left: auto;
-  padding-left: 8px;
-  padding-right: 8px;
-  width: calc(100vw - 1rem);
-  max-width: 1170px;
+  width: calc(100% - 30px);
+  margin: 10px auto;
+}
+
+.demo-title {
   text-align: center;
+  color: $blue-gray-800;
+}
+
+.status {
+  text-transform: uppercase;
+  padding: 2px 12px;
+  border-radius: 24px;
+  width: fit-content;
+  margin: 0;
+
+  &.success {
+    color: $emerald-500;
+    background-color: #d5ffeb;
+  }
+
+  &.warn {
+    color: #cd9400;
+    background-color: #fff3d3;
+  }
+
+  &.danger {
+    color: $red-400;
+    background-color: #ffc4c9;
+  }
+}
+
+.demo-config-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid $cool-gray-300;
+  padding: 5px;
+  border-radius: 10px;
+
+  .demo-config-title {
+    margin: 0;
+    font-weight: 500;
+  }
 }
