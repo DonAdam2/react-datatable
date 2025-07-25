@@ -171,7 +171,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
             }
           : undefined
       }
-      style={{ cursor: isClickEnabled ? 'pointer' : 'initial' }}
+      style={{ cursor: isClickEnabled || isDoubleClickEnabled ? 'pointer' : 'initial' }}
       className="body-tr"
     >
       {updatedColumns.map((col, colIndex) => (
