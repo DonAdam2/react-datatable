@@ -211,8 +211,8 @@ const RootDatatable = ({
                 onUpdateFilteredRecordsCount?.(records.length);
               }
               setSearchQuery(value);
-              await config?.search?.onSearch?.(value);
               resetPagination?.();
+              await config?.search?.onSearch?.(value);
             },
             show,
             isLocalSearch,
