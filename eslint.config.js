@@ -1,7 +1,6 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-const storybook = require("eslint-plugin-storybook")
-
-const path = require('path'),
+const storybook = require('eslint-plugin-storybook'),
+  path = require('path'),
   js = require('@eslint/js'),
   react = require('eslint-plugin-react'),
   reactHooks = require('eslint-plugin-react-hooks'),
