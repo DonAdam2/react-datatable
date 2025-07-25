@@ -28,7 +28,7 @@ export const getMyTeamsDatatableConfig = (
   // Example row events configuration
   const teamsRowEvents: DatatableRowEvents<Person> = {
     onDragStart: {
-      draggable: (rowData) => rowData.id === 1,
+      draggable: (rowData) => rowData.id === 2,
       event: (e, row) => {
         console.log('Dragging row:', row.first_name, row.last_name);
       },

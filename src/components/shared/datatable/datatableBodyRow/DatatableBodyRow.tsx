@@ -1,4 +1,4 @@
-import { DragEvent } from 'react';
+import { DragEvent, useRef } from 'react';
 import { DatatableBodyRowInterface } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 import useTouchScreenDetect from '@/hooks/useTouchScreenDetect';
 import {
@@ -28,6 +28,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   rowEvents,
 }: DatatableBodyRowInterface<T>) => {
   const { isTouchDevice } = useTouchScreenDetect(),
+    rowRef = useRef<HTMLTableRowElement>(null),
     actionsColumnData = {
       accessorKey: actionsColumnName,
       header: actionsColLabel,
@@ -147,6 +148,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
 
   return (
     <tr
+      ref={rowRef}
       onClick={
         isClickEnabled
           ? (e) => {
@@ -169,14 +171,6 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
             }
           : undefined
       }
-      onDragStart={
-        isDragEnabled
-          ? (e) => {
-              rowEvents?.onDragStart?.event(e, row);
-            }
-          : undefined
-      }
-      draggable={isDragEnabled}
       style={{ cursor: isClickEnabled ? 'pointer' : 'initial' }}
       className="body-tr"
     >
@@ -214,10 +208,20 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
             )}
             {colIndex === 0 && isDragEnabled && !isTouchDevice && (
               <div
+                draggable={true}
+                onDragStart={(e) => {
+                  e.stopPropagation();
+                  // Set the drag image to be the entire row
+                  if (rowRef.current && e.dataTransfer) {
+                    e.dataTransfer.setDragImage(rowRef.current, 0, 0);
+                  }
+                  rowEvents?.onDragStart?.event(e, row);
+                }}
                 style={{
                   marginInlineStart: col.accessorKey === selectionsColumnName ? 10 : 0,
                   marginInlineEnd: col.accessorKey === selectionsColumnName ? 0 : 24,
                   display: 'flex',
+                  cursor: 'grab',
                 }}
               >
                 <MoveIcon className="move-element" />
