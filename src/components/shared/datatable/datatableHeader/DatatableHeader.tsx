@@ -1,0 +1,180 @@
+import AscendingSortIcon from '@/assets/icons/AscendingSortIcon';
+import DescendingSortIcon from '@/assets/icons/DescendingSortIcon';
+import FilterIcon from '@/assets/icons/FilterIcon';
+import { DatatableHeaderInterface } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+import { ChangeEvent, useEffect, useState } from 'react';
+import DatatableIconButton from '../datatableIconButton/DatatableIconButton';
+import DatatableRadioInput from '@/components/shared/datatable/datatableRadioInput/DatatableRadioInput';
+import DatatableCheckbox from '@/components/shared/datatable/datatableCheckbox/DatatableCheckbox';
+import cx from 'classnames';
+import { getTableDataCellWidth } from '@/constants/Helpers';
+
+export const actionsColumnName = 'actionsCol';
+const selectionsColumnName = 'selectionsCol';
+const selectionsColumnWidth = 25;
+
+const DatatableHeader = ({
+  columns,
+  actions,
+  onSorting,
+  sortIcon = <FilterIcon />,
+  ascendingSortIcon = <AscendingSortIcon />,
+  descendingSortIcon = <DescendingSortIcon />,
+  actionsColWidth,
+  actionsColLabel,
+  isActionsColumnLast,
+  selection,
+  uniqueId,
+  isSelectAllRecords,
+  setIsSelectAllRecords,
+  candidateRecordsToSelectAll,
+}: DatatableHeaderInterface) => {
+  const [sortingField, setSortingField] = useState(''),
+    [sortingOrder, setSortingOrder] = useState('asc'),
+    actionsColumnData = {
+      field: actionsColumnName,
+      colName: actionsColLabel,
+      width: actionsColWidth,
+      sortable: false,
+      render: (rowData: any) => (
+        <>
+          {actions?.map((el, i) => (
+            <DatatableIconButton
+              key={i}
+              disabled={el.disabled}
+              hidden={el.hidden}
+              icon={el.icon}
+              onClick={el.onClick}
+              rowData={rowData}
+              tooltip={el.tooltip}
+              render={el.render}
+            />
+          ))}
+        </>
+      ),
+    },
+    selectionsColumnData = {
+      field: selectionsColumnName,
+      colName: '',
+      className: 'selections-col-wrapper',
+      width: selectionsColumnWidth,
+      sortable: false,
+      render: (rowData: any) => (
+        <>
+          {selection?.onSelectionChange && (
+            <>
+              {selection.mode === 'radio' ? (
+                <DatatableRadioInput
+                  name={uniqueId}
+                  disabled={selection?.disabled}
+                  hidden={selection?.hidden}
+                  onSelectionChange={selection?.onSelectionChange}
+                  className={selection?.className}
+                  dataKey={selection?.dataKey || ''}
+                  rowData={rowData}
+                  selectedData={selection.selectedData}
+                  candidateRecordsToSelectAll={candidateRecordsToSelectAll}
+                />
+              ) : (
+                <DatatableCheckbox
+                  name={uniqueId}
+                  disabled={selection?.disabled}
+                  hidden={selection?.hidden}
+                  onSelectionChange={selection?.onSelectionChange}
+                  className={selection?.className}
+                  dataKey={selection?.dataKey || ''}
+                  rowData={rowData}
+                  selectedData={selection.selectedData}
+                  setIsSelectAllRecords={setIsSelectAllRecords}
+                  candidateRecordsToSelectAll={candidateRecordsToSelectAll}
+                />
+              )}
+            </>
+          )}
+        </>
+      ),
+    };
+
+  /* This useEffect is responsible for selecting records if selection mode is checkbox
+   * and isSelectAllRecords is true (will work only if datatable is remotely controlled) */
+  useEffect(() => {
+    if (selection !== undefined && selection.mode === 'checkbox') {
+      const unSelectedRecords = candidateRecordsToSelectAll.filter(
+        (candidate: any) =>
+          !selection.selectedData.some(
+            (record: any) => candidate[selection.dataKey] === record[selection.dataKey]
+          )
+      );
+      if (isSelectAllRecords && unSelectedRecords.length) {
+        selection.onSelectionChange([...selection.selectedData, ...unSelectedRecords]);
+      }
+    }
+  }, [isSelectAllRecords, selection, candidateRecordsToSelectAll]);
+
+  const onSortingChange = async (field: string) => {
+    const order = field === sortingField && sortingOrder === 'asc' ? 'desc' : 'asc';
+
+    await onSorting?.(field, order);
+    setSortingField(field);
+    setSortingOrder(order);
+  };
+
+  // Construct new columns
+  const updatedColumns = [
+    ...(selection !== undefined ? [selectionsColumnData] : []),
+    ...(actions?.length && !isActionsColumnLast ? [actionsColumnData] : []),
+    ...columns,
+    ...(actions?.length && isActionsColumnLast ? [actionsColumnData] : []),
+  ];
+
+  return (
+    <thead className="table-header">
+      <tr>
+        {updatedColumns.map(({ field, colName, sortable, width, className = '' }) => (
+          <th
+            style={{
+              width: getTableDataCellWidth({ width, field, columns: updatedColumns, actions }),
+            }}
+            key={field}
+            className={cx(className, {
+              'actions-col-wrapper': field === actionsColumnName,
+              'at-start': field === actionsColumnName && !isActionsColumnLast,
+              'at-end': field === actionsColumnName && isActionsColumnLast,
+              'selections-col-wrapper': field === selectionsColumnName,
+            })}
+          >
+            <span
+              style={{ cursor: sortable ? 'pointer' : 'initial' }}
+              onClick={() => (sortable ? onSortingChange(field) : null)}
+              className="table-head-label"
+            >
+              {field === selectionsColumnName &&
+              selection?.mode === 'checkbox' &&
+              !selection.selectAllCheckbox?.hidden ? (
+                <input
+                  type="checkbox"
+                  disabled={selection.selectAllCheckbox?.disabled}
+                  checked={isSelectAllRecords}
+                  onChange={({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
+                    setIsSelectAllRecords(checked);
+                    selection?.onSelectionChange(checked ? candidateRecordsToSelectAll : []);
+                  }}
+                  className={selection?.className}
+                  data-test="select-all-checkbox"
+                />
+              ) : (
+                colName
+              )}
+              {sortable && sortingField !== field && sortIcon}
+              {sortingField && sortingField === field && (
+                <>{sortingOrder === 'asc' ? ascendingSortIcon : descendingSortIcon}</>
+              )}
+            </span>
+          </th>
+        ))}
+      </tr>
+    </thead>
+  );
+};
+
+export default DatatableHeader;

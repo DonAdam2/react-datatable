@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 //import meta image
 import '@/public/assets/images/metaImage.jpg';
 // required for babel polyfills
@@ -15,7 +16,9 @@ const container = document.getElementById('root'),
 
 root.render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>
 );
 

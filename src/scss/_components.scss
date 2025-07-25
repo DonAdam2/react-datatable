@@ -1,2 +1,22 @@
 @use './components/shared/loading-icon';
 /* PLOP_INJECT_IMPORT */
+@use './components/datatable-checkbox';
+@use './components/datatable-radio-input';
+@use './components/datatable-icon-button';
+@use './components/datatable-header';
+@use './components/datatable-footer';
+@use './components/datatable';
+@use './components/datatable-pagination';
+@use './components/tooltip';
+@use './components/dropdown-option';
+@use './components/dropdown-clear-icon';
+@use './components/dropdown-search-input';
+@use './components/dropdown-selected-option';
+@use './components/dropdown-selected-options';
+@use './components/dropdown';
+@use './components/click-away-wrapper';
+@use './components/button';
+@use './components/gradient-text-color';
+@use './components/paper';
+@use './components/conditional-wrapper';
+@use './components/portal';
