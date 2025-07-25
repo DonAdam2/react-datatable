@@ -315,23 +315,22 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
   }, []);
 
   //update dropdown position (top, bottom) based on the current scroll position
-  const handleScroll = useDebounce(
-    useCallback(() => {
-      if (dropdownWrapperRef.current) {
-        const wrapper = dropdownWrapperRef.current.getBoundingClientRect(),
-          windowHeight = window.innerHeight,
-          menuBounding = dropdownMenuRef.current?.getBoundingClientRect();
+  const updateDropdownPosition = useCallback(() => {
+    if (dropdownWrapperRef.current) {
+      const wrapper = dropdownWrapperRef.current.getBoundingClientRect(),
+        windowHeight = window.innerHeight,
+        menuBounding = dropdownMenuRef.current?.getBoundingClientRect();
 
-        if (
-          windowHeight - space < wrapper.top + wrapper.height + (menuBounding?.height || 0) &&
-          wrapper.top + space > space * 2 + (menuBounding?.height || 0)
-        )
-          setIsDropdownOnTop(true);
-        else setIsDropdownOnTop(false);
-      }
-    }, []),
-    1
-  );
+      if (
+        windowHeight - space < wrapper.top + wrapper.height + (menuBounding?.height || 0) &&
+        wrapper.top + space > space * 2 + (menuBounding?.height || 0)
+      )
+        setIsDropdownOnTop(true);
+      else setIsDropdownOnTop(false);
+    }
+  }, []);
+
+  const handleScroll = useDebounce(updateDropdownPosition, 1);
 
   //update menu position styles
   const getStylesList = useMemo(() => {
@@ -352,7 +351,6 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
         left: Math.max(space, wrapperRect.right - wrapperRect.width),
         top: getElementOffset(dropdownWrapperRef.current).top + wrapperRect.height + space,
       };
-    handleScroll();
 
     //not right
     if (!(style.left < menuWidth) && !isRightAligned) {
@@ -371,7 +369,6 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     menuHeight,
     isOpen,
     wrapperParentUpdated,
-    handleScroll,
     isParentPositionAbsolute,
     targetParentId,
     isRightAligned,
@@ -387,6 +384,13 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     };
   }, [handleScroll]);
 
+  // Call handleScroll when positioning-related state changes
+  useEffect(() => {
+    if (isOpen && dropdownWrapperRef.current && menuHeight && menuWidth) {
+      updateDropdownPosition();
+    }
+  }, [isOpen, menuHeight, menuWidth, wrapperParentUpdated, updateDropdownPosition]);
+
   const updateStyles = useCallback(() => {
     setStyles(getStylesList);
   }, [getStylesList]);
@@ -394,6 +398,64 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
   const updateScrollableParentScroll = ({ target }: any) => {
     setWrapperParentUpdated({ top: target.scrollTop, left: target.scrollLeft });
   };
+
+  const handleResize = useCallback(() => {
+    if (isOpen && dropdownMenuRef.current && dropdownWrapperRef.current) {
+      // Use requestAnimationFrame for smooth, immediate updates
+      requestAnimationFrame(() => {
+        if (!dropdownMenuRef.current || !dropdownWrapperRef.current) return;
+
+        // Get current dimensions synchronously
+        const currentMenuWidth = dropdownMenuRef.current.offsetWidth;
+        const currentMenuHeight = dropdownMenuRef.current.offsetHeight;
+
+        // Update state
+        setMenuWidth(currentMenuWidth);
+        setMenuHeight(currentMenuHeight);
+
+        // Force immediate recalculation with current dimensions
+        const wrapper = dropdownWrapperRef.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        // Calculate if dropdown should be on top
+        const shouldBeOnTop =
+          windowHeight - space < wrapper.top + wrapper.height + currentMenuHeight &&
+          wrapper.top + space > space * 2 + currentMenuHeight;
+
+        setIsDropdownOnTop(shouldBeOnTop);
+
+        // Calculate new position immediately
+        const wrapperRect = dropdownWrapperRef.current.getBoundingClientRect();
+        const scrollableParent = targetParentId
+          ? document.getElementById(targetParentId)
+          : getScrollParent(dropdownWrapperRef.current);
+
+        const newStyle = {
+          left: Math.max(space, wrapperRect.right - wrapperRect.width),
+          top: getElementOffset(dropdownWrapperRef.current).top + wrapperRect.height + space,
+        };
+
+        // Adjust for right alignment
+        if (!(newStyle.left < currentMenuWidth) && !isRightAligned) {
+          newStyle.left = Math.max(space, wrapperRect.right - currentMenuWidth);
+        }
+
+        // Adjust for top positioning
+        if (shouldBeOnTop) {
+          newStyle.top =
+            getElementOffset(dropdownWrapperRef.current).top - space - currentMenuHeight;
+        }
+
+        // Adjust for scroll
+        if (!isParentPositionAbsolute && scrollableParent) {
+          newStyle.top -= scrollableParent.scrollTop;
+        }
+
+        // Apply styles immediately
+        setStyles(newStyle);
+      });
+    }
+  }, [isOpen, space, targetParentId, isRightAligned, isParentPositionAbsolute]);
 
   useEffect(() => {
     if (dropdownWrapperRef.current) {
@@ -403,17 +465,17 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
           : getScrollParent(wrapperRef);
       updateStyles();
 
-      window.addEventListener('resize', updateScrollableParentScroll);
+      window.addEventListener('resize', handleResize);
 
       scrollableParent.addEventListener('scroll', updateScrollableParentScroll);
 
       return () => {
-        window.removeEventListener('resize', updateScrollableParentScroll);
+        window.removeEventListener('resize', handleResize);
 
         scrollableParent.removeEventListener('scroll', updateScrollableParentScroll);
       };
     }
-  }, [updateStyles, targetParentId]);
+  }, [updateStyles, targetParentId, handleResize]);
 
   //update the position of the dropdown menu if isMulti
   useEffect(() => {
