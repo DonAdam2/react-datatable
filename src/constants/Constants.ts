@@ -1,18 +1,12 @@
 import { BackendParams, Person } from './FakeBackend';
 
-// Frontend-enhanced Person with UI-only properties
-export interface PersonWithUIProps extends Person {
-  draggable?: boolean;
-}
-
-export const list: PersonWithUIProps[] = [
+export const list: Person[] = [
   {
     id: 1,
     first_name: 'John',
     last_name: 'Doe',
     employment: { title: 'Software Engineer' },
     subscription: { status: 'active' },
-    draggable: true,
   },
   {
     id: 2,

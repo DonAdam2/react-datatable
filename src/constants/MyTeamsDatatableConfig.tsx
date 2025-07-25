@@ -7,11 +7,13 @@ import {
   ColumnDef,
   ActionDef,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+import { DatatableRowEvents } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 import { Person } from '@/constants/FakeBackend';
 
 /**
  * Type-safe version of the datatable configuration
  * This demonstrates how to use the new ColumnDef<T> for type safety
+ * and the new DatatableRowEvents<T> for row-level interactions
  */
 export const getMyTeamsDatatableConfig = (
   teamDetails: Person[]
@@ -19,9 +21,39 @@ export const getMyTeamsDatatableConfig = (
   teamsColumns: ColumnDef<Person>[];
   teamsRecords: Person[];
   teamsActions: ActionDef<Person>[];
+  teamsRowEvents: DatatableRowEvents<Person>;
 } => {
-  const teamsRecords = teamDetails,
-    teamsColumns: ColumnDef<Person>[] = [
+  const teamsRecords = teamDetails;
+
+  // Example row events configuration
+  const teamsRowEvents: DatatableRowEvents<Person> = {
+    onDragStart: {
+      draggable: (rowData) => rowData.id === 1,
+      event: (e, row) => {
+        console.log('Dragging row:', row.first_name, row.last_name);
+      },
+    },
+    onClick: {
+      // Only enable click for active users
+      clickable: (rowData) => rowData.subscription.status.toLowerCase() === 'active',
+      event: (e, row) => {
+        console.log('Row clicked:', row.first_name, row.last_name);
+        alert(`Clicked on ${row.first_name} ${row.last_name} (${row.employment.title})`);
+      },
+    },
+    onDoubleClick: {
+      // Enable double click for all users
+      clickable: true,
+      event: (e, row) => {
+        console.log('Row double-clicked:', row.first_name, row.last_name);
+        alert(
+          `Double-clicked on ${row.first_name} ${row.last_name}\nID: ${row.id}\nStatus: ${row.subscription.status}`
+        );
+      },
+    },
+  };
+
+  const teamsColumns: ColumnDef<Person>[] = [
       {
         accessorKey: 'first_name',
         header: 'Name',
@@ -113,5 +145,5 @@ export const getMyTeamsDatatableConfig = (
       },
     ];
 
-  return { teamsColumns, teamsRecords, teamsActions };
+  return { teamsColumns, teamsRecords, teamsActions, teamsRowEvents };
 };

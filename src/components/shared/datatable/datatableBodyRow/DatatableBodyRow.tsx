@@ -25,6 +25,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   isSelectAllRecords,
   setIsSelectAllRecords,
   candidateRecordsToSelectAll,
+  rowEvents,
 }: DatatableBodyRowInterface<T>) => {
   const { isTouchDevice } = useTouchScreenDetect(),
     actionsColumnData = {
@@ -99,6 +100,43 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
     e.preventDefault();
   };
 
+  // Helper functions to check if row events are enabled
+  const isClickEventEnabled = (
+    eventConfig: { clickable?: boolean | ((rowData: T) => boolean) } | undefined
+  ): boolean => {
+    if (!eventConfig) return false;
+    if (typeof eventConfig.clickable === 'function') {
+      return eventConfig.clickable(row);
+    }
+    return eventConfig.clickable !== false;
+  };
+
+  const isDropEventEnabled = (
+    eventConfig: { droppable?: boolean | ((rowData: T) => boolean) } | undefined
+  ): boolean => {
+    if (!eventConfig) return false;
+    if (typeof eventConfig.droppable === 'function') {
+      return eventConfig.droppable(row);
+    }
+    return eventConfig.droppable !== false;
+  };
+
+  const isDragEventEnabled = (
+    eventConfig: { draggable?: boolean | ((rowData: T) => boolean) } | undefined
+  ): boolean => {
+    if (!eventConfig) return false;
+    if (typeof eventConfig.draggable === 'function') {
+      return eventConfig.draggable(row);
+    }
+    return eventConfig.draggable !== false;
+  };
+
+  const isClickEnabled = rowEvents?.onClick && isClickEventEnabled(rowEvents.onClick);
+  const isDoubleClickEnabled =
+    rowEvents?.onDoubleClick && isClickEventEnabled(rowEvents.onDoubleClick);
+  const isDropEnabled = rowEvents?.onDrop && isDropEventEnabled(rowEvents.onDrop);
+  const isDragEnabled = rowEvents?.onDragStart && isDragEventEnabled(rowEvents.onDragStart);
+
   // Construct new columns
   const updatedColumns = [
     ...(selection !== undefined ? [selectionsColumnData] : []),
@@ -110,36 +148,36 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   return (
     <tr
       onClick={
-        row.onClick
+        isClickEnabled
           ? (e) => {
-              row.onClick?.(e, row);
+              rowEvents?.onClick?.event(e, row);
             }
           : undefined
       }
       onDoubleClick={
-        row.onDoubleClick
+        isDoubleClickEnabled
           ? (e) => {
-              row.onDoubleClick?.(e, row);
+              rowEvents?.onDoubleClick?.event(e, row);
             }
           : undefined
       }
-      onDragOver={row.isDroppable ? onDragOverHandler : undefined}
+      onDragOver={isDropEnabled ? onDragOverHandler : undefined}
       onDrop={
-        row.isDroppable && row.onDrop
+        isDropEnabled
           ? (e) => {
-              row.onDrop?.(e, row);
+              rowEvents?.onDrop?.event(e, row);
             }
           : undefined
       }
       onDragStart={
-        row.draggable && row.onDragStart
+        isDragEnabled
           ? (e) => {
-              row.onDragStart?.(e, row);
+              rowEvents?.onDragStart?.event(e, row);
             }
           : undefined
       }
-      draggable={row.draggable}
-      style={{ cursor: row.onClick ? 'pointer' : 'initial' }}
+      draggable={isDragEnabled}
+      style={{ cursor: isClickEnabled ? 'pointer' : 'initial' }}
       className="body-tr"
     >
       {updatedColumns.map((col, colIndex) => (
@@ -164,7 +202,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
         >
           <div
             className={`${
-              colIndex === 0 && row.draggable && !isTouchDevice
+              colIndex === 0 && isDragEnabled && !isTouchDevice
                 ? 'is-flex is-align-items-center'
                 : ''
             }`}
@@ -174,7 +212,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                 {col.cell ? col.cell(row) : getNestedValue({ key: col.accessorKey, obj: row })}
               </div>
             )}
-            {colIndex === 0 && row.draggable && !isTouchDevice && (
+            {colIndex === 0 && isDragEnabled && !isTouchDevice && (
               <div
                 style={{
                   marginInlineStart: col.accessorKey === selectionsColumnName ? 10 : 0,

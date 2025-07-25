@@ -266,6 +266,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
                 isSelectAllRecords={isSelectAllRecords}
                 setIsSelectAllRecords={setIsSelectAllRecords}
                 candidateRecordsToSelectAll={candidateRecordsToSelectAll}
+                rowEvents={config?.rowEvents}
               />
             ))}
           </tbody>

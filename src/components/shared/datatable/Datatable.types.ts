@@ -7,8 +7,9 @@ import {
   ActionDef,
   DatatableSelectionConfigInterface,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+import { DatatableRowEvents } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 
-export type { ColumnDef, ActionDef, DatatableSelectionConfigInterface };
+export type { ColumnDef, ActionDef, DatatableSelectionConfigInterface, DatatableRowEvents };
 import { TitlePositionType } from '@/components/shared/datatable/datatableTitle/DatatableTitle.types';
 import { ButtonInterface } from '@/components/shared/button/Button.types';
 
@@ -59,6 +60,7 @@ interface CommonConfigInterface<T = Record<string, unknown>> {
   search?: DatatableSearchConfigInterface;
   sort?: DatatableSortConfigInterface;
   selection?: DatatableSelectionConfigInterface<T>;
+  rowEvents?: DatatableRowEvents<T>;
 }
 
 interface RootPaginationInterface {

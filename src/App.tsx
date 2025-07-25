@@ -34,7 +34,8 @@ export const LocalControlWithoutPaginationExample = () => {
   config={{
     pagination: {
       enablePagination: false
-    }
+    },
+    rowEvents: localConfig.teamsRowEvents
   }}
   isLoading={isLocalLoading}
   actions={localConfig.teamsActions}
@@ -71,6 +72,7 @@ export const LocalControlWithoutPaginationExample = () => {
           pagination: {
             enablePagination: false,
           },
+          rowEvents: localConfig.teamsRowEvents,
         }}
         isLoading={isLocalLoading}
         actions={localConfig.teamsActions}
