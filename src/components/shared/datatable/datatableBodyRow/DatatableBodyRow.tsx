@@ -214,7 +214,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                 }}
                 style={{
                   marginInlineStart: col.accessorKey === selectionsColumnName ? '10px' : '0px',
-                  marginInlineEnd: col.accessorKey === selectionsColumnName ? '0px' : '4px',
+                  marginInlineEnd: col.accessorKey === selectionsColumnName ? '0px' : '10px',
                   display: 'flex',
                   alignItems: 'center',
                   cursor: 'grab',
@@ -228,7 +228,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
               isDragConfigured &&
               !isDragEnabled &&
               col.accessorKey !== selectionsColumnName &&
-              !isTouchDevice && <div style={{ marginInlineEnd: '14px', width: '0px' }} />}
+              !isTouchDevice && <div style={{ marginInlineEnd: '20px', width: '0px' }} />}
             {col.accessorKey !== selectionsColumnName && (
               <div className={`${col.accessorKey === actionsColumnName ? 'actions-col' : ''}`}>
                 {col.cell

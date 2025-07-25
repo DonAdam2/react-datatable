@@ -69,6 +69,7 @@ export const LocalControlWithoutPaginationExample = () => {
         columns={localConfig.teamsColumns}
         records={localConfig.teamsRecords}
         config={{
+          ui: { actionsColWidth: 40 },
           pagination: {
             enablePagination: false,
           },
@@ -174,6 +175,9 @@ export const LocalControlWithPaginationExample = () => {
           titlePosition: 'end',
         }}
         config={{
+          ui: {
+            actionsColWidth: 40,
+          },
           selection: {
             mode: 'checkbox',
             //it can be boolean => disabled: true
@@ -323,6 +327,9 @@ const LocalControlledWithCustomPagination = () => {
         columns={localConfig.teamsColumns}
         records={localConfig.teamsRecords}
         config={{
+          ui: {
+            actionsColWidth: 40,
+          },
           search: {
             onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
           },
