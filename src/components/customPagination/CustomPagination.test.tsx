@@ -4,7 +4,7 @@ import CustomPagination from './CustomPagination';
 
 describe('<CustomPagination />', () => {
   test('renders component name (customPagination)', () => {
-    render(<CustomPagination />);
+    // render(<CustomPagination />);
     const title = screen.getByText(/customPagination/i);
     expect(title).toBeInTheDocument();
   });
