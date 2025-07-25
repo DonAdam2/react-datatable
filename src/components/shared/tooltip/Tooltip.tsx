@@ -29,6 +29,7 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
     tooltipWrapperRef = useRef<HTMLDivElement>(null),
     tooltipMessage = useRef<HTMLSpanElement>(null),
     newPosition = useRef(position),
+    stylesRef = useRef({ top: 0, left: 0 }),
     space = 15,
     [childrenWidth, setChildrenWidth] = useState<undefined | number>(undefined),
     [childrenHeight, setChildrenHeight] = useState<undefined | number>(undefined),
@@ -152,10 +153,17 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
 
   useEffect(() => {
     //required for the first render and on scroll
-    if (getStylesList().top !== styles.top || getStylesList().left !== styles.left) {
-      setStyles(getStylesList());
+    const newStyles = getStylesList();
+    if (newStyles.top !== stylesRef.current.top || newStyles.left !== stylesRef.current.left) {
+      stylesRef.current = newStyles;
+      setStyles(newStyles);
     }
-  }, [getStylesList, styles.left, styles.top]);
+  }, [getStylesList]);
+
+  // Keep stylesRef in sync with styles state
+  useEffect(() => {
+    stylesRef.current = styles;
+  }, [styles]);
 
   const updateScrollableParentScroll = ({ target: { scrollTop, scrollLeft } }: any) => {
     setWrapperParentUpdated({
