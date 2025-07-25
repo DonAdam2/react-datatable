@@ -137,6 +137,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
     rowEvents?.onDoubleClick && isClickEventEnabled(rowEvents.onDoubleClick);
   const isDropEnabled = rowEvents?.onDrop && isDropEventEnabled(rowEvents.onDrop);
   const isDragEnabled = rowEvents?.onDragStart && isDragEventEnabled(rowEvents.onDragStart);
+  const isDragConfigured = Boolean(rowEvents?.onDragStart); // Check if drag is configured for the table
 
   // Construct new columns
   const updatedColumns = [
@@ -194,15 +195,9 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
             'selections-col-wrapper': col.accessorKey === selectionsColumnName,
           })}
         >
-          <div
-            className={`${
-              colIndex === 0 && isDragEnabled && !isTouchDevice
-                ? 'is-flex is-align-items-center'
-                : ''
-            }`}
-          >
+          <div className={`${colIndex === 0 ? 'is-flex is-align-items-center' : ''}`}>
             {colIndex === 0 && col.accessorKey === selectionsColumnName && (
-              <div className={`selection-col`}>
+              <div className="selection-col">
                 {col.cell ? col.cell(row) : getNestedValue({ key: col.accessorKey, obj: row })}
               </div>
             )}
@@ -218,15 +213,22 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   rowEvents?.onDragStart?.event(e, row);
                 }}
                 style={{
-                  marginInlineStart: col.accessorKey === selectionsColumnName ? 10 : 0,
-                  marginInlineEnd: col.accessorKey === selectionsColumnName ? 0 : 24,
+                  marginInlineStart: col.accessorKey === selectionsColumnName ? '10px' : '0px',
+                  marginInlineEnd: col.accessorKey === selectionsColumnName ? '0px' : '4px',
                   display: 'flex',
+                  alignItems: 'center',
                   cursor: 'grab',
+                  flexShrink: 0,
                 }}
               >
                 <MoveIcon className="move-element" />
               </div>
             )}
+            {colIndex === 0 &&
+              isDragConfigured &&
+              !isDragEnabled &&
+              col.accessorKey !== selectionsColumnName &&
+              !isTouchDevice && <div style={{ marginInlineEnd: '14px', width: '0px' }} />}
             {col.accessorKey !== selectionsColumnName && (
               <div className={`${col.accessorKey === actionsColumnName ? 'actions-col' : ''}`}>
                 {col.cell
