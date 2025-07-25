@@ -23,7 +23,7 @@ export interface DatatableColumnInterface {
   direction?: string;
 }
 
-type ColumnOrderType = 'asc' | 'desc';
+export type ColumnOrderType = 'asc' | 'desc';
 export type FieldType = string | 'actions';
 
 export interface DatatableHeaderInterface extends SortIconsInterface {
