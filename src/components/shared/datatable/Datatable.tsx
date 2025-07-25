@@ -4,8 +4,9 @@ import {
   DatatableInterface,
   LocalControlledDatatableInterface,
   RemoteControlledDatatableInterface,
+  DatatableRef,
 } from './Datatable.types';
-import { useEffect, useMemo, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
+import { useEffect, useMemo, useState, useCallback, useImperativeHandle, Ref } from 'react';
 import { ColumnOrderType } from './datatableHeader/DatatableHeader.types';
 import LoadingIcon from '@/components/shared/LoadingIcon';
 import cloneDeep from 'lodash/cloneDeep';
@@ -285,10 +286,13 @@ const RootDatatable = ({
 };
 
 // Unified controlled datatable component
-const ControlledDatatable = forwardRef<
-  { resetPagination: () => { activePage: number; rowsPerPageNum: number } },
-  LocalControlledDatatableInterface | RemoteControlledDatatableInterface
->(({ config, ...rest }, ref) => {
+const ControlledDatatable = ({
+  config,
+  ref,
+  ...rest
+}: (LocalControlledDatatableInterface | RemoteControlledDatatableInterface) & {
+  ref?: Ref<DatatableRef>;
+}) => {
   const { rowsDropdown, enablePagination = true, deepLinking } = config?.pagination ?? {};
   const { rowsPerPage = 10, enableRowsDropdown = true, optionsList } = rowsDropdown ?? {};
   const { isLocalSearch = true, ...otherSearchProps } = config?.search ?? {};
@@ -428,13 +432,16 @@ const ControlledDatatable = forwardRef<
       }}
     />
   );
-});
+};
 
 // Main Datatable component
-const Datatable = forwardRef<
-  { resetPagination: () => { activePage: number; rowsPerPageNum: number } },
-  DatatableInterface
->(({ config, ...rest }, ref) => {
+const Datatable = ({
+  config,
+  ref,
+  ...rest
+}: DatatableInterface & {
+  ref?: Ref<DatatableRef>;
+}) => {
   const paginationConfig = { enablePagination: true, ...config?.pagination };
   const enhancedConfig = { ...config, pagination: paginationConfig };
 
@@ -454,9 +461,6 @@ const Datatable = forwardRef<
       )}
     </>
   );
-});
-
-ControlledDatatable.displayName = 'ControlledDatatable';
-Datatable.displayName = 'Datatable';
+};
 
 export default Datatable;
