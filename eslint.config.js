@@ -1,5 +1,5 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
+const storybook = require("eslint-plugin-storybook")
 
 const path = require('path'),
   js = require('@eslint/js'),
@@ -15,8 +15,16 @@ const path = require('path'),
   globals = require('globals');
 
 module.exports = [
+  // Allow linting of .storybook folder
+  {
+    ignores: ['!.storybook'],
+  },
+
   // ESLint recommended
   js.configs.recommended,
+
+  // Storybook recommended configuration
+  ...storybook.configs['flat/recommended'],
 
   // JavaScript files (including config files)
   {
