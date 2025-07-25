@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "baseUrl": "./",
+    "paths": {
+      "@/jest/*": ["./jest/*"],
+      "@/assets/*": ["./src/assets/*"],
+      "@/constants/*": ["./src/constants/*"],
+      "@/managers/*": ["./src/managers/*"],
+      "@/routing/*": ["./src/routing/*"],
+      "@/store/*": ["./src/store/*"],
+      "@/services/*": ["./src/services/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/scss/*": ["./src/scss/*"],
+      "@/public/*": ["./public/*"]
+    },
+    "types": ["node", "jest", "@testing-library/jest-dom"]
+  },
+  "include": ["src"]
+}
