@@ -10,8 +10,8 @@ import cx from 'classnames';
 import { getTableDataCellWidth } from '@/constants/Helpers';
 
 export const actionsColumnName = 'actionsCol';
-const selectionsColumnName = 'selectionsCol';
-const selectionsColumnWidth = 25;
+export const selectionsColumnName = 'selectionsCol';
+export const selectionsColumnWidth = 25;
 
 const DatatableHeader = ({
   columns,
@@ -34,6 +34,7 @@ const DatatableHeader = ({
     actionsColumnData = {
       field: actionsColumnName,
       colName: actionsColLabel,
+      className: '',
       width: actionsColWidth,
       sortable: false,
       render: (rowData: any) => (

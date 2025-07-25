@@ -91,3 +91,10 @@ export function getTableDataCellWidth({
           columns.some((el) => el.field === actionsColumnName) ? columns.length - 1 : columns.length
         })`;
 }
+
+//get object nested value from string, (e.g: 'person.name')
+export function getNestedValue({ key, obj }: { key: string; obj: any }) {
+  return key.split('.').reduce(function (row, prop) {
+    return row && row[prop];
+  }, obj);
+}

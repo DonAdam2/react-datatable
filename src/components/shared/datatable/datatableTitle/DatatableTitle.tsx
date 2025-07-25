@@ -1,0 +1,58 @@
+import { DatatableTitleInterface } from '@/components/shared/datatable/datatableTitle/DatatableTitle.types';
+import cx from 'classnames';
+import Button from '@/components/shared/button/Button';
+
+const DatatableTitle = ({
+  title,
+  titlePosition = 'start',
+  buttons,
+  buttonsPosition = 'end',
+  titleStyles,
+  isRemovePadding,
+  isInSearchRow,
+}: DatatableTitleInterface) => {
+  const isTitlePositionEnd = title && titlePosition === 'end',
+    isButtonsPositionStart = buttons?.length && buttonsPosition === 'start';
+
+  return (
+    <>
+      {(title || buttons) && (
+        <div
+          className={cx('datatable-title-wrapper', {
+            'remove-padding': isRemovePadding,
+            'is-in-search-row': isInSearchRow,
+          })}
+          style={{
+            flexDirection: isTitlePositionEnd
+              ? 'row-reverse'
+              : isButtonsPositionStart
+                ? 'row-reverse'
+                : 'row',
+          }}
+        >
+          {title && (
+            <h2 className="table-title" style={titleStyles}>
+              {title}
+            </h2>
+          )}
+          <div style={{ flex: '1' }} />
+          {buttons?.length && (
+            <div
+              className={`datatable-title-buttons-wrapper ${!title ? 'no-title' : ''}`}
+              style={{
+                justifyContent:
+                  isTitlePositionEnd || isButtonsPositionStart ? 'flex-start' : 'flex-end',
+              }}
+            >
+              {buttons?.map((el, i) => (
+                <Button key={i} {...el} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+export default DatatableTitle;

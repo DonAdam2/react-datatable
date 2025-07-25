@@ -1,5 +1,9 @@
 @use './components/shared/loading-icon';
 /* PLOP_INJECT_IMPORT */
+@use './components/datatable-body-row';
+@use './components/datatable-title-and-search';
+@use './components/datatable-title';
+@use './components/datatable-search';
 @use './components/datatable-checkbox';
 @use './components/datatable-radio-input';
 @use './components/datatable-icon-button';
