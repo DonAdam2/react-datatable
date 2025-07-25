@@ -914,6 +914,7 @@ export const RemoteControlWithPaginationExample = () => {
           },
           search: {
             onSearch: onRemoteSearch,
+            isLocalSearch: false,
             searchPosition,
             show: showSearch === 'true',
             isFullWidth: isSearchFullWidth === 'true',
@@ -931,6 +932,7 @@ export const RemoteControlWithPaginationExample = () => {
           },
           sort: {
             onSorting: onRemoteSort,
+            isLocalSort: false,
           },
           selection: {
             mode: 'radio',

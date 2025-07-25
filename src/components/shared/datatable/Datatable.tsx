@@ -351,8 +351,10 @@ const ControlledDatatable = forwardRef<
 
   const resetPagination = useCallback(() => {
     if (activePage !== 1 || rowsPerPageNum !== rowsPerPage) {
-      navigateToFirstPage();
-      setRowsPerPageNum(rowsPerPage);
+      (async () => {
+        await navigateToFirstPage();
+        setRowsPerPageNum(rowsPerPage);
+      })();
     }
 
     return {
