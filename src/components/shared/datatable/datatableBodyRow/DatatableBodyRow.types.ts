@@ -3,16 +3,16 @@ import {
   ActionDef,
   DatatableSelectionConfigInterface,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, MouseEvent, DragEvent } from 'react';
 
 // Extended row type with optional UI interaction properties
 type RowWithUIProps<T> = T & {
-  onClick?: (e: import('react').MouseEvent, row: T) => void;
-  onDoubleClick?: (e: import('react').MouseEvent, row: T) => void;
+  onClick?: (e: MouseEvent, row: T) => void;
+  onDoubleClick?: (e: MouseEvent, row: T) => void;
   isDroppable?: boolean;
-  onDrop?: (e: import('react').DragEvent, row: T) => void;
+  onDrop?: (e: DragEvent, row: T) => void;
   draggable?: boolean;
-  onDragStart?: (e: import('react').DragEvent, row: T) => void;
+  onDragStart?: (e: DragEvent, row: T) => void;
 };
 
 export interface DatatableBodyRowInterface<T = Record<string, unknown>> {
