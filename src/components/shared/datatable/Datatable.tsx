@@ -30,7 +30,7 @@ const rowsPerPageOptions: { value: string; displayValue: string }[] = [
   { value: '40', displayValue: '40 rows' },
 ];
 
-const RootDatatable = ({
+const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>({
   columns,
   actions,
   records,
@@ -39,7 +39,7 @@ const RootDatatable = ({
   dataTest,
   noDataToDisplayMessage,
   config,
-}: RootDatatableInterface) => {
+}: RootDatatableInterface<T>) => {
   const uniqueId = uuidv4(),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
     [sorting, setSorting] = useState<{ accessorKey: string; order: ColumnOrderType }>({
@@ -286,11 +286,11 @@ const RootDatatable = ({
 };
 
 // Unified controlled datatable component
-const ControlledDatatable = ({
+const ControlledDatatable = <T extends Record<string, any> = Record<string, unknown>>({
   config,
   ref,
   ...rest
-}: (LocalControlledDatatableInterface | RemoteControlledDatatableInterface) & {
+}: (LocalControlledDatatableInterface<T> | RemoteControlledDatatableInterface<T>) & {
   ref?: Ref<DatatableRef>;
 }) => {
   const { rowsDropdown, enablePagination = true, deepLinking } = config?.pagination ?? {};
@@ -434,7 +434,7 @@ const ControlledDatatable = ({
   );
 };
 
-const Datatable = <T extends Record<string, any> = any>({
+const Datatable = <T extends Record<string, any> = Record<string, unknown>>({
   config,
   ref,
   ...rest

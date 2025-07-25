@@ -58,7 +58,7 @@ export const getElementOffset = (el: any) => {
   return { top: _y, left: _x };
 };
 
-export function getTableDataCellWidth({
+export function getTableDataCellWidth<T = Record<string, any>>({
   width,
   actionsColWidth,
   accessorKey,
@@ -69,7 +69,7 @@ export function getTableDataCellWidth({
   actionsColWidth?: number | string;
   accessorKey: AccessorKeyType;
   columns: any[];
-  actions?: ActionDef[];
+  actions?: ActionDef<T>[];
 }) {
   const actionsColumnWidth = actions
       ? //32 => button width; 5 => gap between buttons;

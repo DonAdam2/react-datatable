@@ -13,7 +13,7 @@ import { getNestedValue, getTableDataCellWidth } from '@/constants/Helpers';
 import cx from 'classnames';
 import MoveIcon from '@/assets/icons/MoveIcon';
 
-const DatatableBodyRow = <T = any,>({
+const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown>>({
   columns,
   row,
   actions,
@@ -145,7 +145,7 @@ const DatatableBodyRow = <T = any,>({
       {updatedColumns.map((col, colIndex) => (
         <td
           style={{
-            width: getTableDataCellWidth({
+            width: getTableDataCellWidth<T>({
               width: col.width,
               accessorKey: String(col.accessorKey),
               columns: updatedColumns,

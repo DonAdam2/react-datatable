@@ -15,7 +15,7 @@ type RowWithUIProps<T> = T & {
   onDragStart?: (e: import('react').DragEvent, row: T) => void;
 };
 
-export interface DatatableBodyRowInterface<T = any> {
+export interface DatatableBodyRowInterface<T = Record<string, unknown>> {
   columns: ColumnDef<T>[];
   row: RowWithUIProps<T>;
   actions?: ActionDef<T>[];

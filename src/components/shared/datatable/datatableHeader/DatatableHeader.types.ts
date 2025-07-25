@@ -9,7 +9,7 @@ export interface SortIconsInterface {
   descendingSortIcon?: ReactNode;
 }
 
-export interface ColumnDef<T = any> {
+export interface ColumnDef<T = Record<string, any>> {
   accessorKey: keyof T | string | 'action';
   header?: ReactNode;
   className?: string;
@@ -25,7 +25,7 @@ export interface ColumnDef<T = any> {
 export type ColumnOrderType = 'asc' | 'desc';
 export type AccessorKeyType = string | 'actions';
 
-export interface DatatableHeaderInterface<T = any> extends SortIconsInterface {
+export interface DatatableHeaderInterface<T = Record<string, unknown>> extends SortIconsInterface {
   columns: ColumnDef<T>[];
   onSorting?: (accessorKey: string, order: ColumnOrderType) => void;
   actions?: ActionDef<T>[];
@@ -39,7 +39,7 @@ export interface DatatableHeaderInterface<T = any> extends SortIconsInterface {
   candidateRecordsToSelectAll: T[];
 }
 
-export interface ActionDef<T = any> {
+export interface ActionDef<T = Record<string, unknown>> {
   icon?: ReactNode;
   disabled?: boolean | ((rowData: T) => boolean);
   hidden?: boolean | ((rowData: T) => boolean);
@@ -48,7 +48,7 @@ export interface ActionDef<T = any> {
   cell?: (rowData: T) => ReactNode;
 }
 
-export interface DatatableSelectionConfigInterface<T = any> {
+export interface DatatableSelectionConfigInterface<T = Record<string, unknown>> {
   disabled?: boolean | ((rowData: T) => boolean);
   hidden?: boolean | ((rowData: T) => boolean);
   mode: SelectionModeType;

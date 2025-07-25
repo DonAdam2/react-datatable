@@ -54,7 +54,7 @@ interface DatatableSortConfigInterface {
   onSorting?: (accessorKey: string, order: ColumnOrderType) => void | Promise<void>;
 }
 
-interface CommonConfigInterface<T = any> {
+interface CommonConfigInterface<T = Record<string, unknown>> {
   ui?: UiConfigInterface;
   search?: DatatableSearchConfigInterface;
   sort?: DatatableSortConfigInterface;
@@ -69,7 +69,8 @@ interface RootPaginationInterface {
   lastContentIndex?: number;
 }
 
-interface RootDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
+interface RootDatatableConfigInterface<T = Record<string, unknown>>
+  extends CommonConfigInterface<T> {
   pagination?: RootPaginationInterface;
 }
 
@@ -82,7 +83,7 @@ interface DatatableTitleConfigInterface {
   titleButtonsLocation?: TitleLocationType;
 }
 
-interface CommonDatatableInterface<T = any> {
+interface CommonDatatableInterface<T = Record<string, unknown>> {
   columns: ColumnDef<T>[];
   actions?: ActionDef<T>[];
   records: T[];
@@ -92,7 +93,8 @@ interface CommonDatatableInterface<T = any> {
   noDataToDisplayMessage?: ReactNode;
 }
 
-export interface RootDatatableInterface<T = any> extends CommonDatatableInterface<T> {
+export interface RootDatatableInterface<T = Record<string, unknown>>
+  extends CommonDatatableInterface<T> {
   config?: RootDatatableConfigInterface<T>;
 }
 
@@ -131,11 +133,13 @@ interface RemoteControlledPaginationInterface {
 }
 
 // Enhanced datatable config interfaces
-interface LocalControlledDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
+interface LocalControlledDatatableConfigInterface<T = Record<string, unknown>>
+  extends CommonConfigInterface<T> {
   pagination?: LocalControlledPaginationInterface;
 }
 
-interface RemoteControlledDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
+interface RemoteControlledDatatableConfigInterface<T = Record<string, unknown>>
+  extends CommonConfigInterface<T> {
   pagination?: RemoteControlledPaginationInterface;
 }
 
@@ -146,21 +150,25 @@ type DatatablePaginationConfig =
   | RemoteControlledPaginationInterface;
 
 // Enhanced datatable config interface
-interface EnhancedDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
+interface EnhancedDatatableConfigInterface<T = Record<string, unknown>>
+  extends CommonConfigInterface<T> {
   pagination?: DatatablePaginationConfig;
 }
 
 // Enhanced datatable interface
-export interface DatatableInterface<T = any> extends CommonDatatableInterface<T> {
+export interface DatatableInterface<T = Record<string, unknown>>
+  extends CommonDatatableInterface<T> {
   config?: EnhancedDatatableConfigInterface<T>;
 }
 
 // Individual component interfaces for internal use
-export interface LocalControlledDatatableInterface<T = any> extends CommonDatatableInterface<T> {
+export interface LocalControlledDatatableInterface<T = Record<string, unknown>>
+  extends CommonDatatableInterface<T> {
   config?: LocalControlledDatatableConfigInterface<T>;
 }
 
-export interface RemoteControlledDatatableInterface<T = any> extends CommonDatatableInterface<T> {
+export interface RemoteControlledDatatableInterface<T = Record<string, unknown>>
+  extends CommonDatatableInterface<T> {
   config?: RemoteControlledDatatableConfigInterface<T>;
 }
 
