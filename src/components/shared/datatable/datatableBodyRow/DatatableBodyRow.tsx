@@ -213,7 +213,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   rowEvents?.onDragStart?.event(e, row);
                 }}
                 style={{
-                  marginInlineStart: col.accessorKey === selectionsColumnName ? '10px' : '0px',
+                  marginInlineStart: col.accessorKey === selectionsColumnName ? '20px' : '0px',
                   marginInlineEnd: col.accessorKey === selectionsColumnName ? '0px' : '10px',
                   display: 'flex',
                   alignItems: 'center',
