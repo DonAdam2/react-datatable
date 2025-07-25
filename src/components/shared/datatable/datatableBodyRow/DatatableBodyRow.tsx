@@ -29,7 +29,7 @@ const DatatableBodyRow = ({
   const { isTouchDevice } = useTouchScreenDetect(),
     actionsColumnData = {
       accessorKey: actionsColumnName,
-      colName: actionsColLabel,
+      header: actionsColLabel,
       width: actionsColWidth,
       minWidth: undefined,
       maxWidth: undefined,
@@ -53,7 +53,7 @@ const DatatableBodyRow = ({
     },
     selectionsColumnData = {
       accessorKey: selectionsColumnName,
-      colName: '',
+      header: '',
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
       minWidth: undefined,

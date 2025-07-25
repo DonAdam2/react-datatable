@@ -10,7 +10,7 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
     teamsColumns = [
       {
         accessorKey: 'first_name',
-        colName: 'Name',
+        header: 'Name',
         sortable: true,
         render: (rowData: any) => (
           <p style={{ margin: 0 }}>
@@ -20,12 +20,12 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
       },
       {
         accessorKey: 'employment.title',
-        colName: 'Occupation',
+        header: 'Occupation',
         sortable: true,
       },
       {
         accessorKey: 'subscription.status',
-        colName: 'Status',
+        header: 'Status',
         // width: '10%',
         render: (rowData: any) => (
           <p

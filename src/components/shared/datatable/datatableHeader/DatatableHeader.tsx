@@ -33,7 +33,7 @@ const DatatableHeader = ({
     [sortingOrder, setSortingOrder] = useState('asc'),
     actionsColumnData = {
       accessorKey: actionsColumnName,
-      colName: actionsColLabel,
+      header: actionsColLabel,
       className: '',
       width: actionsColWidth,
       sortable: false,
@@ -56,7 +56,7 @@ const DatatableHeader = ({
     },
     selectionsColumnData = {
       accessorKey: selectionsColumnName,
-      colName: '',
+      header: '',
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
       sortable: false,
@@ -131,7 +131,7 @@ const DatatableHeader = ({
   return (
     <thead className="table-header">
       <tr>
-        {updatedColumns.map(({ accessorKey, colName, sortable, width, className = '' }) => (
+        {updatedColumns.map(({ accessorKey, header, sortable, width, className = '' }) => (
           <th
             style={{
               width: getTableDataCellWidth({
@@ -169,7 +169,7 @@ const DatatableHeader = ({
                   data-test="select-all-checkbox"
                 />
               ) : (
-                colName
+                header
               )}
               {sortable && sortingField !== accessorKey && sortIcon}
               {sortingField && sortingField === accessorKey && (

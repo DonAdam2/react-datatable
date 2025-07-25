@@ -12,7 +12,7 @@ export interface SortIconsInterface {
 
 export interface DatatableColumnInterface {
   accessorKey: string | 'action';
-  colName?: string;
+  header?: ReactNode;
   className?: string;
   sortable?: boolean;
   render?: (rowData: any) => ReactNode;
