@@ -1,8 +1,7 @@
-import { Dispatch, ReactNode, SetStateAction } from 'react';
-import {
-  ActionInterface,
-  DatatableSelectionConfigInterface,
-} from '@/components/shared/datatable/Datatable.types';
+import { Dispatch, ReactNode, SetStateAction, MouseEvent } from 'react';
+import { ActionTooltipInterface } from '@/components/shared/datatable/Datatable.types';
+
+export type SelectionModeType = 'radio' | 'checkbox';
 
 export interface SortIconsInterface {
   sortIcon?: ReactNode;
@@ -10,12 +9,12 @@ export interface SortIconsInterface {
   descendingSortIcon?: ReactNode;
 }
 
-export interface DatatableColumnInterface {
-  accessorKey: string | 'action';
+export interface ColumnDef<T = any> {
+  accessorKey: keyof T | string | 'action';
   header?: ReactNode;
   className?: string;
   sortable?: boolean;
-  cell?: (rowData: any) => ReactNode;
+  cell?: (rowData: T) => ReactNode;
   width?: string | number;
   noWrap?: boolean;
   minWidth?: string | number;
@@ -26,16 +25,39 @@ export interface DatatableColumnInterface {
 export type ColumnOrderType = 'asc' | 'desc';
 export type AccessorKeyType = string | 'actions';
 
-export interface DatatableHeaderInterface extends SortIconsInterface {
-  columns: DatatableColumnInterface[];
+export interface DatatableHeaderInterface<T = any> extends SortIconsInterface {
+  columns: ColumnDef<T>[];
   onSorting?: (accessorKey: string, order: ColumnOrderType) => void;
-  actions?: ActionInterface[];
+  actions?: ActionDef<T>[];
   isActionsColumnLast?: boolean;
   actionsColLabel?: string;
   actionsColWidth?: number | string;
-  selection?: DatatableSelectionConfigInterface;
+  selection?: DatatableSelectionConfigInterface<T>;
   uniqueId: string;
   isSelectAllRecords: boolean;
   setIsSelectAllRecords: Dispatch<SetStateAction<boolean>>;
-  candidateRecordsToSelectAll: any[];
+  candidateRecordsToSelectAll: T[];
+}
+
+export interface ActionDef<T = any> {
+  icon?: ReactNode;
+  disabled?: boolean | ((rowData: T) => boolean);
+  hidden?: boolean | ((rowData: T) => boolean);
+  tooltip?: ActionTooltipInterface;
+  onClick?: (event: MouseEvent<HTMLButtonElement>, rowData: T) => void;
+  cell?: (rowData: T) => ReactNode;
+}
+
+export interface DatatableSelectionConfigInterface<T = any> {
+  disabled?: boolean | ((rowData: T) => boolean);
+  hidden?: boolean | ((rowData: T) => boolean);
+  mode: SelectionModeType;
+  onSelectionChange: (rowData: T) => void;
+  selectedData: T | T[] | null | undefined;
+  className?: string;
+  dataKey: Extract<keyof T, string> | string;
+  selectAllCheckbox?: {
+    disabled?: boolean;
+    hidden?: boolean;
+  };
 }

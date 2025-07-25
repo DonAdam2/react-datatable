@@ -1,18 +1,32 @@
-import { MouseEvent } from 'react';
 import TrashIcon from '@/assets/icons/TrashIcon';
 import Dropdown from '@/components/shared/dropdown/Dropdown';
 import DotsIcon from '@/assets/icons/DotsIcon';
 import EditIcon from '@/assets/icons/EditIcon';
 import DeleteIcon from '@/assets/icons/DeleteIcon';
+import {
+  ColumnDef,
+  ActionDef,
+} from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+import { Person } from '@/constants/FakeBackend';
 
-export const getMyTeamsDatatableConfig = (teamDetails: any) => {
+/**
+ * Type-safe version of the datatable configuration
+ * This demonstrates how to use the new ColumnDef<T> for type safety
+ */
+export const getMyTeamsDatatableConfig = (
+  teamDetails: Person[]
+): {
+  teamsColumns: ColumnDef<Person>[];
+  teamsRecords: Person[];
+  teamsActions: ActionDef<Person>[];
+} => {
   const teamsRecords = teamDetails,
-    teamsColumns = [
+    teamsColumns: ColumnDef<Person>[] = [
       {
         accessorKey: 'first_name',
         header: 'Name',
         sortable: true,
-        cell: (rowData: any) => (
+        cell: (rowData) => (
           <p style={{ margin: 0 }}>
             {rowData.first_name} {rowData.last_name}
           </p>
@@ -27,7 +41,7 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
         accessorKey: 'subscription.status',
         header: 'Status',
         // width: '10%',
-        cell: (rowData: any) => (
+        cell: (rowData) => (
           <p
             className={`status ${
               rowData.subscription.status.toLowerCase() === 'active'
@@ -42,13 +56,13 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
         ),
       },
     ],
-    teamsActions = [
+    teamsActions: ActionDef<Person>[] = [
       {
         icon: <TrashIcon />,
         //it can be boolean => disabled: true
-        disabled: (rowData: any) => rowData.subscription.status.toLowerCase() === 'active',
+        disabled: (rowData) => rowData.subscription.status.toLowerCase() === 'active',
         //it can be boolean => hidden: true
-        hidden: (rowData: any) => rowData.subscription.status.toLowerCase() === 'idle',
+        hidden: (rowData) => rowData.subscription.status.toLowerCase() === 'idle',
         tooltip: {
           tooltipContent: 'Delete row',
           /*position: TooltipPositionEnum.TOP,
@@ -59,16 +73,16 @@ export const getMyTeamsDatatableConfig = (teamDetails: any) => {
           messageClassName: '',
           isDisplayTooltipIndicator: true,*/
         },
-        onClick: (e: MouseEvent<HTMLButtonElement>, rowData: any) => {
+        onClick: (e, rowData) => {
           console.log('delete ', `${rowData.first_name} ${rowData.last_name}`);
         },
       },
       {
         //it can be boolean => hidden: true
-        hidden: (rowData: any) => rowData.subscription.status.toLowerCase() !== 'idle',
+        hidden: (rowData) => rowData.subscription.status.toLowerCase() !== 'idle',
         //keep in mind that if you use the cell function it's your
         //responsibility to set the disabled flag and on click event
-        cell: (rowData: any) => (
+        cell: (rowData) => (
           <Dropdown
             header={{
               trigger: <DotsIcon />,

@@ -13,7 +13,7 @@ export const actionsColumnName = 'actionsCol';
 export const selectionsColumnName = 'selectionsCol';
 export const selectionsColumnWidth = 25;
 
-const DatatableHeader = ({
+const DatatableHeader = <T = any,>({
   columns,
   actions,
   onSorting,
@@ -28,7 +28,7 @@ const DatatableHeader = ({
   isSelectAllRecords,
   setIsSelectAllRecords,
   candidateRecordsToSelectAll,
-}: DatatableHeaderInterface) => {
+}: DatatableHeaderInterface<T>) => {
   const [sortingField, setSortingField] = useState(''),
     [sortingOrder, setSortingOrder] = useState('asc'),
     actionsColumnData = {
@@ -100,14 +100,21 @@ const DatatableHeader = ({
    * and isSelectAllRecords is true (will work only if datatable is remotely controlled) */
   useEffect(() => {
     if (selection !== undefined && selection.mode === 'checkbox') {
+      // Ensure selectedData is an array for checkbox mode
+      const selectedDataArray = Array.isArray(selection.selectedData)
+        ? selection.selectedData
+        : selection.selectedData
+          ? [selection.selectedData]
+          : [];
+
       const unSelectedRecords = candidateRecordsToSelectAll.filter(
         (candidate: any) =>
-          !selection.selectedData.some(
+          !selectedDataArray.some(
             (record: any) => candidate[selection.dataKey] === record[selection.dataKey]
           )
       );
       if (isSelectAllRecords && unSelectedRecords.length) {
-        selection.onSelectionChange([...selection.selectedData, ...unSelectedRecords]);
+        selection.onSelectionChange([...selectedDataArray, ...unSelectedRecords] as any);
       }
     }
   }, [isSelectAllRecords, selection, candidateRecordsToSelectAll]);
@@ -136,12 +143,12 @@ const DatatableHeader = ({
             style={{
               width: getTableDataCellWidth({
                 width,
-                accessorKey,
+                accessorKey: String(accessorKey),
                 columns: updatedColumns,
                 actions,
               }),
             }}
-            key={accessorKey}
+            key={String(accessorKey)}
             className={cx(className, {
               'actions-col-wrapper': accessorKey === actionsColumnName,
               'at-start': accessorKey === actionsColumnName && !isActionsColumnLast,
@@ -151,7 +158,7 @@ const DatatableHeader = ({
           >
             <span
               style={{ cursor: sortable ? 'pointer' : 'initial' }}
-              onClick={() => (sortable ? onSortingChange(accessorKey) : null)}
+              onClick={() => (sortable ? onSortingChange(String(accessorKey)) : null)}
               className="table-head-label"
             >
               {accessorKey === selectionsColumnName &&
@@ -163,7 +170,9 @@ const DatatableHeader = ({
                   checked={isSelectAllRecords}
                   onChange={({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
                     setIsSelectAllRecords(checked);
-                    selection?.onSelectionChange(checked ? candidateRecordsToSelectAll : []);
+                    selection?.onSelectionChange(
+                      checked ? (candidateRecordsToSelectAll as any) : ([] as any)
+                    );
                   }}
                   className={selection?.className}
                   data-test="select-all-checkbox"

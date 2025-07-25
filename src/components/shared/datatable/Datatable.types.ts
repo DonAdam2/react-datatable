@@ -1,15 +1,18 @@
-import { ReactNode, MouseEvent, CSSProperties } from 'react';
+import { ReactNode, CSSProperties } from 'react';
 import { TooltipPositionEnum, TooltipTriggerEnum } from '@/components/shared/tooltip/Tooltip.types';
 import {
   ColumnOrderType,
-  DatatableColumnInterface,
   SortIconsInterface,
+  ColumnDef,
+  ActionDef,
+  DatatableSelectionConfigInterface,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+
+export type { ColumnDef, ActionDef, DatatableSelectionConfigInterface };
 import { TitlePositionType } from '@/components/shared/datatable/datatableTitle/DatatableTitle.types';
 import { ButtonInterface } from '@/components/shared/button/Button.types';
 
 export type BooleanFuncType = (rowData: any) => boolean;
-type SelectionModeType = 'radio' | 'checkbox';
 export type TitleLocationType = 'searchRow' | 'titleRow';
 
 export interface ActionTooltipInterface {
@@ -21,29 +24,6 @@ export interface ActionTooltipInterface {
   className?: string;
   messageClassName?: string;
   isDisplayIndicator?: boolean;
-}
-
-export interface ActionInterface {
-  icon?: ReactNode;
-  disabled?: boolean | BooleanFuncType;
-  hidden?: boolean | BooleanFuncType;
-  tooltip?: ActionTooltipInterface;
-  onClick?: (event: MouseEvent<HTMLButtonElement>, rowData: any) => void;
-  cell?: (rowData: any) => ReactNode;
-}
-
-export interface DatatableSelectionConfigInterface {
-  disabled?: boolean | BooleanFuncType;
-  hidden?: boolean | BooleanFuncType;
-  mode: SelectionModeType;
-  onSelectionChange: (rowData: any) => void;
-  selectedData: any;
-  className?: string;
-  dataKey: string;
-  selectAllCheckbox?: {
-    disabled?: boolean;
-    hidden?: boolean;
-  };
 }
 
 interface UiConfigInterface extends SortIconsInterface {
@@ -74,11 +54,11 @@ interface DatatableSortConfigInterface {
   onSorting?: (accessorKey: string, order: ColumnOrderType) => void | Promise<void>;
 }
 
-interface CommonConfigInterface {
+interface CommonConfigInterface<T = any> {
   ui?: UiConfigInterface;
   search?: DatatableSearchConfigInterface;
   sort?: DatatableSortConfigInterface;
-  selection?: DatatableSelectionConfigInterface;
+  selection?: DatatableSelectionConfigInterface<T>;
 }
 
 interface RootPaginationInterface {
@@ -89,7 +69,7 @@ interface RootPaginationInterface {
   lastContentIndex?: number;
 }
 
-interface RootDatatableConfigInterface extends CommonConfigInterface {
+interface RootDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
   pagination?: RootPaginationInterface;
 }
 
@@ -102,18 +82,18 @@ interface DatatableTitleConfigInterface {
   titleButtonsLocation?: TitleLocationType;
 }
 
-interface CommonDatatableInterface {
-  columns: DatatableColumnInterface[];
-  actions?: ActionInterface[];
-  records: any[];
+interface CommonDatatableInterface<T = any> {
+  columns: ColumnDef<T>[];
+  actions?: ActionDef<T>[];
+  records: T[];
   title?: DatatableTitleConfigInterface;
   isLoading?: boolean;
   dataTest?: string;
   noDataToDisplayMessage?: ReactNode;
 }
 
-export interface RootDatatableInterface extends CommonDatatableInterface {
-  config?: RootDatatableConfigInterface;
+export interface RootDatatableInterface<T = any> extends CommonDatatableInterface<T> {
+  config?: RootDatatableConfigInterface<T>;
 }
 
 // New interfaces for enhanced pagination support
@@ -151,11 +131,11 @@ interface RemoteControlledPaginationInterface {
 }
 
 // Enhanced datatable config interfaces
-interface LocalControlledDatatableConfigInterface extends CommonConfigInterface {
+interface LocalControlledDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
   pagination?: LocalControlledPaginationInterface;
 }
 
-interface RemoteControlledDatatableConfigInterface extends CommonConfigInterface {
+interface RemoteControlledDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
   pagination?: RemoteControlledPaginationInterface;
 }
 
@@ -166,22 +146,22 @@ type DatatablePaginationConfig =
   | RemoteControlledPaginationInterface;
 
 // Enhanced datatable config interface
-interface EnhancedDatatableConfigInterface extends CommonConfigInterface {
+interface EnhancedDatatableConfigInterface<T = any> extends CommonConfigInterface<T> {
   pagination?: DatatablePaginationConfig;
 }
 
 // Enhanced datatable interface
-export interface DatatableInterface extends CommonDatatableInterface {
-  config?: EnhancedDatatableConfigInterface;
+export interface DatatableInterface<T = any> extends CommonDatatableInterface<T> {
+  config?: EnhancedDatatableConfigInterface<T>;
 }
 
 // Individual component interfaces for internal use
-export interface LocalControlledDatatableInterface extends CommonDatatableInterface {
-  config?: LocalControlledDatatableConfigInterface;
+export interface LocalControlledDatatableInterface<T = any> extends CommonDatatableInterface<T> {
+  config?: LocalControlledDatatableConfigInterface<T>;
 }
 
-export interface RemoteControlledDatatableInterface extends CommonDatatableInterface {
-  config?: RemoteControlledDatatableConfigInterface;
+export interface RemoteControlledDatatableInterface<T = any> extends CommonDatatableInterface<T> {
+  config?: RemoteControlledDatatableConfigInterface<T>;
 }
 
 export interface DatatableRef {

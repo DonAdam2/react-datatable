@@ -13,7 +13,7 @@ import { getNestedValue, getTableDataCellWidth } from '@/constants/Helpers';
 import cx from 'classnames';
 import MoveIcon from '@/assets/icons/MoveIcon';
 
-const DatatableBodyRow = ({
+const DatatableBodyRow = <T = any,>({
   columns,
   row,
   actions,
@@ -25,7 +25,7 @@ const DatatableBodyRow = ({
   isSelectAllRecords,
   setIsSelectAllRecords,
   candidateRecordsToSelectAll,
-}: DatatableBodyRowInterface) => {
+}: DatatableBodyRowInterface<T>) => {
   const { isTouchDevice } = useTouchScreenDetect(),
     actionsColumnData = {
       accessorKey: actionsColumnName,
@@ -112,14 +112,14 @@ const DatatableBodyRow = ({
       onClick={
         row.onClick
           ? (e) => {
-              row.onClick(e, row);
+              row.onClick?.(e, row);
             }
           : undefined
       }
       onDoubleClick={
         row.onDoubleClick
           ? (e) => {
-              row.onDoubleClick(e, row);
+              row.onDoubleClick?.(e, row);
             }
           : undefined
       }
@@ -127,14 +127,14 @@ const DatatableBodyRow = ({
       onDrop={
         row.isDroppable && row.onDrop
           ? (e) => {
-              row.onDrop(e, row);
+              row.onDrop?.(e, row);
             }
           : undefined
       }
       onDragStart={
         row.draggable && row.onDragStart
           ? (e) => {
-              row.onDragStart(e, row);
+              row.onDragStart?.(e, row);
             }
           : undefined
       }
@@ -147,14 +147,14 @@ const DatatableBodyRow = ({
           style={{
             width: getTableDataCellWidth({
               width: col.width,
-              accessorKey: col.accessorKey,
+              accessorKey: String(col.accessorKey),
               columns: updatedColumns,
               actions,
             }),
             minWidth: col.minWidth ? col.minWidth : 'unset',
             maxWidth: col.maxWidth ? col.maxWidth : 'unset',
           }}
-          key={col.accessorKey}
+          key={String(col.accessorKey)}
           className={cx(`${col.className ? col.className : ''}`, {
             'actions-col-wrapper': col.accessorKey === actionsColumnName,
             'at-start': col.accessorKey === actionsColumnName && !isActionsColumnLast,
@@ -187,7 +187,9 @@ const DatatableBodyRow = ({
             )}
             {col.accessorKey !== selectionsColumnName && (
               <div className={`${col.accessorKey === actionsColumnName ? 'actions-col' : ''}`}>
-                {col.cell ? col.cell(row) : getNestedValue({ key: col.accessorKey, obj: row })}
+                {col.cell
+                  ? col.cell(row)
+                  : getNestedValue({ key: String(col.accessorKey), obj: row })}
               </div>
             )}
           </div>

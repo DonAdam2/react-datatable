@@ -5,7 +5,7 @@ interface Employment {
 }
 
 interface Subscription {
-  status: string;
+  status: 'active' | 'blocked' | 'idle';
 }
 
 export interface Person {
@@ -33,7 +33,8 @@ export const fakeBackend = (
 
   return new Promise((resolve) => {
     setTimeout(() => {
-      let data = [...list];
+      // Strip frontend-only properties from the data to simulate real backend response
+      let data: Person[] = list.map((person) => person);
 
       // Search in all specified fields
       if (searchTerm) {
@@ -48,8 +49,8 @@ export const fakeBackend = (
       // Sort
       if (sortField) {
         data.sort((a, b) => {
-          let aField: string | number | null = null;
-          let bField: string | number | null = null;
+          let aField: string | number;
+          let bField: string | number;
 
           if (sortField === 'employment' || sortField.includes('employment')) {
             aField = a.employment.title;
@@ -58,8 +59,8 @@ export const fakeBackend = (
             aField = a.subscription.status;
             bField = b.subscription.status;
           } else {
-            aField = a[sortField];
-            bField = b[sortField];
+            aField = a[sortField] as string | number;
+            bField = b[sortField] as string | number;
           }
 
           if (aField < bField) return sortOrder === 'asc' ? -1 : 1;

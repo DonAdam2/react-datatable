@@ -937,10 +937,10 @@ export const RemoteControlWithPaginationExample = () => {
           selection: {
             mode: 'radio',
             //it can be boolean => disabled: true
-            disabled: (rowData: any) => rowData.subscription.status.toLowerCase() === 'blocked',
+            disabled: (rowData) => rowData.subscription.status.toLowerCase() === 'blocked',
             //it can be boolean => hidden: true
-            hidden: (rowData: any) => rowData.subscription.status.toLowerCase() === 'idle',
-            onSelectionChange: (rowData: any) => {
+            hidden: (rowData) => rowData.subscription.status.toLowerCase() === 'idle',
+            onSelectionChange: (rowData) => {
               setSelectedPerson(rowData);
             },
             dataKey: 'id',

@@ -136,7 +136,7 @@ const RootDatatable = ({
     if (searchQuery && show && isLocalSearch) {
       clonedRecords = clonedRecords.filter((record) =>
         columns.some((col) =>
-          getNestedValue({ key: col.accessorKey, obj: record })
+          getNestedValue({ key: String(col.accessorKey), obj: record })
             ?.toString()
             .toLowerCase()
             .includes(searchQuery.toString().toLowerCase())
@@ -434,12 +434,11 @@ const ControlledDatatable = ({
   );
 };
 
-// Main Datatable component
-const Datatable = ({
+const Datatable = <T extends Record<string, any> = any>({
   config,
   ref,
   ...rest
-}: DatatableInterface & {
+}: DatatableInterface<T> & {
   ref?: Ref<DatatableRef>;
 }) => {
   const paginationConfig = { enablePagination: true, ...config?.pagination };

@@ -1,6 +1,8 @@
 import { actionsColumnName } from '@/components/shared/datatable/datatableHeader/DatatableHeader';
-import { ActionInterface } from '@/components/shared/datatable/Datatable.types';
-import { AccessorKeyType } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+import {
+  AccessorKeyType,
+  ActionDef,
+} from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 
 export const getPaginationRange = (fromPageNum: number, toPageNum: number, step = 1): number[] => {
   let i = fromPageNum;
@@ -67,7 +69,7 @@ export function getTableDataCellWidth({
   actionsColWidth?: number | string;
   accessorKey: AccessorKeyType;
   columns: any[];
-  actions?: ActionInterface[];
+  actions?: ActionDef[];
 }) {
   const actionsColumnWidth = actions
       ? //32 => button width; 5 => gap between buttons;
