@@ -66,6 +66,9 @@ export interface DropdownComponentInterface {
     trigger?: ReactNode;
     isDisabled?: boolean;
     controlledDropdown?: ControlledDropdownInterface;
+    onOpenDropdown?: () => void | Promise<void>;
+    isLoading?: boolean;
+    loadingIcon?: ReactNode;
   };
   body: {
     bodyClassName?: string;

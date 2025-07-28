@@ -23,6 +23,7 @@ import ChevronDownIcon from '@/assets/icons/ChevronDownIcon';
 import Portal from '../portal/Portal';
 import DropdownOption from '@/components/shared/dropdown/dropdownOption/DropdownOption';
 import DropdownContextProvider from '@/components/shared/dropdown/dropdownContextProvider/DropdownContextProvider';
+import LoadingIcon from '@/components/shared/LoadingIcon';
 
 const maxMenuHeight = 300;
 
@@ -41,6 +42,9 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
       trigger,
       isDisabled = false,
       controlledDropdown,
+      onOpenDropdown,
+      isLoading = false,
+      loadingIcon = <LoadingIcon />,
     } = header ?? {},
     {
       bodyClassName = '',
@@ -81,9 +85,17 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
       isMulti ||
       controlledDropdown?.isSearchable;
 
-  const toggleDropdown = () => {
-    if (!isDisabled) {
-      setOpen((prev) => !prev);
+  const toggleDropdown = async () => {
+    if (!isDisabled && !isLoading) {
+      if (!isOpen) {
+        if (onOpenDropdown) {
+          await onOpenDropdown();
+        }
+
+        setOpen(true);
+      } else {
+        setOpen(false);
+      }
 
       if (controlledDropdown?.isSearchable) {
         searchInputFocusHandler();
@@ -508,7 +520,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     if (event) {
       event.stopPropagation();
     }
-    if (!isDisabled && Array.isArray(controlledDropdown?.value)) {
+    if (!isDisabled && !isLoading && Array.isArray(controlledDropdown?.value)) {
       const newSelectedOptions = controlledDropdown.value.filter((selected) => selected !== option);
       controlledDropdown?.onChangeHandler?.(newSelectedOptions);
       if (!controlledDropdown?.isCheckboxMultiSelect) {
@@ -531,7 +543,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
 
   //clear dropdown (multi and single)
   const clearDropdownValue = () => {
-    if (!isDisabled) {
+    if (!isDisabled && !isLoading) {
       if (isMulti) {
         clearMultiSelectDropdownValue();
       } else {
@@ -865,7 +877,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
   };
 
   const onClickAwayCallback = () => {
-    if (!isDisabled) {
+    if (!isDisabled && !isLoading) {
       if (isOpen) {
         setOpen(false);
       }
@@ -888,12 +900,14 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
         <div
           className={`dropdown-wrapper ${wrapperClassName} ${isError ? 'dropdown-error' : ''} ${
             menuWidth && styles.left < menuWidth ? 'is-right' : ''
-          } ${!isBorder || trigger ? 'no-border' : ''} ${isFullWidth ? 'is-fullwidth' : ''}`}
+          } ${!isBorder || trigger ? 'no-border' : ''} ${isFullWidth ? 'is-fullwidth' : ''} ${
+            isDisabled || isLoading ? 'disabled-dropdown-wrapper' : ''
+          }`}
           ref={dropdownWrapperRef}
         >
           <div
             className={`dropdown-header ${headerClassName ? headerClassName : ''} ${
-              isDisabled ? 'disabled-dropdown' : ''
+              isDisabled || isLoading ? 'disabled-dropdown' : ''
             }`}
             onClick={toggleDropdown}
             data-test={dataTest ? `${dataTest}-header` : undefined}
@@ -901,6 +915,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
               minHeight: isMulti ? 42 : 'auto',
             }}
           >
+            {isLoading && <div className="center-loader-wrapper">{loadingIcon}</div>}
             {trigger ? (
               trigger
             ) : (
@@ -913,7 +928,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
                       }
                       options={options ?? []}
                       removeOptionHandler={removeMultiSelectOptionHandler}
-                      isDisabled={isDisabled}
+                      isDisabled={isDisabled || isLoading}
                       chipStyles={controlledDropdown?.multiSelectChipStyles}
                       staticHeadIcon={controlledDropdown?.staticHeadIcon}
                       staticHeadLabel={controlledDropdown?.staticHeadLabel}
@@ -986,7 +1001,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
                       value={searchTerm}
                       onChange={handleSearchChange}
                       onKeyDown={keyDownHandler}
-                      disabled={isDisabled}
+                      disabled={isDisabled || isLoading}
                     />
                   )}
                 </div>
