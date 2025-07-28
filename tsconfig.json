@@ -18,7 +18,6 @@
     "jsx": "react-jsx",
     "baseUrl": "./",
     "paths": {
-      "@/jest/*": ["./jest/*"],
       "@/assets/*": ["./src/assets/*"],
       "@/constants/*": ["./src/constants/*"],
       "@/managers/*": ["./src/managers/*"],
@@ -31,7 +30,7 @@
       "@/scss/*": ["./src/scss/*"],
       "@/public/*": ["./public/*"]
     },
-    "types": ["node", "jest", "@testing-library/jest-dom"]
+    "types": ["node"]
   },
   "include": ["src"]
 }

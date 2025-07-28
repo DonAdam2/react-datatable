@@ -62,11 +62,6 @@ const generatePage = () => {
       templateFile: 'generatorTemplates/page/Page.js.hbs',
       data: { isCssModules },
     },
-    {
-      type: 'add',
-      path: `${rootDirectory}/pages/{{camelCase name}}Page/{{pascalCase name}}Page.test.tsx`,
-      templateFile: `generatorTemplates/page/Page.test.js.hbs`,
-    },
   ];
 
   if (isCssModules) {
@@ -109,11 +104,6 @@ module.exports = async (plop) => {
           // Handlebars template used to generate content of new file
           templateFile: 'generatorTemplates/component/Component.js.hbs',
           data: { isCssModules },
-        },
-        {
-          type: 'add',
-          path: `${rootDirectory}/components/{{camelCase name}}/{{pascalCase name}}.test.tsx`,
-          templateFile: 'generatorTemplates/component/Component.test.js.hbs',
         },
       ];
 

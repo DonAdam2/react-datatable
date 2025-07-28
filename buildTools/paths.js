@@ -24,7 +24,6 @@ module.exports = {
   swIconPath: (imageSrc) => resolveApp(`${publicDirectory}/${imageSrc}`),
   publicDirPath: resolveApp(publicDirectory),
   indexHtmlPath: resolveApp(`${publicDirectory}/index.html`),
-  jestPath: resolveApp(jestDirectory),
   outputSrcPath: resolveApp(outputDirectory),
   envDevelopmentPath: resolveApp(`${environmentsDirectory}/.env.development`),
   envProductionPath: resolveApp(`${environmentsDirectory}/.env`),

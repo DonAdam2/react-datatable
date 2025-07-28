@@ -17,7 +17,6 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin'),
     publicDirPath,
     srcPath,
     outputSrcPath,
-    jestPath,
     appIndexPath,
     assetsDirPath,
     managersDirPath,
@@ -71,7 +70,6 @@ module.exports = (env, options) => {
       extensions: ['.js', '.ts', '.tsx', '.json'],
       // declaring aliases to reduce the use of relative path
       alias: {
-        '@/jest': jestPath,
         '@/assets': assetsDirPath,
         '@/constants': constantsDirPath,
         '@/managers': managersDirPath,
