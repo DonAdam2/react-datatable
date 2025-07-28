@@ -12,6 +12,7 @@
 @use 'components/shared/datatable/datatable-footer';
 @use 'components/shared/datatable/datatable';
 @use 'components/shared/datatable/datatable-pagination';
+@use 'components/shared/datatable/datatable-column-visibility';
 @use 'components/shared/tooltip';
 @use 'components/shared/dropdown/dropdown';
 @use 'components/shared/click-away-wrapper';

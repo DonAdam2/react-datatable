@@ -62,7 +62,7 @@ const DatatableColumnVisibility = <T = Record<string, unknown>,>({
           dataTest: 'column-visibility-dropdown',
         }}
         header={{
-          isBorder: true,
+          headerClassName: 'visibility-header',
           trigger: (
             <Button
               {...trigger}
