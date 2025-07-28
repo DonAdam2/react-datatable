@@ -13,7 +13,7 @@ export interface ColumnDef<T = Record<string, any>> {
   accessorKey: keyof T | string | 'action';
   header?: ReactNode;
   className?: string;
-  sortable?: boolean;
+  enableSorting?: boolean;
   hideable?: boolean;
   cell?: (rowData: T) => ReactNode;
   width?: string | number;

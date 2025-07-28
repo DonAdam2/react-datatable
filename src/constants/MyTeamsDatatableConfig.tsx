@@ -62,7 +62,7 @@ export const getMyTeamsDatatableConfig = (
       {
         accessorKey: 'first_name',
         header: 'Name',
-        sortable: true,
+        enableSorting: true,
         hideable: false, // Always visible - core identifier
         cell: (rowData) => (
           <p style={{ margin: 0 }}>
@@ -73,7 +73,7 @@ export const getMyTeamsDatatableConfig = (
       {
         accessorKey: 'employment.title',
         header: 'Occupation',
-        sortable: true,
+        enableSorting: true,
         hideable: true, // Can be hidden via column visibility toggle
       },
       {

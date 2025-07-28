@@ -36,7 +36,7 @@ const DatatableHeader = <T = any,>({
       header: actionsColLabel,
       className: '',
       width: actionsColWidth,
-      sortable: false,
+      enableSorting: false,
       cell: (rowData: any) => (
         <>
           {actions?.map((el, i) => (
@@ -59,7 +59,7 @@ const DatatableHeader = <T = any,>({
       header: '',
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
-      sortable: false,
+      enableSorting: false,
       cell: (rowData: any) => (
         <>
           {selection?.onSelectionChange && (
@@ -138,7 +138,7 @@ const DatatableHeader = <T = any,>({
   return (
     <thead className="table-header">
       <tr>
-        {updatedColumns.map(({ accessorKey, header, sortable, width, className = '' }) => (
+        {updatedColumns.map(({ accessorKey, header, enableSorting, width, className = '' }) => (
           <th
             style={{
               width: getTableDataCellWidth({
@@ -157,8 +157,8 @@ const DatatableHeader = <T = any,>({
             })}
           >
             <span
-              style={{ cursor: sortable ? 'pointer' : 'initial' }}
-              onClick={() => (sortable ? onSortingChange(String(accessorKey)) : null)}
+              style={{ cursor: enableSorting ? 'pointer' : 'initial' }}
+              onClick={() => (enableSorting ? onSortingChange(String(accessorKey)) : null)}
               className="table-head-label"
             >
               {accessorKey === selectionsColumnName &&
@@ -180,7 +180,7 @@ const DatatableHeader = <T = any,>({
               ) : (
                 header
               )}
-              {sortable && sortingField !== accessorKey && sortIcon}
+              {enableSorting && sortingField !== accessorKey && sortIcon}
               {sortingField && sortingField === accessorKey && (
                 <>{sortingOrder === 'asc' ? ascendingSortIcon : descendingSortIcon}</>
               )}
