@@ -85,12 +85,10 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
       isMulti ||
       controlledDropdown?.isSearchable;
 
-  const toggleDropdown = async () => {
+  const toggleDropdown = () => {
     if (!isDisabled && !isLoading) {
       if (!isOpen) {
-        if (onOpenDropdown) {
-          await onOpenDropdown();
-        }
+        onOpenDropdown?.();
 
         setOpen(true);
       } else {
@@ -260,13 +258,13 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
       setMenuWidth(dropdownMenuRef.current?.offsetWidth);
       setMenuHeight(dropdownMenuRef.current?.offsetHeight);
     }
-  }, [menuWidth, menuHeight, isOpen]);
+  }, [menuWidth, menuHeight, isOpen, isLoading]);
 
   //update menu height on search if options are not grouped
   useEffect(() => {
     if (
       isOpen &&
-      (controlledDropdown?.isSearchable || isMulti) &&
+      (controlledDropdown?.isSearchable || isMulti || isLoading) &&
       filteredOptions &&
       filteredOptions.length >= 0 &&
       !isGroupedOptions
@@ -280,6 +278,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     filteredOptions,
     filteredOptions?.length,
     isGroupedOptions,
+    isLoading,
   ]);
 
   const getFlatOptionsOfGroupedOptions = useCallback(() => {
@@ -295,7 +294,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
 
     if (
       isOpen &&
-      (controlledDropdown?.isSearchable || isMulti) &&
+      (controlledDropdown?.isSearchable || isMulti || isLoading) &&
       isGroupedOptions &&
       flatOptions &&
       flatOptions.length >= 0
@@ -308,6 +307,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     isMulti,
     getFlatOptionsOfGroupedOptions,
     isGroupedOptions,
+    isLoading,
   ]);
 
   useEffect(() => {
@@ -319,6 +319,17 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
       setShowMenu(false);
     }
   }, [isOpen]);
+
+  // Update menu height when loading state changes
+  useEffect(() => {
+    if (isOpen) {
+      // Use a small timeout to ensure the content is rendered (loading or options)
+      const timeoutId = setTimeout(() => {
+        setMenuHeight(dropdownMenuRef.current?.offsetHeight);
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOpen, isLoading]);
 
   useEffect(() => {
     return () => {
@@ -713,6 +724,9 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
   ]);
 
   const handleSearchChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    // Prevent search interactions when loading
+    if (isLoading) return;
+
     setSearchTerm(value);
     if (!isOpen) {
       setOpen(true);
@@ -844,6 +858,9 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
   };
 
   const keyDownHandler = ({ key }: KeyboardEvent<HTMLInputElement>) => {
+    // Prevent keyboard interactions when loading
+    if (isLoading) return;
+
     //user pressed on backspace or delete button
     if (searchTerm === '' && (key === 'Backspace' || key === 'Delete')) {
       if (controlledDropdown?.value && controlledDropdown.value.length > 0) {
@@ -915,7 +932,6 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
               minHeight: isMulti ? 42 : 'auto',
             }}
           >
-            {isLoading && <div className="center-loader-wrapper">{loadingIcon}</div>}
             {trigger ? (
               trigger
             ) : (
@@ -1048,6 +1064,8 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
                 >
                   {customContent ? (
                     <div onClick={(e) => e.stopPropagation()}>{customContent}</div>
+                  ) : isLoading ? (
+                    <div className="dropdown-loading-wrapper">{loadingIcon}</div>
                   ) : (
                     options &&
                     (controlledDropdown?.isSearchable || isMulti ? filteredOptions : options)?.map(

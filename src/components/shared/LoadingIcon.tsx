@@ -1,12 +1,12 @@
 const LoadingIcon = () => (
-  <svg className="circular" height="50" width="50">
+  <svg className="circular" height={20} width={20}>
     <circle
       className="path"
-      cx="25"
-      cy="25"
-      r="20"
+      cx="10"
+      cy="10"
+      r="8"
       fill="none"
-      strokeWidth="6"
+      strokeWidth="4"
       strokeMiterlimit="10"
     />
   </svg>

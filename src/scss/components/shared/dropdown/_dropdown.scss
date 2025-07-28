@@ -216,6 +216,13 @@
     position: absolute;
   }
 
+  .dropdown-loading-wrapper {
+    padding: 16px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .options-group-label {
     font-weight: 500;
     font-family:
