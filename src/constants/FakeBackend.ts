@@ -30,7 +30,7 @@ export const fakeBackend = (
   // Merge provided params with default params
   const finalParams: BackendParams = { ...defaultParams, ...params };
   const { searchTerm, sortField, sortOrder, currentPage, itemsPerPage } = finalParams;
-  console.log({ params });
+
   return new Promise((resolve) => {
     setTimeout(() => {
       // Strip frontend-only properties from the data to simulate real backend response

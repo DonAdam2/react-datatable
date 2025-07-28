@@ -782,8 +782,8 @@ export const RemoteControlWithPaginationExample = () => {
 /&gt;
 `.trim();
 
-  // Initial data fetch - only runs once on component mount
-  useEffect(() => {
+  // Uncomment if no deep linking
+  /*useEffect(() => {
     (async () => {
       setIsRemoteLoading(true);
       try {
@@ -805,7 +805,49 @@ export const RemoteControlWithPaginationExample = () => {
         setIsRemoteLoading(false);
       }
     })();
-  }, []); // Only run once on mount, deep linking will handle URL parameter reading
+  }, []);*/
+
+  // Initial data fetch - only runs once on component mount
+  // Use URL parameters if they exist, otherwise use defaults
+  useEffect(() => {
+    (async () => {
+      setIsRemoteLoading(true);
+      try {
+        // Check URL parameters for initial load
+        const searchParams = new URLSearchParams(window.location.search);
+        const pageFromUrl = searchParams.get('page');
+        const pageSizeFromUrl = searchParams.get('pageSize');
+
+        // Use URL params if available, otherwise use defaults
+        const initialPage = pageFromUrl ? +pageFromUrl : 1;
+        const initialPageSize = pageSizeFromUrl ? +pageSizeFromUrl : 10;
+
+        // Get initial data with URL-aware parameters
+        const remoteData = await fakeBackend({
+          currentPage: initialPage,
+          itemsPerPage: initialPageSize,
+          sortOrder: 'asc',
+          sortField: 'first_name',
+          searchTerm: '',
+        });
+
+        setRemotePeople(remoteData.data);
+        setRemoteTotalRecords(remoteData.total);
+
+        // Update state to match URL parameters
+        const newParams = cloneDeep(remoteParams);
+        newParams.currentPage = initialPage;
+        newParams.itemsPerPage = initialPageSize;
+        setRemoteParams(newParams);
+      } catch (err) {
+        console.log(err);
+        setRemoteError(true);
+      } finally {
+        setIsRemoteLoading(false);
+      }
+    })();
+    //eslint-disable-next-line
+  }, []); // Only run once on mount, now URL-aware
 
   const fetchRemoteData = async (newParams: Partial<BackendParams> = {}) => {
     setIsRemoteLoading(true);
@@ -822,15 +864,16 @@ export const RemoteControlWithPaginationExample = () => {
     }
   };
 
-  const resetRemoteDatatablePagination = async () => {
+  const resetRemoteDatatablePagination = () => {
     if (remoteDatatableRef.current) {
-      const paginationData = remoteDatatableRef.current.resetPagination(),
-        newParams = cloneDeep(remoteParams);
+      const paginationData = remoteDatatableRef.current.resetPagination();
+      // Update local params state to keep it in sync
+      // The resetPagination method already handles the API call via deep linking
+      const newParams = cloneDeep(remoteParams);
       newParams.currentPage = paginationData.activePage;
       newParams.itemsPerPage = paginationData.rowsPerPageNum;
-
       setRemoteParams(newParams);
-      await fetchRemoteData(newParams);
+      // Note: No need to call fetchRemoteData here as resetPagination handles it
     }
   };
 
