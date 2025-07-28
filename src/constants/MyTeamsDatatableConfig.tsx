@@ -161,7 +161,7 @@ export const getMyTeamsDatatableConfig = (
       isOutlined: true,
     },
     // Option 1: Specify which columns should be visible by default
-    defaultVisibleColumns: ['first_name', 'employment.title'], // Only Name and Occupation visible by default
+    defaultVisibleColumns: ['employment.title'], // Only Name and Occupation visible by default
 
     // Option 2: Alternative - specify which columns should be hidden by default
     // hiddenColumns: ['subscription.status'], // Hide Status column by default

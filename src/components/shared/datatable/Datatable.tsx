@@ -124,17 +124,24 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     columns.forEach((column) => {
       const columnKey = String(column.accessorKey);
 
-      // If defaultVisibleColumns is provided, use it
-      if (defaultVisibleColumns) {
-        initialVisibility[columnKey] = defaultVisibleColumns.includes(columnKey);
-      }
-      // If hiddenColumns is provided, use it
-      else if (hiddenColumns) {
-        initialVisibility[columnKey] = !hiddenColumns.includes(columnKey);
-      }
-      // Otherwise, all columns are visible by default
-      else {
+      // If column is not hideable, it should always be visible
+      if (column.hideable === false) {
         initialVisibility[columnKey] = true;
+      }
+      // Only apply defaultVisibleColumns/hiddenColumns logic to hideable columns
+      else {
+        // If defaultVisibleColumns is provided, use it
+        if (defaultVisibleColumns) {
+          initialVisibility[columnKey] = defaultVisibleColumns.includes(columnKey);
+        }
+        // If hiddenColumns is provided, use it
+        else if (hiddenColumns) {
+          initialVisibility[columnKey] = !hiddenColumns.includes(columnKey);
+        }
+        // Otherwise, all columns are visible by default
+        else {
+          initialVisibility[columnKey] = true;
+        }
       }
     });
 
