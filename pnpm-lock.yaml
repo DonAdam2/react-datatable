@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@storybook/react':
+        specifier: ^9.0.18
+        version: 9.0.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(storybook@9.0.18(@testing-library/dom@10.4.0)(prettier@3.6.2))(typescript@5.8.3)
       classnames:
         specifier: 2.5.1
         version: 2.5.1
