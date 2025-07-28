@@ -8,12 +8,16 @@ import {
   ActionDef,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import { DatatableRowEvents } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
+import { DatatableColumnVisibilityConfigInterface } from '@/components/shared/datatable/Datatable.types';
 import { Person } from '@/constants/FakeBackend';
 
 /**
  * Type-safe version of the datatable configuration
- * This demonstrates how to use the new ColumnDef<T> for type safety
- * and the new DatatableRowEvents<T> for row-level interactions
+ * This demonstrates how to use:
+ * - ColumnDef<T> for type safety
+ * - DatatableRowEvents<T> for row-level interactions
+ * - Column visibility functionality with hideable columns
+ * - Column visibility configuration options
  */
 export const getMyTeamsDatatableConfig = (
   teamDetails: Person[]
@@ -22,6 +26,7 @@ export const getMyTeamsDatatableConfig = (
   teamsRecords: Person[];
   teamsActions: ActionDef<Person>[];
   teamsRowEvents: DatatableRowEvents<Person>;
+  columnVisibilityConfig: DatatableColumnVisibilityConfigInterface;
 } => {
   const teamsRecords = teamDetails;
 
@@ -58,6 +63,7 @@ export const getMyTeamsDatatableConfig = (
         accessorKey: 'first_name',
         header: 'Name',
         sortable: true,
+        hideable: false, // Always visible - core identifier
         cell: (rowData) => (
           <p style={{ margin: 0 }}>
             {rowData.first_name} {rowData.last_name}
@@ -68,10 +74,12 @@ export const getMyTeamsDatatableConfig = (
         accessorKey: 'employment.title',
         header: 'Occupation',
         sortable: true,
+        hideable: true, // Can be hidden via column visibility toggle
       },
       {
         accessorKey: 'subscription.status',
         header: 'Status',
+        hideable: true, // Can be hidden via column visibility toggle
         // width: '10%',
         cell: (rowData) => (
           <p
@@ -145,5 +153,19 @@ export const getMyTeamsDatatableConfig = (
       },
     ];
 
-  return { teamsColumns, teamsRecords, teamsActions, teamsRowEvents };
+  // Column visibility configuration example
+  const columnVisibilityConfig: DatatableColumnVisibilityConfigInterface = {
+    show: true,
+    trigger: {
+      // label: '',
+      isOutlined: true,
+    },
+    // Option 1: Specify which columns should be visible by default
+    defaultVisibleColumns: ['first_name', 'employment.title'], // Only Name and Occupation visible by default
+
+    // Option 2: Alternative - specify which columns should be hidden by default
+    // hiddenColumns: ['subscription.status'], // Hide Status column by default
+  };
+
+  return { teamsColumns, teamsRecords, teamsActions, teamsRowEvents, columnVisibilityConfig };
 };

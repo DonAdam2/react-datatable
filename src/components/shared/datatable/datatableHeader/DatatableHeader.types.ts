@@ -14,6 +14,7 @@ export interface ColumnDef<T = Record<string, any>> {
   header?: ReactNode;
   className?: string;
   sortable?: boolean;
+  hideable?: boolean;
   cell?: (rowData: T) => ReactNode;
   width?: string | number;
   noWrap?: boolean;

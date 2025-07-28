@@ -39,6 +39,13 @@ interface UiConfigInterface extends SortIconsInterface {
   paginationRangeSeparatorLabel?: string;
 }
 
+export interface DatatableColumnVisibilityConfigInterface {
+  show?: boolean;
+  trigger?: import('@/components/shared/button/Button.types').ButtonInterface;
+  defaultVisibleColumns?: string[];
+  hiddenColumns?: string[];
+}
+
 interface DatatableSearchConfigInterface {
   show?: boolean;
   onSearch?: (key: string) => void | Promise<void>;
@@ -61,6 +68,7 @@ interface CommonConfigInterface<T = Record<string, unknown>> {
   sort?: DatatableSortConfigInterface;
   selection?: DatatableSelectionConfigInterface<T>;
   rowEvents?: DatatableRowEvents<T>;
+  columnVisibility?: DatatableColumnVisibilityConfigInterface;
 }
 
 interface RootPaginationInterface {

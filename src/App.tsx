@@ -663,7 +663,8 @@ export const RemoteControlWithPaginationExample = () => {
       searchTerm: '',
     }),
     remoteDatatableRef = useRef<DatatableRef>(null),
-    remoteConfig = getMyTeamsDatatableConfig(remotePeople);
+    remoteConfig = getMyTeamsDatatableConfig(remotePeople),
+    { teamsColumns, teamsRecords, teamsActions, columnVisibilityConfig } = remoteConfig;
   const codeSnippet = `
 &lt;Datatable
   ref={remoteDatatableRef}
@@ -678,9 +679,11 @@ export const RemoteControlWithPaginationExample = () => {
     titleButtonsLocation,
     titleButtonsPosition,
   }}
-  columns={remoteConfig.teamsColumns}
-  records={remoteConfig.teamsRecords}
+  columns={teamsColumns}
+  records={teamsRecords}
   config={{
+    // Column visibility configuration
+    columnVisibility: columnVisibilityConfig,
     ui: {
       showTableHeader: showTableHeader === 'true',
       tableWrapperClassName: 'title-wrapper-class-name',
@@ -729,7 +732,7 @@ export const RemoteControlWithPaginationExample = () => {
     },
   }}
   isLoading={isRemoteLoading}
-  actions={remoteConfig.teamsActions}
+  actions={teamsActions}
   dataTest="table-data-test"
 /&gt;
 `.trim();
@@ -904,9 +907,11 @@ export const RemoteControlWithPaginationExample = () => {
           titleButtonsLocation,
           titleButtonsPosition,
         }}
-        columns={remoteConfig.teamsColumns}
-        records={remoteConfig.teamsRecords}
+        columns={teamsColumns}
+        records={teamsRecords}
         config={{
+          // Column visibility configuration
+          columnVisibility: columnVisibilityConfig,
           ui: {
             showTableHeader: showTableHeader === 'true',
             tableWrapperClassName: 'title-wrapper-class-name',
@@ -958,7 +963,7 @@ export const RemoteControlWithPaginationExample = () => {
           },
         }}
         isLoading={isRemoteLoading}
-        actions={remoteConfig.teamsActions}
+        actions={teamsActions}
         dataTest="table-data-test"
       />
       <details>

@@ -19,6 +19,7 @@ import DatatableHeader from '@/components/shared/datatable/datatableHeader/Datat
 import DatatableBodyRow from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow';
 import DatatableFooter from '@/components/shared/datatable/datatableFooter/DatatableFooter';
 import DatatablePagination from '@/components/shared/datatable/datatablePagination/DatatablePagination';
+import DatatableColumnVisibility from '@/components/shared/datatable/datatableColumnVisibility/DatatableColumnVisibility';
 import usePagination from '@/hooks/usePagination';
 
 // Default rows per page options
@@ -47,6 +48,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       order: 'asc',
     }),
     [searchQuery, setSearchQuery] = useState(''),
+    [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({}),
     {
       titleLabel,
       titlePosition,
@@ -75,6 +77,12 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       onUpdateFilteredRecordsCount,
     } = config?.search ?? {},
     { isLocalSort = true, onSorting } = config?.sort ?? {},
+    {
+      show: showColumnVisibilityToggle = true,
+      trigger,
+      defaultVisibleColumns,
+      hiddenColumns,
+    } = config?.columnVisibility ?? {},
     {
       resetPagination,
       enablePagination,
@@ -109,6 +117,46 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       [showTableHeader, records, config?.selection]
     );
 
+  // Initialize column visibility state
+  useEffect(() => {
+    const initialVisibility: Record<string, boolean> = {};
+
+    columns.forEach((column) => {
+      const columnKey = String(column.accessorKey);
+
+      // If defaultVisibleColumns is provided, use it
+      if (defaultVisibleColumns) {
+        initialVisibility[columnKey] = defaultVisibleColumns.includes(columnKey);
+      }
+      // If hiddenColumns is provided, use it
+      else if (hiddenColumns) {
+        initialVisibility[columnKey] = !hiddenColumns.includes(columnKey);
+      }
+      // Otherwise, all columns are visible by default
+      else {
+        initialVisibility[columnKey] = true;
+      }
+    });
+
+    setVisibleColumns(initialVisibility);
+  }, [columns, defaultVisibleColumns, hiddenColumns]);
+
+  // Filter visible columns
+  const visibleColumnsData = useMemo(() => {
+    return columns.filter((column) => {
+      const columnKey = String(column.accessorKey);
+      return visibleColumns[columnKey] !== false;
+    });
+  }, [columns, visibleColumns]);
+
+  // Handle column visibility toggle
+  const handleToggleColumn = useCallback((columnKey: string) => {
+    setVisibleColumns((prev) => ({
+      ...prev,
+      [columnKey]: !prev[columnKey],
+    }));
+  }, []);
+
   const recordsData = useMemo(() => {
     let clonedRecords = cloneDeep(records);
 
@@ -135,7 +183,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     //local search functionality
     if (searchQuery && show && isLocalSearch) {
       clonedRecords = clonedRecords.filter((record) =>
-        columns.some((col) =>
+        visibleColumnsData.some((col) =>
           getNestedValue({ key: String(col.accessorKey), obj: record })
             ?.toString()
             .toLowerCase()
@@ -152,7 +200,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     return clonedRecords;
   }, [
     records,
-    columns,
+    visibleColumnsData,
     isLocalSort,
     sorting,
     searchQuery,
@@ -187,6 +235,17 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     }
   };
 
+  // Column visibility toggle element
+  const columnVisibilityToggle =
+    showColumnVisibilityToggle && config?.columnVisibility ? (
+      <DatatableColumnVisibility
+        columns={columns}
+        visibleColumns={visibleColumns}
+        onToggleColumn={handleToggleColumn}
+        trigger={trigger}
+      />
+    ) : null;
+
   return (
     <Paper className={tableWrapperClassName} dataTest={dataTest}>
       {(isTitleLocationOnTitleRow || isTitleButtonsLocationOnTitleRow) && (
@@ -198,44 +257,52 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
           buttonsPosition={isTitleButtonsLocationOnTitleRow ? titleButtonsPosition : undefined}
         />
       )}
-      {(isTitleLocationOnSearchRow || isTitleButtonsLocationOnSearchRow || show) && (
-        <DatatableTitleAndSearch
-          title={isTitleLocationOnSearchRow ? titleLabel : undefined}
-          titleStyles={isTitleLocationOnSearchRow ? titleStyles : undefined}
-          titlePosition={isTitleLocationOnSearchRow ? titlePosition : undefined}
-          buttons={isTitleButtonsLocationOnSearchRow ? titleButtons : undefined}
-          buttonsPosition={isTitleButtonsLocationOnSearchRow ? titleButtonsPosition : undefined}
-          search={{
-            ...config?.search,
-            onSearch: async (value) => {
-              if (value === '') {
-                onUpdateFilteredRecordsCount?.(records.length);
-              }
-              setSearchQuery(value);
-              resetPagination?.();
-              await config?.search?.onSearch?.(value);
-            },
-            show,
-            isLocalSearch,
-            isSearchDisabled: isLoading,
-            searchPosition,
-            isMarginInlineStart:
-              searchPosition !== 'start' &&
-              ((isTitleLocationOnSearchRow && title !== undefined) ||
-                (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
-            isMarginInlineEnd:
-              searchPosition !== 'end' &&
-              ((isTitleLocationOnSearchRow && title !== undefined) ||
-                (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
-          }}
-        />
+      {(isTitleLocationOnSearchRow ||
+        isTitleButtonsLocationOnSearchRow ||
+        show ||
+        columnVisibilityToggle) && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ flex: 1 }}>
+            <DatatableTitleAndSearch
+              title={isTitleLocationOnSearchRow ? titleLabel : undefined}
+              titleStyles={isTitleLocationOnSearchRow ? titleStyles : undefined}
+              titlePosition={isTitleLocationOnSearchRow ? titlePosition : undefined}
+              buttons={isTitleButtonsLocationOnSearchRow ? titleButtons : undefined}
+              buttonsPosition={isTitleButtonsLocationOnSearchRow ? titleButtonsPosition : undefined}
+              search={{
+                ...config?.search,
+                onSearch: async (value) => {
+                  if (value === '') {
+                    onUpdateFilteredRecordsCount?.(records.length);
+                  }
+                  setSearchQuery(value);
+                  resetPagination?.();
+                  await config?.search?.onSearch?.(value);
+                },
+                show,
+                isLocalSearch,
+                isSearchDisabled: isLoading,
+                searchPosition,
+                isMarginInlineStart:
+                  searchPosition !== 'start' &&
+                  ((isTitleLocationOnSearchRow && title !== undefined) ||
+                    (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
+                isMarginInlineEnd:
+                  searchPosition !== 'end' &&
+                  ((isTitleLocationOnSearchRow && title !== undefined) ||
+                    (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
+              }}
+            />
+          </div>
+          {columnVisibilityToggle && <div style={{ flexShrink: 0 }}>{columnVisibilityToggle}</div>}
+        </div>
       )}
       <div className="table-wrapper">
         {isLoading && <div className="center-loader-wrapper">{loadingIcon}</div>}
         <table className={`table ${tableClassName}`}>
           {showTableHeader && (
             <DatatableHeader
-              columns={columns}
+              columns={visibleColumnsData}
               actions={actions}
               onSorting={sortHandler}
               sortIcon={sortIcon}
@@ -256,7 +323,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
               <DatatableBodyRow
                 key={i}
                 row={row}
-                columns={columns}
+                columns={visibleColumnsData}
                 actions={actions}
                 actionsColLabel={actionsColLabel}
                 isActionsColumnLast={isActionsColumnLast}
