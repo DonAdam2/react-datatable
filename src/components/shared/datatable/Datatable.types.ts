@@ -12,6 +12,7 @@ import { DatatableRowEvents } from '@/components/shared/datatable/datatableBodyR
 export type { ColumnDef, ActionDef, DatatableSelectionConfigInterface, DatatableRowEvents };
 import { TitlePositionType } from '@/components/shared/datatable/datatableTitle/DatatableTitle.types';
 import { ButtonInterface } from '@/components/shared/button/Button.types';
+import { DeepLinkingConfig } from '@/hooks/usePagination';
 
 export type BooleanFuncType = (rowData: any) => boolean;
 export type TitleLocationType = 'searchRow' | 'titleRow';
@@ -114,10 +115,6 @@ export interface RootDatatableInterface<T = Record<string, unknown>>
 export interface DatatableRowsDropdownOption {
   value: number;
   displayValue: string;
-}
-
-interface DeepLinkingConfig {
-  pageNumKey: string;
 }
 
 interface LocalControlledPaginationInterface {

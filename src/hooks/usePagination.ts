@@ -3,7 +3,7 @@ import { getPaginationRange } from '@/constants/Helpers';
 import useRouter from '@/hooks/useRouter';
 
 // Define types for the hook parameters
-interface DeepLinkingConfig {
+export interface DeepLinkingConfig {
   pageNumKey: string;
   pageSizeKey?: string;
 }
@@ -287,16 +287,29 @@ function usePagination({
 
         // Handle deep linking - only update URL, let URL effect handle state
         if (deepLinking) {
-          updatePageNum(activePageNum);
+          if (newContentPerPage !== undefined && deepLinking.pageSizeKey && setSearchParams) {
+            // Update both page and page size in URL
+            const updates: Record<string, string> = {
+              [deepLinking.pageNumKey]: activePageNum.toString(),
+              [deepLinking.pageSizeKey]: newContentPerPage.toString(),
+            };
+            setSearchParams(updates);
+          } else {
+            // Only update page number
+            updatePageNum(activePageNum);
+          }
         } else {
           // Non-deep linking mode - update state directly
           setActivePage(activePageNum);
+          if (newContentPerPage !== undefined) {
+            setContentPerPage(newContentPerPage);
+          }
         }
       } catch (err) {
         console.log(err);
       }
     },
-    [fetchData, contentPerPage, deepLinking, updatePageNum]
+    [fetchData, contentPerPage, deepLinking, updatePageNum, setSearchParams]
   );
 
   // Change page based on direction either front or back

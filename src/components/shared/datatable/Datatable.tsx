@@ -432,11 +432,18 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
     navigateToNextPage,
     navigateToFirstPage,
     navigateToLastPage,
+    navigateToPage,
     updateCurrentRowsPerPage,
     firstContentIndex,
     lastContentIndex,
     totalPages,
+    contentPerPage,
   } = paginationData;
+
+  // Sync rowsPerPage state with contentPerPage from URL
+  useEffect(() => {
+    setRowsPerPageNum(contentPerPage);
+  }, [contentPerPage]);
 
   const modifiedOptionsList = useMemo(
     () =>
@@ -462,8 +469,7 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   const resetPagination = useCallback(() => {
     if (activePage !== 1 || rowsPerPageNum !== rowsPerPage) {
       (async () => {
-        await navigateToFirstPage();
-        setRowsPerPageNum(rowsPerPage);
+        await navigateToPage(1, rowsPerPage);
       })();
     }
 
@@ -471,7 +477,7 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
       activePage: 1,
       rowsPerPageNum: rowsPerPage,
     };
-  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToFirstPage]);
+  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToPage]);
 
   useImperativeHandle(
     ref,

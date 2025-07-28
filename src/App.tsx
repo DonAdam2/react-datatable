@@ -378,6 +378,8 @@ const UiConfigSetup = ({
   actionsColLabelHandler,
   paginationRangeSeparatorLabel,
   paginationRangeSeparatorLabelHandler,
+  columnVisibilityLocation,
+  columnVisibilityLocationHandler,
 }: {
   titlePosition: TitlePositionType;
   titlePositionHandler: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -403,6 +405,8 @@ const UiConfigSetup = ({
   actionsColLabelHandler: (event: ChangeEvent<HTMLInputElement>) => void;
   paginationRangeSeparatorLabel: string;
   paginationRangeSeparatorLabelHandler: (event: ChangeEvent<HTMLInputElement>) => void;
+  columnVisibilityLocation: string;
+  columnVisibilityLocationHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
     <div className="demo-config-wrapper">
@@ -628,6 +632,39 @@ const UiConfigSetup = ({
         value={paginationRangeSeparatorLabel}
       />
     </div>
+    <div className="demo-config-wrapper">
+      <p className="demo-config-title">Column visibility location: </p>
+      <label>
+        <input
+          type="radio"
+          name="columnVisibilityLocation"
+          value="titleRow"
+          checked={columnVisibilityLocation === 'titleRow'}
+          onChange={columnVisibilityLocationHandler}
+        />
+        Title row
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="columnVisibilityLocation"
+          value="searchRow"
+          checked={columnVisibilityLocation === 'searchRow'}
+          onChange={columnVisibilityLocationHandler}
+        />
+        Search row
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="columnVisibilityLocation"
+          value="actionsColumn"
+          checked={columnVisibilityLocation === 'actionsColumn'}
+          onChange={columnVisibilityLocationHandler}
+        />
+        Actions column
+      </label>
+    </div>
   </div>
 );
 
@@ -644,6 +681,7 @@ export const RemoteControlWithPaginationExample = () => {
     [searchPlaceholder, setSearchPlaceholder] = useState('Search...'),
     [actionsColLabel, setActionsColLabel] = useState(''),
     [paginationRangeSeparatorLabel, setPaginationRangeSeparatorLabel] = useState('of'),
+    [columnVisibilityLocation, setColumnVisibilityLocation] = useState('actionsColumn'),
     [selectedPerson, setSelectedPerson] = useState<Person | null>({
       id: 25,
       first_name: 'Benjamin',
@@ -683,7 +721,10 @@ export const RemoteControlWithPaginationExample = () => {
   records={teamsRecords}
   config={{
     // Column visibility configuration
-    columnVisibility: columnVisibilityConfig,
+    columnVisibility: {
+      ...columnVisibilityConfig,
+      location: columnVisibilityLocation,
+    },
     ui: {
       showTableHeader: showTableHeader === 'true',
       tableWrapperClassName: 'title-wrapper-class-name',
@@ -714,6 +755,10 @@ export const RemoteControlWithPaginationExample = () => {
       rowsDropdown: {
         optionsList: customOptionsList,
       },
+      deepLinking: {
+        pageNumKey: 'page',
+        pageSizeKey: 'pageSize',
+      },
     },
     sort: {
       onSorting: onRemoteSort,
@@ -737,11 +782,19 @@ export const RemoteControlWithPaginationExample = () => {
 /&gt;
 `.trim();
 
+  // Initial data fetch - only runs once on component mount
   useEffect(() => {
     (async () => {
       setIsRemoteLoading(true);
       try {
-        const remoteData = await fakeBackend({ itemsPerPage: 10 });
+        // Get initial data with default parameters
+        const remoteData = await fakeBackend({
+          currentPage: 1,
+          itemsPerPage: 10,
+          sortOrder: 'asc',
+          sortField: 'first_name',
+          searchTerm: '',
+        });
 
         setRemotePeople(remoteData.data);
         setRemoteTotalRecords(remoteData.total);
@@ -752,7 +805,7 @@ export const RemoteControlWithPaginationExample = () => {
         setIsRemoteLoading(false);
       }
     })();
-  }, []);
+  }, []); // Only run once on mount, deep linking will handle URL parameter reading
 
   const fetchRemoteData = async (newParams: Partial<BackendParams> = {}) => {
     setIsRemoteLoading(true);
@@ -859,6 +912,10 @@ export const RemoteControlWithPaginationExample = () => {
     setPaginationRangeSeparatorLabel(event.target.value);
   };
 
+  const columnVisibilityLocationHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setColumnVisibilityLocation(event.target.value);
+  };
+
   return (
     <>
       {remoteError && <span>Remote error: {remoteError}</span>}
@@ -887,6 +944,8 @@ export const RemoteControlWithPaginationExample = () => {
         actionsColLabelHandler={actionsColLabelHandler}
         paginationRangeSeparatorLabel={paginationRangeSeparatorLabel}
         paginationRangeSeparatorLabelHandler={paginationRangeSeparatorLabelHandler}
+        columnVisibilityLocation={columnVisibilityLocation}
+        columnVisibilityLocationHandler={columnVisibilityLocationHandler}
       />
       <Button
         label="Reset remote datatable pagination"
@@ -911,7 +970,10 @@ export const RemoteControlWithPaginationExample = () => {
         records={teamsRecords}
         config={{
           // Column visibility configuration
-          columnVisibility: columnVisibilityConfig,
+          columnVisibility: {
+            ...columnVisibilityConfig,
+            location: columnVisibilityLocation as 'titleRow' | 'searchRow' | 'actionsColumn',
+          },
           ui: {
             showTableHeader: showTableHeader === 'true',
             tableWrapperClassName: 'title-wrapper-class-name',
@@ -942,6 +1004,10 @@ export const RemoteControlWithPaginationExample = () => {
             },
             rowsDropdown: {
               optionsList: customOptionsList,
+            },
+            deepLinking: {
+              pageNumKey: 'page',
+              pageSizeKey: 'pageSize',
             },
           },
           sort: {
