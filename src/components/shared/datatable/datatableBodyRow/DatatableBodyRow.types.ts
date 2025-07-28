@@ -3,7 +3,7 @@ import {
   ActionDef,
   DatatableSelectionConfigInterface,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
-import { Dispatch, SetStateAction, MouseEvent, DragEvent } from 'react';
+import { Dispatch, SetStateAction, MouseEvent, DragEvent, ReactNode } from 'react';
 
 // Row events interface similar to ActionDef pattern
 export interface DatatableRowEvents<T = Record<string, unknown>> {
@@ -38,4 +38,5 @@ export interface DatatableBodyRowInterface<T = Record<string, unknown>> {
   setIsSelectAllRecords: Dispatch<SetStateAction<boolean>>;
   candidateRecordsToSelectAll: T[];
   rowEvents?: DatatableRowEvents<T>;
+  columnVisibilityToggle?: ReactNode;
 }

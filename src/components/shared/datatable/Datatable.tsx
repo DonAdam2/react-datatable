@@ -369,6 +369,9 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
                 setIsSelectAllRecords={setIsSelectAllRecords}
                 candidateRecordsToSelectAll={candidateRecordsToSelectAll}
                 rowEvents={config?.rowEvents}
+                columnVisibilityToggle={
+                  showColumnVisibilityInActionsColumn ? columnVisibilityToggle : undefined
+                }
               />
             ))}
           </tbody>

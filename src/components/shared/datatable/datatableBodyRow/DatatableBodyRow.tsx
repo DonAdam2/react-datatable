@@ -26,6 +26,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   setIsSelectAllRecords,
   candidateRecordsToSelectAll,
   rowEvents,
+  columnVisibilityToggle,
 }: DatatableBodyRowInterface<T>) => {
   const { isTouchDevice } = useTouchScreenDetect(),
     rowRef = useRef<HTMLTableRowElement>(null),
@@ -142,9 +143,13 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   // Construct new columns
   const updatedColumns = [
     ...(selection !== undefined ? [selectionsColumnData] : []),
-    ...(actions?.length && !isActionsColumnLast ? [actionsColumnData] : []),
+    ...((actions?.length || columnVisibilityToggle) && !isActionsColumnLast
+      ? [actionsColumnData]
+      : []),
     ...columns,
-    ...(actions?.length && isActionsColumnLast ? [actionsColumnData] : []),
+    ...((actions?.length || columnVisibilityToggle) && isActionsColumnLast
+      ? [actionsColumnData]
+      : []),
   ];
 
   return (
