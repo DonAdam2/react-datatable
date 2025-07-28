@@ -70,7 +70,7 @@ const DatatableColumnVisibility = <T = Record<string, unknown>,>({
               icon={trigger?.icon ?? <ChevronDownIcon />}
               iconPosition={trigger?.iconPosition ?? 'right'}
               type={trigger?.type ?? 'button'}
-              variant={trigger?.variant ?? 'light'}
+              variant={trigger?.variant}
             />
           ),
           controlledDropdown: {

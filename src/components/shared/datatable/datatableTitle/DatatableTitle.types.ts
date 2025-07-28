@@ -11,4 +11,5 @@ export interface DatatableTitleInterface {
   titleStyles?: CSSProperties;
   isRemovePadding?: boolean;
   isInSearchRow?: boolean;
+  columnVisibilityToggle?: ReactNode;
 }

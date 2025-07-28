@@ -38,6 +38,7 @@ export interface DatatableHeaderInterface<T = Record<string, unknown>> extends S
   isSelectAllRecords: boolean;
   setIsSelectAllRecords: Dispatch<SetStateAction<boolean>>;
   candidateRecordsToSelectAll: T[];
+  columnVisibilityToggle?: ReactNode;
 }
 
 export interface ActionDef<T = Record<string, unknown>> {

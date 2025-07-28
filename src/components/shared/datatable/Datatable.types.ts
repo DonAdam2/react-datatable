@@ -15,6 +15,7 @@ import { ButtonInterface } from '@/components/shared/button/Button.types';
 
 export type BooleanFuncType = (rowData: any) => boolean;
 export type TitleLocationType = 'searchRow' | 'titleRow';
+export type ColumnVisibilityLocationType = TitleLocationType | 'actionsColumn';
 
 export interface ActionTooltipInterface {
   tooltipContent: string; //can have jsx => tooltipContent="<em>hi</em>"
@@ -41,9 +42,10 @@ interface UiConfigInterface extends SortIconsInterface {
 
 export interface DatatableColumnVisibilityConfigInterface {
   show?: boolean;
-  trigger?: import('@/components/shared/button/Button.types').ButtonInterface;
+  trigger?: ButtonInterface;
   defaultVisibleColumns?: string[];
   hiddenColumns?: string[];
+  location?: ColumnVisibilityLocationType;
 }
 
 interface DatatableSearchConfigInterface {

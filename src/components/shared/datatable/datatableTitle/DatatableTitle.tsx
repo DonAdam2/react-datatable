@@ -10,13 +10,14 @@ const DatatableTitle = ({
   titleStyles,
   isRemovePadding,
   isInSearchRow,
+  columnVisibilityToggle,
 }: DatatableTitleInterface) => {
   const isTitlePositionEnd = title && titlePosition === 'end',
     isButtonsPositionStart = buttons?.length && buttonsPosition === 'start';
 
   return (
     <>
-      {(title || buttons) && (
+      {(title || buttons || columnVisibilityToggle) && (
         <div
           className={cx('datatable-title-wrapper', {
             'remove-padding': isRemovePadding,
@@ -31,12 +32,14 @@ const DatatableTitle = ({
           }}
         >
           {title && (
-            <h2 className="table-title" style={titleStyles}>
-              {title}
-            </h2>
+            <>
+              <h2 className="table-title" style={titleStyles}>
+                {title}
+              </h2>
+              <div style={{ flex: '1' }} />
+            </>
           )}
-          <div style={{ flex: '1' }} />
-          {buttons?.length && (
+          {(buttons?.length || columnVisibilityToggle) && (
             <div
               className={`datatable-title-buttons-wrapper ${!title ? 'no-title' : ''}`}
               style={{
@@ -47,6 +50,7 @@ const DatatableTitle = ({
               {buttons?.map((el, i) => (
                 <Button key={i} {...el} />
               ))}
+              {columnVisibilityToggle && <div>{columnVisibilityToggle}</div>}
             </div>
           )}
         </div>

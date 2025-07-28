@@ -7,6 +7,7 @@ const DatatableTitleAndSearch = ({
   titlePosition,
   buttons,
   buttonsPosition,
+  columnVisibilityToggle,
   titleStyles,
   search,
 }: DatatableTitleAndSearchInterface) => {
@@ -14,14 +15,14 @@ const DatatableTitleAndSearch = ({
 
   return (
     <>
-      {(title || buttons || search) && (
+      {(title || buttons || search || columnVisibilityToggle) && (
         <div
           className="datatable-search-title-wrapper"
           style={{
             flexDirection: isSearchPositionStart ? 'row-reverse' : 'row',
           }}
         >
-          {(title || buttons) && (
+          {(title || buttons || columnVisibilityToggle) && (
             <DatatableTitle
               title={title}
               titleStyles={titleStyles}
@@ -30,6 +31,7 @@ const DatatableTitleAndSearch = ({
               buttonsPosition={buttonsPosition}
               isRemovePadding
               isInSearchRow
+              columnVisibilityToggle={columnVisibilityToggle}
             />
           )}
           <div style={{ flex: title || buttons ? '1 1 10%' : '1' }} />

@@ -158,7 +158,6 @@ export const getMyTeamsDatatableConfig = (
     show: true,
     trigger: {
       // label: '',
-      isOutlined: true,
     },
     // Option 1: Specify which columns should be visible by default
     defaultVisibleColumns: ['employment.title'], // Only Name and Occupation visible by default

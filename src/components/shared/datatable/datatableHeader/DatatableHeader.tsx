@@ -28,6 +28,7 @@ const DatatableHeader = <T = any,>({
   isSelectAllRecords,
   setIsSelectAllRecords,
   candidateRecordsToSelectAll,
+  columnVisibilityToggle,
 }: DatatableHeaderInterface<T>) => {
   const [sortingField, setSortingField] = useState(''),
     [sortingOrder, setSortingOrder] = useState('asc'),
@@ -130,9 +131,13 @@ const DatatableHeader = <T = any,>({
   // Construct new columns
   const updatedColumns = [
     ...(selection !== undefined ? [selectionsColumnData] : []),
-    ...(actions?.length && !isActionsColumnLast ? [actionsColumnData] : []),
+    ...((actions?.length || columnVisibilityToggle) && !isActionsColumnLast
+      ? [actionsColumnData]
+      : []),
     ...columns,
-    ...(actions?.length && isActionsColumnLast ? [actionsColumnData] : []),
+    ...((actions?.length || columnVisibilityToggle) && isActionsColumnLast
+      ? [actionsColumnData]
+      : []),
   ];
 
   return (
@@ -178,7 +183,12 @@ const DatatableHeader = <T = any,>({
                   data-test="select-all-checkbox"
                 />
               ) : (
-                header
+                <>
+                  {header}
+                  {accessorKey === actionsColumnName && columnVisibilityToggle && (
+                    <span style={{ marginInlineStart: 8 }}>{columnVisibilityToggle}</span>
+                  )}
+                </>
               )}
               {enableSorting && sortingField !== accessorKey && sortIcon}
               {sortingField && sortingField === accessorKey && (

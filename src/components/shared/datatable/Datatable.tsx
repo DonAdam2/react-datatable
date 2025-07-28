@@ -21,6 +21,7 @@ import DatatableFooter from '@/components/shared/datatable/datatableFooter/Datat
 import DatatablePagination from '@/components/shared/datatable/datatablePagination/DatatablePagination';
 import DatatableColumnVisibility from '@/components/shared/datatable/datatableColumnVisibility/DatatableColumnVisibility';
 import usePagination from '@/hooks/usePagination';
+import SettingsIcon from '@/assets/icons/SettingsIcon';
 
 // Default rows per page options
 const rowsPerPageOptions: { value: string; displayValue: string }[] = [
@@ -82,6 +83,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       trigger,
       defaultVisibleColumns,
       hiddenColumns,
+      location = 'actionsColumn',
     } = config?.columnVisibility ?? {},
     {
       resetPagination,
@@ -242,6 +244,11 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     }
   };
 
+  // Determine where to show the column visibility toggle based on location
+  const showColumnVisibilityInTitleRow = location === 'titleRow';
+  const showColumnVisibilityInActionsColumn = location === 'actionsColumn';
+  const showColumnVisibilityInSearchRow = location === 'searchRow';
+
   // Column visibility toggle element
   const columnVisibilityToggle =
     showColumnVisibilityToggle && config?.columnVisibility ? (
@@ -249,60 +256,78 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
         columns={columns}
         visibleColumns={visibleColumns}
         onToggleColumn={handleToggleColumn}
-        trigger={trigger}
+        trigger={{
+          ...trigger,
+          icon:
+            showColumnVisibilityInActionsColumn && !trigger?.icon ? (
+              <SettingsIcon />
+            ) : (
+              trigger?.icon
+            ),
+          label: showColumnVisibilityInActionsColumn && !trigger?.label ? '' : trigger?.label,
+          variant:
+            showColumnVisibilityInActionsColumn && !trigger?.variant ? 'light' : trigger?.variant,
+          className:
+            showColumnVisibilityInActionsColumn && !trigger?.className
+              ? 'actions-col-visibility-button'
+              : trigger?.className,
+        }}
       />
     ) : null;
 
   return (
     <Paper className={tableWrapperClassName} dataTest={dataTest}>
-      {(isTitleLocationOnTitleRow || isTitleButtonsLocationOnTitleRow) && (
+      {(isTitleLocationOnTitleRow ||
+        isTitleButtonsLocationOnTitleRow ||
+        (showColumnVisibilityInTitleRow && columnVisibilityToggle)) && (
         <DatatableTitle
           title={isTitleLocationOnTitleRow ? titleLabel : undefined}
           titleStyles={isTitleLocationOnTitleRow ? titleStyles : undefined}
           titlePosition={isTitleLocationOnTitleRow ? titlePosition : undefined}
           buttons={isTitleButtonsLocationOnTitleRow ? titleButtons : undefined}
           buttonsPosition={isTitleButtonsLocationOnTitleRow ? titleButtonsPosition : undefined}
+          columnVisibilityToggle={
+            showColumnVisibilityInTitleRow ? columnVisibilityToggle : undefined
+          }
         />
       )}
       {(isTitleLocationOnSearchRow ||
         isTitleButtonsLocationOnSearchRow ||
         show ||
-        columnVisibilityToggle) && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ flex: 1 }}>
-            <DatatableTitleAndSearch
-              title={isTitleLocationOnSearchRow ? titleLabel : undefined}
-              titleStyles={isTitleLocationOnSearchRow ? titleStyles : undefined}
-              titlePosition={isTitleLocationOnSearchRow ? titlePosition : undefined}
-              buttons={isTitleButtonsLocationOnSearchRow ? titleButtons : undefined}
-              buttonsPosition={isTitleButtonsLocationOnSearchRow ? titleButtonsPosition : undefined}
-              search={{
-                ...config?.search,
-                onSearch: async (value) => {
-                  if (value === '') {
-                    onUpdateFilteredRecordsCount?.(records.length);
-                  }
-                  setSearchQuery(value);
-                  resetPagination?.();
-                  await config?.search?.onSearch?.(value);
-                },
-                show,
-                isLocalSearch,
-                isSearchDisabled: isLoading,
-                searchPosition,
-                isMarginInlineStart:
-                  searchPosition !== 'start' &&
-                  ((isTitleLocationOnSearchRow && title !== undefined) ||
-                    (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
-                isMarginInlineEnd:
-                  searchPosition !== 'end' &&
-                  ((isTitleLocationOnSearchRow && title !== undefined) ||
-                    (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
-              }}
-            />
-          </div>
-          {columnVisibilityToggle && <div style={{ flexShrink: 0 }}>{columnVisibilityToggle}</div>}
-        </div>
+        (showColumnVisibilityInSearchRow && columnVisibilityToggle)) && (
+        <DatatableTitleAndSearch
+          title={isTitleLocationOnSearchRow ? titleLabel : undefined}
+          titleStyles={isTitleLocationOnSearchRow ? titleStyles : undefined}
+          titlePosition={isTitleLocationOnSearchRow ? titlePosition : undefined}
+          buttons={isTitleButtonsLocationOnSearchRow ? titleButtons : undefined}
+          buttonsPosition={isTitleButtonsLocationOnSearchRow ? titleButtonsPosition : undefined}
+          columnVisibilityToggle={
+            showColumnVisibilityInSearchRow ? columnVisibilityToggle : undefined
+          }
+          search={{
+            ...config?.search,
+            onSearch: async (value) => {
+              if (value === '') {
+                onUpdateFilteredRecordsCount?.(records.length);
+              }
+              setSearchQuery(value);
+              resetPagination?.();
+              await config?.search?.onSearch?.(value);
+            },
+            show,
+            isLocalSearch,
+            isSearchDisabled: isLoading,
+            searchPosition,
+            isMarginInlineStart:
+              searchPosition !== 'start' &&
+              ((isTitleLocationOnSearchRow && title !== undefined) ||
+                (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
+            isMarginInlineEnd:
+              searchPosition !== 'end' &&
+              ((isTitleLocationOnSearchRow && title !== undefined) ||
+                (isTitleButtonsLocationOnSearchRow && titleButtons !== undefined)),
+          }}
+        />
       )}
       <div className="table-wrapper">
         {isLoading && <div className="center-loader-wrapper">{loadingIcon}</div>}
@@ -323,6 +348,9 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
               isSelectAllRecords={isSelectAllRecords}
               setIsSelectAllRecords={setIsSelectAllRecords}
               candidateRecordsToSelectAll={candidateRecordsToSelectAll}
+              columnVisibilityToggle={
+                showColumnVisibilityInActionsColumn ? columnVisibilityToggle : undefined
+              }
             />
           )}
           <tbody>
