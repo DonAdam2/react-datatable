@@ -3,10 +3,10 @@ import DatatableColumnVisibility from './DatatableColumnVisibility';
 import { ColumnDef } from '../datatableHeader/DatatableHeader.types';
 
 const mockColumns: ColumnDef[] = [
-  { accessorKey: 'name', header: 'Name', hideable: true },
-  { accessorKey: 'email', header: 'Email', hideable: true },
-  { accessorKey: 'role', header: 'Role', hideable: false },
-  { accessorKey: 'actions', header: '', hideable: false },
+  { accessorKey: 'name', header: 'Name', enableHiding: true },
+  { accessorKey: 'email', header: 'Email', enableHiding: true },
+  { accessorKey: 'role', header: 'Role', enableHiding: false },
+  { accessorKey: 'actions', header: '', enableHiding: false },
 ];
 
 const defaultProps = {
@@ -45,14 +45,14 @@ describe('DatatableColumnVisibility', () => {
     expect(screen.getByText('Columns')).toBeInTheDocument();
   });
 
-  it('does not render when no hideable columns exist', () => {
-    const nonHideableColumns: ColumnDef[] = [
-      { accessorKey: 'name', header: 'Name', hideable: false },
-      { accessorKey: 'email', header: 'Email', hideable: false },
+  it('does not render when no columns with hiding enabled exist', () => {
+    const nonHidingColumns: ColumnDef[] = [
+      { accessorKey: 'name', header: 'Name', enableHiding: false },
+      { accessorKey: 'email', header: 'Email', enableHiding: false },
     ];
 
     const { container } = render(
-      <DatatableColumnVisibility {...defaultProps} columns={nonHideableColumns} />
+      <DatatableColumnVisibility {...defaultProps} columns={nonHidingColumns} />
     );
 
     expect(container).toBeEmptyDOMElement();

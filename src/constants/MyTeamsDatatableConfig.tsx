@@ -16,7 +16,7 @@ import { Person } from '@/constants/FakeBackend';
  * This demonstrates how to use:
  * - ColumnDef<T> for type safety
  * - DatatableRowEvents<T> for row-level interactions
- * - Column visibility functionality with hideable columns
+ * - Column visibility functionality with enableHiding columns
  * - Column visibility configuration options
  */
 export const getMyTeamsDatatableConfig = (
@@ -63,7 +63,7 @@ export const getMyTeamsDatatableConfig = (
         accessorKey: 'first_name',
         header: 'Name',
         enableSorting: true,
-        hideable: false, // Always visible - core identifier
+        enableHiding: false, // Always visible - core identifier
         cell: (rowData) => (
           <p style={{ margin: 0 }}>
             {rowData.first_name} {rowData.last_name}
@@ -74,12 +74,12 @@ export const getMyTeamsDatatableConfig = (
         accessorKey: 'employment.title',
         header: 'Occupation',
         enableSorting: true,
-        hideable: true, // Can be hidden via column visibility toggle
+        enableHiding: true, // Can be hidden via column visibility toggle
       },
       {
         accessorKey: 'subscription.status',
         header: 'Status',
-        hideable: true, // Can be hidden via column visibility toggle
+        enableHiding: true, // Can be hidden via column visibility toggle
         // width: '10%',
         cell: (rowData) => (
           <p
