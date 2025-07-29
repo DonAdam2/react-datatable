@@ -41,7 +41,7 @@ It supports the following:
 
 ## Demo:
 
-Explore interactive examples in our by running `pnpm storybook` it features:
+Explore interactive examples in storybook by running `pnpm storybook`. It features:
 - Local datatable with full client-side functionality
 - Remote datatable with server-side operations
 - Column visibility controls
