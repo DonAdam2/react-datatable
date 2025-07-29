@@ -636,7 +636,7 @@ const MyTypedDatatable: React.FC = () => {
 
 ## Contributing:
 
-Contributions are welcome! Please read our contributing guidelines and submit pull requests for any improvements.
+Contributions are welcome! Please submit pull requests for any improvements.
 
 ## License:
 
