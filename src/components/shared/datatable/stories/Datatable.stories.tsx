@@ -12,6 +12,7 @@ import FilterIcon from '@/assets/icons/FilterIcon';
 import AscendingSortIcon from '@/assets/icons/AscendingSortIcon';
 import DescendingSortIcon from '@/assets/icons/DescendingSortIcon';
 import SettingsIcon from '@/assets/icons/SettingsIcon';
+import EditIcon from '@/assets/icons/EditIcon';
 
 // Helper component for stories that need to load data
 interface StandardDatatableComponentProps {
@@ -865,6 +866,34 @@ export const WithOnRowDragAndDrop: Story = {
             },
           },
           onDragStart: {
+            draggable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'active',
+            event: (e: DragEvent, rowData: Person) => {
+              console.log(`Row dragged! Employee: ${rowData.first_name} ${rowData.last_name}`);
+            },
+          },
+        },
+      }}
+    />
+  ),
+};
+
+export const WithRowDragAndCustomIcon: Story = {
+  render: () => (
+    <StandardDatatableComponent
+      title={{
+        titleLabel: 'Employees (Row Drag & Drop with Custom Icon)',
+      }}
+      config={{
+        rowEvents: {
+          onDrop: {
+            droppable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'idle',
+            event: (e: DragEvent, rowData: Person) => {
+              console.log(`Row dropped! Employee: ${rowData.first_name} ${rowData.last_name}`);
+              alert(`Dropped employee: ${rowData.first_name} ${rowData.last_name}`);
+            },
+          },
+          onDragStart: {
+            icon: <EditIcon />,
             draggable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'active',
             event: (e: DragEvent, rowData: Person) => {
               console.log(`Row dragged! Employee: ${rowData.first_name} ${rowData.last_name}`);

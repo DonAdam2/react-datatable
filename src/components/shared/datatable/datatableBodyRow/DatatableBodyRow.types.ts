@@ -20,6 +20,7 @@ export interface DatatableRowEvents<T = Record<string, unknown>> {
     event: (e: DragEvent, row: T) => void;
   };
   onDragStart?: {
+    icon?: ReactNode;
     draggable?: boolean | ((rowData: T) => boolean);
     event: (e: DragEvent, row: T) => void;
   };

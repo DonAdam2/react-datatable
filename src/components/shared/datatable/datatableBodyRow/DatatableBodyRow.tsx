@@ -226,7 +226,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   flexShrink: 0,
                 }}
               >
-                <MoveIcon className="move-element" />
+                <span className="move-element">{rowEvents?.onDragStart?.icon || <MoveIcon />}</span>
               </div>
             )}
             {colIndex === 0 &&

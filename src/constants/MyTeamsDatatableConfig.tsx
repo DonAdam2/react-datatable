@@ -41,6 +41,7 @@ export const getMyTeamsDatatableConfig = (
       },
     },
     onDragStart: {
+      icon: <EditIcon />,
       draggable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'active',
       event: (e: DragEvent, rowData: Person) => {
         console.log(`Row dragged! Employee: ${rowData.first_name} ${rowData.last_name}`);
