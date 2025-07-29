@@ -281,4 +281,3 @@ export const WithCustomFilterIcons: Story = {
     />
   ),
 };
-
