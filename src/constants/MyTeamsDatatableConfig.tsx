@@ -10,6 +10,7 @@ import {
 import { DatatableRowEvents } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 import { DatatableColumnVisibilityConfigInterface } from '@/components/shared/datatable/Datatable.types';
 import { Person } from '@/constants/FakeBackend';
+import { DragEvent } from 'react';
 
 /**
  * Type-safe version of the datatable configuration
@@ -32,10 +33,17 @@ export const getMyTeamsDatatableConfig = (
 
   // Example row events configuration
   const teamsRowEvents: DatatableRowEvents<Person> = {
+    onDrop: {
+      droppable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'idle',
+      event: (e: DragEvent, rowData: Person) => {
+        console.log(`Row dropped! Employee: ${rowData.first_name} ${rowData.last_name}`);
+        alert(`Dropped employee: ${rowData.first_name} ${rowData.last_name}`);
+      },
+    },
     onDragStart: {
-      draggable: (rowData) => rowData.id === 2,
-      event: (e, row) => {
-        console.log('Dragging row:', row.first_name, row.last_name);
+      draggable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'active',
+      event: (e: DragEvent, rowData: Person) => {
+        console.log(`Row dragged! Employee: ${rowData.first_name} ${rowData.last_name}`);
       },
     },
     onClick: {

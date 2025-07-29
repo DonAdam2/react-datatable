@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { DragEvent, ReactNode, useCallback, useEffect, useState } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 
 import Datatable from '../Datatable';
@@ -60,7 +60,6 @@ const StandardDatatableComponent = ({
       actions={actions ? localConfig.teamsActions : undefined}
       config={{
         ui: { actionsColWidth: 40 },
-        rowEvents: localConfig.teamsRowEvents,
         ...config,
       }}
       isLoading={isLocalLoading}
@@ -118,7 +117,6 @@ const LocalDatatableComponent = () => {
       actions={localConfig.teamsActions}
       config={{
         ui: { actionsColWidth: 40 },
-        rowEvents: localConfig.teamsRowEvents,
       }}
       isLoading={isLocalLoading}
     />
@@ -223,7 +221,6 @@ const RemoteDatatableComponent = () => {
             totalRecords: remoteTotalRecords,
           },
         },
-        rowEvents: remoteConfig.teamsRowEvents,
       }}
       isLoading={isRemoteLoading}
     />
@@ -617,7 +614,6 @@ const CustomPaginationComponentStory = () => {
           resetPagination: () => navigateToFirstPage(),
           paginationComponent: <CustomPagination {...paginationData} />,
         },
-        rowEvents: localConfig.teamsRowEvents,
       }}
       isLoading={isLocalLoading}
     />
@@ -693,7 +689,6 @@ const RadioSelectionComponent = () => {
             dataKey: 'id',
             selectedData: selectedPerson,
           },
-          rowEvents: localConfig.teamsRowEvents,
         }}
         isLoading={isLocalLoading}
       />
@@ -755,7 +750,6 @@ const CheckboxSelectionComponent = () => {
             dataKey: 'id',
             selectedData: selectedPersons,
           },
-          rowEvents: localConfig.teamsRowEvents,
         }}
         isLoading={isLocalLoading}
       />
@@ -812,6 +806,70 @@ export const WithCustomVisibilityTriggerInTitleRow: Story = {
             },
           },
           defaultVisibleColumns: ['employment.title'],
+        },
+      }}
+    />
+  ),
+};
+
+// Row Events Stories
+export const WithOnRowClick: Story = {
+  render: () => (
+    <StandardDatatableComponent
+      title={{
+        titleLabel: 'Employees (Row Click Event)',
+      }}
+      config={{
+        rowEvents: {
+          onRowClick: (rowData: Person) => {
+            alert(`Row clicked! Employee: ${rowData.first_name} ${rowData.last_name}`);
+          },
+        },
+      }}
+    />
+  ),
+};
+
+export const WithOnRowDoubleClick: Story = {
+  render: () => (
+    <StandardDatatableComponent
+      title={{
+        titleLabel: 'Employees (Row Double Click Event)',
+      }}
+      config={{
+        rowEvents: {
+          onRowDoubleClick: (rowData: Person) => {
+            alert(
+              `Row double-clicked! Employee: ${rowData.first_name} ${rowData.last_name} (${rowData.employment.title})`
+            );
+          },
+        },
+      }}
+    />
+  ),
+};
+
+export const WithOnRowDragAndDrop: Story = {
+  render: () => (
+    <StandardDatatableComponent
+      title={{
+        titleLabel: 'Employees (Row Drag & Drop Events)',
+      }}
+      config={{
+        rowEvents: {
+          onDrop: {
+            droppable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'idle',
+            event: (e: DragEvent, rowData: Person) => {
+              console.log(`Row dropped! Employee: ${rowData.first_name} ${rowData.last_name}`);
+              alert(`Dropped employee: ${rowData.first_name} ${rowData.last_name}`);
+            },
+          },
+          onDragStart: {
+            draggable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'active',
+            event: (e: DragEvent, rowData: Person) => {
+              console.log(`Row dragged! Employee: ${rowData.first_name} ${rowData.last_name}`);
+            },
+          },
         },
       }}
     />
