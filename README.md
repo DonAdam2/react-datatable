@@ -1,384 +1,54 @@
+[![Storybook][badge_storybook]][storybook_link]
+[![TypeScript][badge_typescript]][typescript_link]
+[![React][badge_react]][react_link]
+[![SCSS][badge_scss]][scss_link]
+
+# React Datatable Component
+
 # Table of Contents:
-- [Overview](#this-webpack-v51002-boilerplate-supports-the-following)
-- [Prerequisites](#prerequisites)
-- [Installing & getting started](#installing--getting-started)
-- [Windows subsystem for Linux (WSL2)](#windows-subsystem-for-linux-wsl2-for-docker)
-- [Available React configuration](#available-react-configurations)
-- [Available Jest mocks](#available-jest-mocks)
-- [Available aliases](#available-aliases)
-- [Environments](#environments)
-- [Enable CSS modules](#enable-css-modules)
-- [Enable HTTPS in development](#enable-https-in-development-pnpm-start)
-- [Start the development server without opening the app in the browser](#start-the-development-server-without-opening-the-app-in-the-browser-pnpm-start)
-- [Enable PWA (production only)](#enable-pwa-pnpm-generate-progressivewebapp)
-- [Configuring prettier](#configuring-prettier)
-- [Site meta tags](#site-meta-tags)
-- [Add Cypress](#add-cypress)
-- [Extras](#extras)
-- [Code generator](#code-generator-using-plop)
-- [Available scripts](#available-scripts)
+- [Overview](#overview)
+- [Demo](#demo)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Datatable Props](#datatable-props)
+- [Configuration Options](#configuration-options)
+- [Features and Methods](#features-and-methods)
+- [Examples](#examples)
+- [TypeScript Support](#typescript-support)
+- [Styling](#styling)
+- [Resources](#resources)
 
-## This webpack (V5.100.2) boilerplate supports the following:
+## Overview:
 
-- Testing using **jest**, **react-testing-library**
-- **SCSS** preprocessor
-- Autoprefixer for CSS (it supports IE >= 11)
-- Hot reloading for **JS** & **CSS** and **redux** store (in development)
-- Prettier (for code format)
-- Docker setup for development
-- Docker setup for production (basic setup **using nginx**)
+Advanced and feature-rich datatable component designed to handle complex data visualization and interaction scenarios with maximum flexibility and performance.
 
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Prerequisites:
-
-- nodeJS > 17.X.X or Docker
-
-## Installing / Getting Started:
-
-### Development (locally):
-
-- Clone repo => `git clone git@github.com:DonAdam2/webpack-react-typescript-boilerplate.git`
-- Navigate to project directory `cd webpack-react-typescript-boilerplate`
-- Install dependencies => `pnpm install`
-- Start the development server => `pnpm start`
-
-### Development (using Docker) (port 3000):
-
-- Clone repo => `git clone git@github.com:DonAdam2/webpack-react-typescript-boilerplate.git`
-- Navigate to project directory `cd webpack-react-typescript-boilerplate`
-- Install dependencies (required for prettier) => `pnpm install`
-- Start the development server => `docker-compose up web-dev`
+It supports the following:
+- **Local Data Handling**: Client-side sorting, filtering, and pagination
+- **Remote Data Handling**: Server-side operations with API integration
+- **Column Management**: Show/hide columns, custom column definitions
+- **Row Selection**: Single and multiple row selection with callbacks
+- **Advanced Pagination**: Customizable pagination with rows-per-page options
+- **Search Functionality**: Global search with local or remote filtering
+- **Sorting**: Multi-column sorting with custom sort indicators
+- **Actions**: Row-level and bulk actions with custom handlers
+- **Responsive Design**: Mobile-friendly with customizable layouts
+- **Loading States**: Built-in loading indicators and states
+- **Custom Styling**: Extensive theming and styling options
+- **TypeScript Support**: Full TypeScript integration with comprehensive type definitions
+- **Accessibility**: ARIA-compliant with keyboard navigation support
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
-## Windows subsystem for linux "WSL2" (for Docker):
-
-- If you are using Windows 11 or 10, it's recommended to use WSL2:
-  - [Install WSL on windows](https://pureinfotech.com/install-wsl-windows-11/)
-  - [Install docker on windows](https://docs.docker.com/desktop/install/windows-install/)
-  - Open docker desktop app:
-    - settings => resources => WSL integration => enable required Ubuntu integration
-  - [Setup SSH keys (if you want) on windows and share it with WSL](https://devblogs.microsoft.com/commandline/sharing-ssh-keys-between-windows-and-wsl-2/)
-  - Create a new directory in ubuntu:
-  ```
-  mkdir workspace
-  cd workspace
-  ```
-  - Clone this repo into the selected Ubuntu:
-  ```
-  git clone git@github.com:DonAdam2/webpack-react-typescript-boilerplate.git
-  ```
-  - Install curl in Ubuntu:
-  ```
-  sudo apt-get install curl
-  ```
-  - Install nvm:
-  ```
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-  ```
-  - Install required node version:
-  ```
-  nvm install --lts
-  ```
-  - Install pnpm globally:
-  ```
-  npm install -g pnpm
-  ```
-  - Update permissions to be able to install NPM packages
-  ```
-  sudo chown -R $(whoami) ~/workspace/webpack-react-typescript-boilerplate
-  ```
-  - Install packages (for linting purposes):
-  ```
-  pnpm install
-  ```
-  - Run docker for development:
-  ```
-  docker-compose up web-dev
-  ```
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Docker for production (_basic setup_) (port 8080) (modify it to your needs):
-- Update the **_production_** section of the **_Dockerfile_** to meet your needs
-- Run the following command to build your image => `docker-compose up web-prod`
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Available React configurations:
-
-- React router dom
-- Redux toolkit with Redux logger & Redux devTool
-- 2 environments {production: .env, development: .env.development}
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Available Jest mocks:
-
-- RenderWithRedux => overrides the render method of RTL with redux
-- RenderWithReactIntl => overrides the render method of RTL with react-intl provider (if you are using it you need to download it)
-- RenderWithRouter => overrides the render method of RTL with react router
-- RenderWithProviders => overrides the render method of RTL with all providers
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Available aliases:
-- @/jest => for the jest directory
-- @/ts => for the TS directory
-- @/scss => for the SCSS directory
-- @/public => for the public directory, (don't forget to prepend the **tilde** symbol in scss files):
-  ```
-  background-image: url('~@/public/asstes/images/favicon.png');
-  ```
-  ```
-  @font-face {
-    font-family: 'Roboto';
-    src: url('~@/public/asstes/fonts/Roboto-Regular.ttf');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-  }
-  ```
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Environments:
-
-### Available environments:
-- Development => _.env.development_
-- Production => _.env_
-
-### Override environment files:
-
-#### Development:
-- Create a file with the chosen env extension in **/environments** directory, .e.g `.env.local`
-- Install **env-cmd** package
-- Update your start script `"start": "env-cmd -f environments/.env.local node scripts/start.js",`
-
-#### Production:
-- Create a file with the chosen env extension in **/environments** directory, .e.g `.env.prod`
-- Install **env-cmd** package
-- Update your build script `"build": "env-cmd -f environments/.env.prod webpack --config buildTools/webpack.prod.js --progress --color"`
-
-#### Staging (new production environment):
-- Create a file with the chosen env extension in **/environments** directory, .e.g `.env.staging`
-- Install **env-cmd** package
-- Add a new build script `"build:staging": "env-cmd -f environments/.env.staging webpack --config buildTools/webpack.prod.js --progress --color"`
-
-### Update environment variables:
-
-Please keep in mind that environment variables configured using webpack which means that you need to re-run the corresponding environment script (pnpm start, pnpm build) if you update the environment file.
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Enable CSS modules:
-### Each component has its own styles "no conflict between different components styles"
-
-- Open **_/buildTools/constants.js_** and set **isCssModules** to true
-- Then in every component add the required import as follows: 
-  ```
-  import classes from './requiredStyles.scss'
-  ```
-- Use it as follows:
-  ```
-  <div className={classes.wrapper} />
-  ```
-  - Note:
-    - In development class names will be in (componentName_class-name) format => e.g. `box_box-wrapper`
-    - In production class names will be in (letter_letter) unique format to **reduce the bundle size** => e.g. `a_i`
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Enable HTTPS in development `pnpm start`
-
-Add `set HTTPS=true` to `pnpm start` script => `"start": "set HTTPS=true && node scripts/start.js"`
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Start the development server without opening the app in the browser `pnpm start`
-
-Add `set BROWSER=none` to `pnpm start` script => `"start": "set BROWSER=none && node scripts/start.js"`
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Enable PWA `pnpm generate progressiveWebApp`
-
-- Run the given script to add the required files for progressive web app
-- Install the following packages:
-
-  ```
-  pnpm add -D workbox-webpack-plugin workbox-cacheable-response workbox-core workbox-expiration workbox-precaching workbox-routing workbox-strategies workbox-window webpack-pwa-manifest
-  ```
-- Add **pwa** directory `/public/assets/images/pwa`, then add your PWA images using the following names:
-  - icon_192x192.png
-  - icon_256x256.png
-  - icon_384x384.png
-  - icon_512x512.png
-- Open `/buildTools/webpack.prod.js` file and update manifest data in `WebpackPwaManifest` plugin:
-  - start_url (indicates what page should launch when someone opens your progressive web app.)
-  - theme_color (This sometimes affects how the OS displays the site (e.g., on Android's task switcher, the theme color surrounds the site).)
-  - background_color (tells the browser what color to use on the startup splash screen that users will see when they launch your app.)
-  - name
-  - short_name
-  - description
-  - orientation (you can enforce the orientation of your app, it can be ommited.)
-  - categories (This is intended to be used by app stores to categorize your app.)
-- Update **cache APIs** section as needed in `/src/serviceWorker/swSource` file
-- You are good to go.
-
-**Notes**:
-
-- If you get the following error in production:
-  ```
-  Uncaught (in promise) bad-precaching-response: 
-  bad-precaching-response :: [{"url":"https:
-  ```
-  - Add the given package or file in exclude array of [InjectManifest](https://developer.chrome.com/docs/workbox/reference/workbox-webpack-plugin/#type-InjectManifest) plugin in `/buildTools/webpack.prod.js` as follows:
-  ```
-  new InjectManifest({
-    //this is the source of your service worker setup
-    swSrc: \`\${PATHS.src}/serviceWorker/swSource\`,
-    dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
-    // Bump up the default maximum size (2mb) that's precached,
-    // to make lazy-loading failure scenarios less likely.
-    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-    //this is the output name of your service worker file
-    swDest: 'serviceWorker.js',
-    exclude: ['fileName'],
-  }),`,
-  ```
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Configuring Prettier:
-
-This build relies on [Prettier formatter](https://prettier.io/) to enforce code style. And [ESLint](https://eslint.org/) for identifying problematic patterns found in the code.
-
-- Setting up prettier:
-
-  1- You can find steps on how to set up prettier formatter with WebStorm/PhpStorm [here](https://prettier.io/docs/en/webstorm.html#running-prettier-on-save-using-file-watcher).
-
-  **Notes**:
-
-  - It's better to use local `node_modules` version of prettier instead of a global one, to avoid version conflicts (in case the globally installed version does not match the version specified in `package.json`).
-
-  2- Follow the next steps to set up **prettier** and **eslint** in **_VS Code_**:
-
-  - Install `prettier` plugin
-
-  - Install `eslint` plugin
-
-  - Open **_VS Code settings_** `CTRL + ,`:
-
-    a- Search for `formatter` => check **Format on save**
-
-    b- Search for `prettier` => add `.prettierrc` in **_Prettier: Config Path_** section && check **_Prettier: Require Config_**
-
-  3- Please refer to other tutorials if you are using a different IDE.
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Site meta tags:
-
-- This app includes search engines, Facebook, Twitter and regular meta tags
-
-#### To update them:
-
-- Open **_/buildTools/constants.js_** file and update metaInfo object
-- Open **_public/assets/images_** and replace (favicon.png, metaImage.jpg) with your images but using the same name
-
-  **Notes**:
-
-  - It's very important to set `PRODUCTION_DOMAIN` in any production environment file, to generate site meta tags correctly
-  - `PRODUCTION_DOMAIN` is the domain of your deployed app
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Add Cypress:
-
-- Install the following packages:
-  ```
-  pnpm add -D cypress start-server-and-test
-  ```
-- Add the following scripts in `package.json`:
-  ```
-  "cypress:prepare": "set BROWSER=none && set ENV=test && pnpm start", //starts the app without opening it in the browser
-  "cypress:start": "start-server-and-test cypress:prepare 3000", //Runs the previous command and waits for localhost to start up
-  "cypress:open": "pnpm cypress:start \"cypress open\"", //Runs cypress tests in electron browser (recommended by cypress)
-  "cypress:run": "pnpm cypress:start \"cypress run\"" //Runs cypress tests in headless mode (no browser)
-  ```
-
-  - Note:
-    - If you would like to start the E2E tests automatically you can update `cypress:open` command to the following, but after running it at least once:
-    ```
-    "cypress:open": "pnpm cypress:start \"cypress open --e2e -b electron\""
-    ```
-- Open `tsconfig.json` file and add cypress to the types array:
-  ```
-   "types": ["node", "jest", "@testing-library/jest-dom", "cypress", "cypress.config.ts"]
-  ```
-- Run `cypress:open` command and choose E2E to configure it
-- Open `cypress.config.ts` file and add the baseUrl:
-  ```
-   baseUrl: 'http://localhost:3000/',
-  ```
-- Add **e2e directory** in **cypress directory** then add your test files inside it using the following convention `fileName.cy.ts`
-- If you would like to add code coverage for **E2E**, do the following [Documentations](https://github.com/cypress-io/code-coverage):
-  - Install the following package:
-    ```
-    pnpm add -D @cypress/code-coverage
-    ```
-  - Import the installed package in `cypress.config.ts` file:
-    ```
-    setupNodeEvents(on, config) {
-      require('@cypress/code-coverage/task')(on, config);
-      // include any other plugin code...
-
-      // It's IMPORTANT to return the config object
-      // with any changed environment variables
-      return config;
-    },
-    ```
-  - Add the following import in `cypress/support/e2e.ts` file:
-    ```
-    import '@cypress/code-coverage/support';
-    ```
-  - Add the following to `babel.config.js` file before the return:
-    ```
-    if (process.env['ENV']?.trim() === 'test') {
-      plugins.push('istanbul');
-    }
-    ```
-    - Note:
-      - To open the coverage report go to `/coverage/lcov-report/index.html`
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Extras:
-
-- Private route guard => protect the given route based on a token.
-- Public route guard => used for public routes and authentication routes (ex: login, signup, ...etc) {if authenticated it will redirect the user to the home page}
-- Restricted route guard => protect the given route based on a token, and a list of permissions (can be an array or a string).
-- Restricted section => protect the given section based on a list of permissions (can be an array or a string).
-- Generic error boundary fallback component (you can customize it)
-- Cookies, local storage and sessions storage mangers to store data in the browser. (**Note:** the data encrypted using crypto-js package before storing it.)
-- Basic mixins `(scss/generic/_mixins.scss)`
-- Normalize styles `(scss/generic/_normalize.scss)`
-- App typography styles `(scss/generic/_typography.scss)`
-- 4 break points `(scss/generic/_variables.scss)`
-
-<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
-
-## Code generator (using plop):
-### It allows you to generate the following (pnpm generate):
-- Components
-- Containers
-- Pages
-- Custom hooks
-- Services
-- Reducers
-- progressiveWebApp
+## Demo:
+
+Explore interactive examples in our by running `pnpm storybook` it features:
+- Local datatable with full client-side functionality
+- Remote datatable with server-side operations
+- Column visibility controls
+- Row selection examples
+- Custom actions and events
+- Search and filtering demonstrations
+- Pagination scenarios
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -389,16 +59,17 @@ In the project directory, you can run:
 ### `pnpm start`
 
 Runs the app in the development mode.<br>
-It will open [http://localhost:3000](http://localhost:3000) automatically in the browser to see your app.
+It will automatically detect and use an available port, typically starting at [http://localhost:3000](http://localhost:3000) and open it in the browser.
 
 All changes will be injected automatically without reloading the page.<br>
 
 You will see in the console the following:
 
-- All redux store related changes
+- All development logs and errors
 - Any of the following errors:
   1. Linting errors.
   2. Code format errors (because of [prettier](https://prettier.io/))
+  3. TypeScript compilation errors
 
 ### `pnpm build`
 
@@ -416,27 +87,566 @@ Serves the app on `http://localhost:8080/` from the `dist` folder to check the p
 
 ### `pnpm analyze-bundle`
 
-It allows you to analyze the bundle size.
+It allows you to analyze the bundle size by generating a stats.json file and opening the webpack bundle analyzer.
 
-### `pnpm test`
+### `pnpm storybook`
 
-It runs all test files.
+Runs Storybook in development mode on [http://localhost:6006](http://localhost:6006).<br>
+This provides an interactive environment to develop and test components in isolation.
 
-### `pnpm test:watch`
+### `pnpm build-storybook`
 
-- It runs all unit test files in `/src` directory using watch mode.
-- Will run all your tests once then again on every change of your source code
-
-### `pnpm test:coverage`
-
-It runs test coverage.
-
-### `pnpm test:clear`
-
-Clears test cache.
+Builds Storybook for production to the `storybook-static` folder.
 
 ### `pnpm generate` **_component_** || **_page_** || **_hook_** || **_service_** || **_reducer_** || **_progressiveWebApp_**
 
-- It creates a boilerplate for component, container, page, custom hook, service, reducer or progressive web app setup.
+- It creates a boilerplate for component, page, custom hook, service, reducer or progressive web app setup using Plop.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Usage:
+
+### Basic Local Datatable:
+
+```jsx
+import Datatable from './components/shared/datatable/Datatable';
+
+const App = () => {
+  const columns = [
+    {
+      accessorKey: 'id',
+      header: 'ID',
+      enableSorting: true,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      enableSorting: true,
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      enableSorting: true,
+    },
+  ];
+
+  const data = [
+    { id: 1, name: 'John Doe', email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+    // ... more data
+  ];
+
+  const actions = [
+    {
+      label: 'Edit',
+      onClick: (row) => console.log('Edit:', row),
+      icon: <EditIcon />,
+    },
+    {
+      label: 'Delete',
+      onClick: (row) => console.log('Delete:', row),
+      icon: <DeleteIcon />,
+    },
+  ];
+
+  return (
+    <Datatable
+      title={{
+        titleLabel: 'Employee Management',
+        titleLocation: 'titleRow',
+      }}
+      columns={columns}
+      records={data}
+      actions={actions}
+      config={{
+        ui: {
+          actionsColWidth: 120,
+        },
+        search: {
+          show: true,
+          placeholder: 'Search employees...',
+        },
+        selection: {
+          mode: 'checkbox',
+          onSelectionChange: (selectedRows) => {
+            console.log('Selected:', selectedRows);
+          },
+        },
+      }}
+    />
+  );
+};
+```
+
+### Remote Datatable with Server-side Operations:
+
+```jsx
+import { useState, useEffect } from 'react';
+import Datatable from './components/shared/datatable/Datatable';
+
+const RemoteDataTable = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  const fetchData = async (params) => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      });
+      const result = await response.json();
+      setData(result.data);
+      setTotalRecords(result.total);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePagination = async (page, rowsPerPage) => {
+    await fetchData({ page, rowsPerPage });
+  };
+
+  const handleSearch = async (searchTerm) => {
+    await fetchData({ searchTerm, page: 1 });
+  };
+
+  const handleSort = async (column, order) => {
+    await fetchData({ sortColumn: column, sortOrder: order });
+  };
+
+  return (
+    <Datatable
+      title={{
+        titleLabel: 'Remote Employee Data',
+        titleLocation: 'titleRow',
+      }}
+      columns={columns}
+      records={data}
+      isLoading={loading}
+      config={{
+        search: {
+          onSearch: handleSearch,
+          isLocalSearch: false,
+        },
+        sort: {
+          onSorting: handleSort,
+          isLocalSort: false,
+        },
+        pagination: {
+          remoteControl: {
+            onPaginationDataUpdate: handlePagination,
+            totalRecords: totalRecords,
+          },
+        },
+      }}
+    />
+  );
+};
+```
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Datatable Props:
+
+| Prop | Type | Default | Required | Description |
+|------|------|---------|----------|-------------|
+| columns | `ColumnDef<T>[]` | - | Yes | Array of column definitions |
+| records | `T[]` | - | Yes | Array of data records to display |
+| actions | `ActionDef<T>[]` | `undefined` | No | Array of action definitions for each row |
+| title | [TitleConfigInterface](#titleconfiginterface) | `undefined` | No | Title configuration object |
+| isLoading | `boolean` | `false` | No | Shows loading state when true |
+| dataTest | `string` | `undefined` | No | Data test attribute for testing |
+| noDataToDisplayMessage | `ReactNode` | `'No data to display'` | No | Custom message when no data is available |
+| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for all datatable features |
+| ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Configuration Options:
+
+### DatatableConfigInterface:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| ui | [UiConfigInterface](#uiconfiginterface) | UI customization options |
+| search | [SearchConfigInterface](#searchconfiginterface) | Search functionality configuration |
+| sort | [SortConfigInterface](#sortconfiginterface) | Sorting functionality configuration |
+| selection | [SelectionConfigInterface](#selectionconfiginterface) | Row selection configuration |
+| rowEvents | [RowEventsInterface](#roweventsinterface) | Row interaction events |
+| columnVisibility | [ColumnVisibilityInterface](#columnvisibilityinterface) | Column show/hide functionality |
+| pagination | [PaginationConfigInterface](#paginationconfiginterface) | Pagination configuration |
+
+### UiConfigInterface:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showTableHeader | `boolean` | `true` | Show/hide table header |
+| tableWrapperClassName | `string` | `''` | CSS class for table wrapper |
+| tableClassName | `string` | `''` | CSS class for table element |
+| titleStyles | `CSSProperties` | `undefined` | Inline styles for title |
+| isActionsColumnLast | `boolean` | `undefined` | Position actions column at the end |
+| actionsColLabel | `string` | `''` | Label for actions column header |
+| actionsColWidth | `number \| string` | `undefined` | Width of actions column |
+| loadingIcon | `ReactNode` | `<LoadingIcon />` | Custom loading indicator |
+| sortIcon | `ReactNode` | `undefined` | Default sort icon |
+| ascendingSortIcon | `ReactNode` | `undefined` | Ascending sort icon |
+| descendingSortIcon | `ReactNode` | `undefined` | Descending sort icon |
+| paginationRangeSeparatorLabel | `string` | `'of'` | Separator text in pagination range |
+
+### SearchConfigInterface:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| show | `boolean` | `true` | Show/hide search functionality |
+| onSearch | `(searchTerm: string) => void \| Promise<void>` | `undefined` | Search handler function |
+| isLocalSearch | `boolean` | `true` | Enable client-side search |
+| isFullWidth | `boolean` | `false` | Make search input full width |
+| placeholder | `string` | `'Search...'` | Search input placeholder |
+| searchDataTest | `string` | `undefined` | Data test attribute for search |
+| searchPosition | `'start' \| 'end'` | `'end'` | Position of search input |
+
+### SelectionConfigInterface:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| mode | `'checkbox' \| 'radio'` | `undefined` | Selection mode |
+| onSelectionChange | `(selectedRows: T[]) => void` | `undefined` | Selection change handler |
+| isSelectAllDisabled | `boolean` | `false` | Disable select all functionality |
+| hidden | `boolean \| BooleanFuncType` | `false` | Hide selection for specific rows |
+| disabled | `boolean \| BooleanFuncType` | `false` | Disable selection for specific rows |
+
+### PaginationConfigInterface:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| enablePagination | `boolean` | `true` | Enable/disable pagination |
+| rowsDropdown | [RowsDropdownInterface](#rowsdropdowninterface) | `undefined` | Rows per page configuration |
+| remoteControl | [RemoteControlInterface](#remotecontrolinterface) | `undefined` | Remote pagination configuration |
+| deepLinking | `DeepLinkingConfig` | `undefined` | URL-based pagination state |
+
+### RowsDropdownInterface:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| enableRowsDropdown | `boolean` | `true` | Show rows per page selector |
+| rowsPerPage | `number` | `10` | Default rows per page |
+| optionsList | `DatatableRowsDropdownOption[]` | `[5, 10, 20, 30, 40]` | Available rows per page options |
+
+### TitleConfigInterface:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| titleLabel | `string \| ReactNode` | `undefined` | Title text or component |
+| titlePosition | `'start' \| 'end'` | `'start'` | Title alignment |
+| titleLocation | `'titleRow' \| 'searchRow'` | `'titleRow'` | Title placement |
+| titleButtons | `ButtonInterface[]` | `undefined` | Action buttons in title area |
+| titleButtonsPosition | `'start' \| 'end'` | `'end'` | Buttons alignment |
+| titleButtonsLocation | `'titleRow' \| 'searchRow'` | `'titleRow'` | Buttons placement |
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Features and Methods:
+
+### Column Definition:
+
+```typescript
+interface ColumnDef<T> {
+  accessorKey: keyof T | string;
+  header: string | ReactNode;
+  enableSorting?: boolean;
+  enableHiding?: boolean;
+  cell?: (rowData: T) => ReactNode;
+  width?: number | string;
+  className?: string;
+}
+```
+
+### Action Definition:
+
+```typescript
+interface ActionDef<T> {
+  label: string;
+  onClick: (rowData: T, index: number) => void;
+  icon?: ReactNode;
+  isHidden?: boolean | BooleanFuncType;
+  isDisabled?: boolean | BooleanFuncType;
+  tooltip?: ActionTooltipInterface;
+  className?: string;
+}
+```
+
+### Programmatic Control:
+
+The datatable exposes methods through refs for programmatic control:
+
+```typescript
+interface DatatableRef {
+  resetPagination: () => { activePage: number; rowsPerPageNum: number };
+}
+```
+
+**Usage Example:**
+
+```jsx
+import { useRef } from 'react';
+
+const MyComponent = () => {
+  const datatableRef = useRef(null);
+
+  const resetTable = () => {
+    datatableRef.current?.resetPagination();
+  };
+
+  return (
+    <>
+      <button onClick={resetTable}>Reset Pagination</button>
+      <Datatable
+        ref={datatableRef}
+        // ... other props
+      />
+    </>
+  );
+};
+```
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Examples:
+
+### Column Visibility Control:
+
+```jsx
+<Datatable
+  columns={columns}
+  records={data}
+  config={{
+    columnVisibility: {
+      show: true,
+      location: 'titleRow', // 'titleRow' | 'searchRow' | 'actionsColumn'
+      defaultVisibleColumns: ['name', 'email'], // Show only these columns initially
+      trigger: {
+        label: 'Manage Columns',
+        icon: <SettingsIcon />,
+        variant: 'outline',
+      },
+    },
+  }}
+/>
+```
+
+### Custom Row Events:
+
+```jsx
+<Datatable
+  columns={columns}
+  records={data}
+  config={{
+    rowEvents: {
+      onRowClick: (row, index) => {
+        console.log('Row clicked:', row);
+      },
+      onRowDoubleClick: (row, index) => {
+        console.log('Row double-clicked:', row);
+      },
+      onRowMouseEnter: (row, index) => {
+        console.log('Mouse entered row:', row);
+      },
+    },
+  }}
+/>
+```
+
+### Advanced Search Configuration:
+
+```jsx
+<Datatable
+  columns={columns}
+  records={data}
+  config={{
+    search: {
+      show: true,
+      placeholder: 'Search by name, email, or department...',
+      searchPosition: 'start',
+      isFullWidth: true,
+      onSearch: async (searchTerm) => {
+        // Custom search logic
+        const results = await searchAPI(searchTerm);
+        setFilteredData(results);
+      },
+    },
+  }}
+/>
+```
+
+### Custom No Data Message:
+
+```jsx
+<Datatable
+  columns={columns}
+  records={[]} // Empty data
+  noDataToDisplayMessage={
+    <div style={{ padding: '3rem', textAlign: 'center' }}>
+      <h3>No employees found</h3>
+      <p>Try adjusting your search criteria or add new employees.</p>
+      <Button 
+        label="Add Employee" 
+        onClick={() => openAddEmployeeModal()} 
+      />
+    </div>
+  }
+/>
+```
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## TypeScript Support:
+
+The datatable component is built with TypeScript and provides comprehensive type definitions:
+
+```typescript
+import Datatable, { 
+  DatatableInterface,
+  ColumnDef,
+  ActionDef,
+  DatatableRef 
+} from './components/shared/datatable/Datatable';
+
+interface Employee {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  salary: number;
+}
+
+const MyTypedDatatable: React.FC = () => {
+  const columns: ColumnDef<Employee>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Full Name',
+      enableSorting: true,
+    },
+    {
+      accessorKey: 'salary',
+      header: 'Salary',
+      cell: (row) => `$${row.salary.toLocaleString()}`,
+    },
+  ];
+
+  const actions: ActionDef<Employee>[] = [
+    {
+      label: 'Edit',
+      onClick: (employee) => editEmployee(employee.id),
+      isDisabled: (employee) => employee.department === 'HR',
+    },
+  ];
+
+  return (
+    <Datatable<Employee>
+      columns={columns}
+      records={employees}
+      actions={actions}
+      // TypeScript will validate all props and configurations
+    />
+  );
+};
+```
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Styling:
+
+### CSS Classes Available for Customization:
+
+```scss
+// Main datatable wrapper
+.table-wrapper {
+  // Custom styles
+}
+
+// Table element
+.table {
+  // Custom styles
+}
+
+// Loading overlay
+.center-loader-wrapper {
+  // Custom styles
+}
+
+// No data message
+.no-data {
+  // Custom styles
+}
+
+// Action column visibility button
+.actions-col-visibility-button {
+  // Custom styles
+}
+
+// Pagination components
+.datatable-footer {
+  // Custom styles
+}
+
+.datatable-pagination {
+  // Custom styles
+}
+```
+
+### Custom Theme Example:
+
+```scss
+.my-custom-datatable {
+  .table {
+    --datatable-border-color: #e0e0e0;
+    --datatable-header-bg: #f8f9fa;
+    --datatable-row-hover: #f1f3f4;
+    --datatable-selected-bg: #e3f2fd;
+  }
+
+  .table thead th {
+    background-color: var(--datatable-header-bg);
+    border-color: var(--datatable-border-color);
+  }
+
+  .table tbody tr:hover {
+    background-color: var(--datatable-row-hover);
+  }
+}
+```
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Resources:
+
+- [Storybook Documentation][storybook_link] - Interactive examples and component playground
+- [TypeScript Documentation][typescript_link] - Type definitions and interfaces
+- [React Documentation][react_link] - React best practices and patterns
+- [SCSS Documentation][scss_link] - Styling and theming guide
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+---
+
+## Contributing:
+
+Contributions are welcome! Please read our contributing guidelines and submit pull requests for any improvements.
+
+## License:
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+[badge_storybook]: https://cdn.jsdelivr.net/gh/storybookjs/brand@master/badge/badge-storybook.svg
+[badge_typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white
+[badge_react]: https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB
+[badge_scss]: https://img.shields.io/badge/SCSS-CC6699?style=flat&logo=sass&logoColor=white
+[storybook_link]: #
+[typescript_link]: https://www.typescriptlang.org/
+[react_link]: https://reactjs.org/
+[scss_link]: https://sass-lang.com/
