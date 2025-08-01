@@ -408,7 +408,6 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   const remoteControl = (config?.pagination as any)?.remoteControl;
   const { onPaginationDataUpdate, totalRecords: remoteTotalRecords = 0 } = remoteControl ?? {};
 
-  const [rowsPerPageNum, setRowsPerPageNum] = useState(rowsPerPage);
   const [localTotalRecords, setLocalTotalRecords] = useState(0);
 
   // Determine if we're using remote pagination
@@ -416,7 +415,7 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   const totalRecords = isRemotePagination ? remoteTotalRecords : localTotalRecords;
 
   const paginationData = usePagination({
-    contentPerPage: rowsPerPageNum,
+    contentPerPage: rowsPerPage,
     count: totalRecords,
     fetchData: onPaginationDataUpdate
       ? async (page, perPage) => {
@@ -440,11 +439,6 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
     contentPerPage,
   } = paginationData;
 
-  // Sync rowsPerPage state with contentPerPage from URL
-  useEffect(() => {
-    setRowsPerPageNum(contentPerPage);
-  }, [contentPerPage]);
-
   const modifiedOptionsList = useMemo(
     () =>
       optionsList
@@ -462,12 +456,11 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
 
   const onChangeRowsPerPage = async (value: string | string[]) => {
     const newRowsPerPage = +value;
-    setRowsPerPageNum(newRowsPerPage);
     await updateCurrentRowsPerPage(newRowsPerPage);
   };
 
   const resetPagination = useCallback(() => {
-    if (activePage !== 1 || rowsPerPageNum !== rowsPerPage) {
+    if (activePage !== 1 || contentPerPage !== rowsPerPage) {
       (async () => {
         await navigateToPage(1, rowsPerPage);
       })();
@@ -477,7 +470,7 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
       activePage: 1,
       rowsPerPageNum: rowsPerPage,
     };
-  }, [rowsPerPage, activePage, rowsPerPageNum, navigateToPage]);
+  }, [rowsPerPage, activePage, contentPerPage, navigateToPage]);
 
   useImperativeHandle(
     ref,
@@ -529,14 +522,14 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
                   navigateToNextPage={navigateToNextPage}
                   totalPages={totalPages}
                   totalRecords={totalRecords}
-                  recordsPerPage={rowsPerPageNum}
+                  recordsPerPage={contentPerPage}
                   activePage={activePage}
                   paginationRangeSeparatorLabel={config?.ui?.paginationRangeSeparatorLabel}
                 />
               }
               enableRowsDropdown={enableRowsDropdown}
               rowsPerPageOptions={modifiedOptionsList}
-              rowsPerPageNum={JSON.stringify(rowsPerPageNum)}
+              rowsPerPageNum={String(contentPerPage)}
               onChangeRowsPerPage={onChangeRowsPerPage}
             />
           ) : undefined,

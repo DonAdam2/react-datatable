@@ -17,6 +17,7 @@ import FilterIcon from '@/assets/icons/FilterIcon';
 import AscendingSortIcon from '@/assets/icons/AscendingSortIcon';
 import DescendingSortIcon from '@/assets/icons/DescendingSortIcon';
 import LoadingIcon from '@/components/shared/LoadingIcon';
+import useRouter from '@/hooks/useRouter';
 
 export const LocalControlWithoutPaginationExample = () => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]),
@@ -669,7 +670,8 @@ const UiConfigSetup = ({
 );
 
 export const RemoteControlWithPaginationExample = () => {
-  const [titleLocation, setTitleLocation] = useState<TitleLocationType>('titleRow'),
+  const { location } = useRouter(),
+    [titleLocation, setTitleLocation] = useState<TitleLocationType>('titleRow'),
     [titlePosition, setTitlePosition] = useState<TitlePositionType>('start'),
     [titleButtonsLocation, setTitleButtonsLocation] = useState<TitleLocationType>('titleRow'),
     [titleButtonsPosition, setTitleButtonsPosition] = useState<TitlePositionType>('end'),
@@ -813,10 +815,10 @@ export const RemoteControlWithPaginationExample = () => {
     (async () => {
       setIsRemoteLoading(true);
       try {
-        // Check URL parameters for initial load
-        const searchParams = new URLSearchParams(window.location.search);
-        const pageFromUrl = searchParams.get('page');
-        const pageSizeFromUrl = searchParams.get('pageSize');
+        // Check URL parameters for deep linking
+        const urlParams = new URLSearchParams(location?.search || '');
+        const pageFromUrl = urlParams.get('page');
+        const pageSizeFromUrl = urlParams.get('pageSize');
 
         // Use URL params if available, otherwise use defaults
         const initialPage = pageFromUrl ? +pageFromUrl : 1;
