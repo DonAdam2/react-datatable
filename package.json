@@ -116,7 +116,7 @@
     "webpack-merge": "6.0.1"
   },
   "dependencies": {
-    "@storybook/react": "^9.0.18",
+    "@storybook/react": "^9.1.0",
     "classnames": "2.5.1",
     "lodash": "4.17.21",
     "react-error-boundary": "6.0.0",
