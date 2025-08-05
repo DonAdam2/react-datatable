@@ -153,7 +153,6 @@ export const CustomDragDropStyles: Story = {
             className: 'custom-drop-zone', // Custom orange styling for drop zones
           },
           onDragStart: {
-            icon: <EditIcon />,
             draggable: ({ original, getValue }: RowInfo<Person>) =>
               getValue('subscription.status').toLowerCase() === 'active',
             event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
