@@ -1,2 +1,167 @@
+@use '../../../generic/variables' as *;
+
 .datatable-body-row-wrapper {
+}
+
+// Drag and drop animations for table rows
+.body-tr {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Row that can be dragged
+  &.row-draggable {
+    &:hover {
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+  }
+
+    // Row currently being dragged
+  &.row-dragging {
+    opacity: 0.8;
+    transform: translateY(-2px);
+    z-index: 1000;
+    border-radius: 6px;
+    
+    // Use box-shadow to create full-width background and border
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 0 0 2px rgba(59, 130, 246, 0.4),
+      inset 0 0 0 1000px rgba(59, 130, 246, 0.1);
+    
+    td {
+      border-color: transparent;
+      background-color: transparent;
+    }
+  }
+
+  // Row that can accept drops
+  &.row-drop-target {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 2px dashed transparent;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+  }
+
+  // Row with item being dragged over it
+  &.row-drag-over {
+    background-color: rgba(16, 185, 129, 0.1);
+    transform: translateY(-1px);
+
+    &::before {
+      border-color: rgba(16, 185, 129, 0.5);
+      background-color: rgba(16, 185, 129, 0.05);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: 12px;
+      right: 12px;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        rgba(16, 185, 129, 0.8),
+        rgba(16, 185, 129, 0.4),
+        rgba(16, 185, 129, 0.8)
+      );
+      border-radius: 1px;
+      animation: drop-indicator 1.5s ease-in-out infinite;
+    }
+  }
+}
+
+// Drag handle styles
+.drag-handle {
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  padding: 2px;
+
+  &:hover {
+    background-color: rgba(99, 102, 241, 0.1);
+    transform: scale(1.05);
+  }
+
+  &.drag-handle-active {
+    background-color: rgba(99, 102, 241, 0.2);
+    transform: scale(1.1);
+  }
+
+  .move-element {
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-radius: 3px;
+
+    svg {
+      transition: all 0.2s ease;
+    }
+  }
+
+  &:hover .move-element svg {
+    color: rgba(99, 102, 241, 0.8);
+    transform: scale(1.1);
+  }
+
+  &.drag-handle-active .move-element svg {
+    color: rgba(99, 102, 241, 1);
+    transform: scale(1.2);
+  }
+}
+
+// Keyframe animations
+@keyframes drop-indicator {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scaleX(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+// Pulse animation for drop zones
+@keyframes pulse-drop-zone {
+  0%,
+  100% {
+    background-color: rgba(16, 185, 129, 0.05);
+  }
+  50% {
+    background-color: rgba(16, 185, 129, 0.15);
+  }
+}
+
+// Enhanced drag effects for better visual feedback
+.body-tr.row-drag-over {
+  animation: pulse-drop-zone 2s ease-in-out infinite;
+}
+
+// Improved transitions for all interactive states
+.body-tr {
+  &:not(.row-dragging):not(.row-drag-over) {
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+// Drag image styling
+.drag-image {
+  opacity: 0.8;
+  transform: rotate(2deg);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }

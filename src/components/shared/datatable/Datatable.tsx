@@ -44,6 +44,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 }: RootDatatableInterface<T>) => {
   const uniqueId = uuidv4(),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
+    [isDragActive, setIsDragActive] = useState(false),
     [sorting, setSorting] = useState<{ accessorKey: string; order: ColumnOrderType }>({
       accessorKey: '',
       order: 'asc',
@@ -331,7 +332,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       )}
       <div className="table-wrapper">
         {isLoading && <div className="center-loader-wrapper">{loadingIcon}</div>}
-        <table className={`table ${tableClassName}`}>
+        <table className={`table ${tableClassName} ${isDragActive ? 'drag-active' : ''}`}>
           {showTableHeader && (
             <DatatableHeader
               columns={visibleColumnsData}
@@ -368,10 +369,31 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
                 isSelectAllRecords={isSelectAllRecords}
                 setIsSelectAllRecords={setIsSelectAllRecords}
                 candidateRecordsToSelectAll={candidateRecordsToSelectAll}
-                rowEvents={config?.rowEvents}
+                rowEvents={{
+                  ...config?.rowEvents,
+                  onDragStart: config?.rowEvents?.onDragStart
+                    ? {
+                        ...config.rowEvents.onDragStart,
+                        event: (e, rowData) => {
+                          setIsDragActive(true);
+                          config.rowEvents?.onDragStart?.event(e, rowData);
+                        },
+                      }
+                    : undefined,
+                  onDrop: config?.rowEvents?.onDrop
+                    ? {
+                        ...config.rowEvents.onDrop,
+                        event: (e, rowData) => {
+                          setIsDragActive(false);
+                          config.rowEvents?.onDrop?.event(e, rowData);
+                        },
+                      }
+                    : undefined,
+                }}
                 columnVisibilityToggle={
                   showColumnVisibilityInActionsColumn ? columnVisibilityToggle : undefined
                 }
+                onDragEnd={() => setIsDragActive(false)}
               />
             ))}
           </tbody>

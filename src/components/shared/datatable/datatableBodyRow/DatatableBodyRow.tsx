@@ -1,4 +1,4 @@
-import { DragEvent, useRef } from 'react';
+import { DragEvent, useRef, useState } from 'react';
 import { DatatableBodyRowInterface } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 import useTouchScreenDetect from '@/hooks/useTouchScreenDetect';
 import {
@@ -27,9 +27,12 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   candidateRecordsToSelectAll,
   rowEvents,
   columnVisibilityToggle,
+  onDragEnd: onDragEndCallback,
 }: DatatableBodyRowInterface<T>) => {
   const { isTouchDevice } = useTouchScreenDetect(),
     rowRef = useRef<HTMLTableRowElement>(null),
+    [isDragging, setIsDragging] = useState(false),
+    [isDraggedOver, setIsDraggedOver] = useState(false),
     actionsColumnData = {
       accessorKey: actionsColumnName,
       header: actionsColLabel,
@@ -100,6 +103,30 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
 
   const onDragOverHandler = (e: DragEvent<HTMLTableRowElement>) => {
     e.preventDefault();
+    if (!isDraggedOver) {
+      setIsDraggedOver(true);
+    }
+  };
+
+  const onDragLeaveHandler = (e: DragEvent<HTMLTableRowElement>) => {
+    // Only set drag over to false if we're actually leaving the row element
+    if (!rowRef.current?.contains(e.relatedTarget as Node)) {
+      setIsDraggedOver(false);
+    }
+  };
+
+  const onDragEndHandler = () => {
+    setIsDragging(false);
+    setIsDraggedOver(false);
+    onDragEndCallback?.();
+  };
+
+  const onDropHandler = (e: DragEvent<HTMLTableRowElement>) => {
+    e.preventDefault();
+    setIsDraggedOver(false);
+    if (rowEvents?.onDrop?.event) {
+      rowEvents.onDrop.event(e, row);
+    }
   };
 
   // Helper functions to check if row events are enabled
@@ -170,15 +197,15 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
           : undefined
       }
       onDragOver={isDropEnabled ? onDragOverHandler : undefined}
-      onDrop={
-        isDropEnabled
-          ? (e) => {
-              rowEvents?.onDrop?.event(e, row);
-            }
-          : undefined
-      }
+      onDragLeave={isDropEnabled ? onDragLeaveHandler : undefined}
+      onDrop={isDropEnabled ? onDropHandler : undefined}
       style={{ cursor: isClickEnabled || isDoubleClickEnabled ? 'pointer' : 'initial' }}
-      className="body-tr"
+      className={cx('body-tr', {
+        'row-dragging': isDragging,
+        'row-drag-over': isDraggedOver && isDropEnabled,
+        'row-drop-target': isDropEnabled,
+        'row-draggable': isDragEnabled,
+      })}
     >
       {updatedColumns.map((col, colIndex) => (
         <td
@@ -211,20 +238,36 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                 draggable={true}
                 onDragStart={(e) => {
                   e.stopPropagation();
-                  // Set the drag image to be the entire row
+                  setIsDragging(true);
+
+                  // Create a custom drag image with styling
                   if (rowRef.current && e.dataTransfer) {
-                    e.dataTransfer.setDragImage(rowRef.current, 0, 0);
+                    const dragImage = rowRef.current.cloneNode(true) as HTMLElement;
+                    dragImage.className += ' drag-image';
+
+                    document.body.appendChild(dragImage);
+                    e.dataTransfer.setDragImage(dragImage, 0, 0);
+
+                    // Clean up the temporary drag image
+                    setTimeout(() => {
+                      document.body.removeChild(dragImage);
+                    }, 0);
                   }
+
                   rowEvents?.onDragStart?.event(e, row);
                 }}
+                onDragEnd={onDragEndHandler}
                 style={{
                   marginInlineStart: col.accessorKey === selectionsColumnName ? '20px' : '0px',
                   marginInlineEnd: col.accessorKey === selectionsColumnName ? '0px' : '10px',
                   display: 'flex',
                   alignItems: 'center',
-                  cursor: 'grab',
+                  cursor: isDragging ? 'grabbing' : 'grab',
                   flexShrink: 0,
                 }}
+                className={cx('drag-handle', {
+                  'drag-handle-active': isDragging,
+                })}
               >
                 <span className="move-element">{rowEvents?.onDragStart?.icon || <MoveIcon />}</span>
               </div>

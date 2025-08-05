@@ -40,4 +40,5 @@ export interface DatatableBodyRowInterface<T = Record<string, unknown>> {
   candidateRecordsToSelectAll: T[];
   rowEvents?: DatatableRowEvents<T>;
   columnVisibilityToggle?: ReactNode;
+  onDragEnd?: () => void;
 }

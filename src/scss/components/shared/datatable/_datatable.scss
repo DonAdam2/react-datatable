@@ -55,10 +55,42 @@
 
     .move-element {
       cursor: move;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
     }
   }
 
   .no-data {
     text-align: center;
+  }
+
+  // Enhanced drag and drop experience
+  &.drag-active {
+    .body-tr:not(.row-dragging):not(.row-drop-target) {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+  }
+
+  // Custom scrollbar for better drag experience
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #a1a1a1;
+    }
   }
 }
