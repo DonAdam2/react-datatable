@@ -277,10 +277,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                 style={{
                   marginInlineStart: col.accessorKey === selectionsColumnName ? '20px' : '0px',
                   marginInlineEnd: col.accessorKey === selectionsColumnName ? '0px' : '10px',
-                  display: 'flex',
-                  alignItems: 'center',
                   cursor: isDragging ? 'grabbing' : 'grab',
-                  flexShrink: 0,
                 }}
                 className={cx(
                   'drag-handle',
@@ -298,7 +295,10 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
               isDragConfigured &&
               !isDragEnabled &&
               col.accessorKey !== selectionsColumnName &&
-              !isTouchDevice && <div style={{ marginInlineEnd: '20px', width: '0px' }} />}
+              !isTouchDevice && (
+                // Placeholder to maintain consistent spacing when drag is configured but not enabled for this row
+                <div className="drag-placeholder" />
+              )}
             {col.accessorKey !== selectionsColumnName && (
               <div className={`${col.accessorKey === actionsColumnName ? 'actions-col' : ''}`}>
                 {col.cell

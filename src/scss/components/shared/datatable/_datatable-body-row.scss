@@ -82,6 +82,14 @@
 
 // Drag handle styles
 .drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  min-width: 20px;
+  overflow: visible; // Allow icon to scale outside container during hover animations
+  position: relative; // Ensure proper stacking context for scaled icons
   transition: all 0.2s ease;
 
   &:hover {
@@ -93,10 +101,11 @@
   }
 
   .move-element {
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.2s ease-in-out; // Smooth scaling transition
+    z-index: 1; // Ensure scaled icon appears above adjacent content
 
     svg {
       transition: all 0.2s ease;
@@ -112,6 +121,13 @@
     color: rgba(99, 102, 241, 1);
     transform: scale(1.2);
   }
+}
+
+// Drag placeholder to maintain spacing
+.drag-placeholder {
+  width: 20px;
+  min-width: 20px;
+  margin-inline-end: 10px;
 }
 
 // Keyframe animations
