@@ -6,7 +6,11 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { BackendParams, fakeBackend, Person } from './constants/FakeBackend';
 import { getMyTeamsDatatableConfig } from './constants/MyTeamsDatatableConfig';
 import Datatable from '@/components/shared/datatable/Datatable';
-import { DatatableRef, TitleLocationType } from '@/components/shared/datatable/Datatable.types';
+import {
+  DatatableRef,
+  TitleLocationType,
+  RowInfo,
+} from '@/components/shared/datatable/Datatable.types';
 import Button from '@/components/shared/button/Button';
 import CustomPagination from '@/components/customPagination/CustomPagination';
 import usePagination from '@/hooks/usePagination';
@@ -122,9 +126,9 @@ export const LocalControlWithPaginationExample = () => {
     selection: {
       mode: "checkbox",
       //it can be boolean =&gt; disabled: true
-      disabled: (rowData: any) =&gt; rowData.subscription.status.toLowerCase() === "blocked",
+      disabled: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === "blocked",
       //it can be boolean =&gt; hidden: true
-      hidden: (rowData: any) =&gt; rowData.subscription.status.toLowerCase() === "idle",
+      hidden: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === "idle",
       onSelectionChange: (selectionsArr: any) =&gt; {
         setSelectedPersons(selectionsArr);
       },
@@ -182,9 +186,11 @@ export const LocalControlWithPaginationExample = () => {
           selection: {
             mode: 'checkbox',
             //it can be boolean => disabled: true
-            disabled: (rowData: any) => rowData.subscription.status.toLowerCase() === 'blocked',
+            disabled: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'blocked',
             //it can be boolean => hidden: true
-            hidden: (rowData: any) => rowData.subscription.status.toLowerCase() === 'idle',
+            hidden: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'idle',
             onSelectionChange: (selectionsArr: any) => {
               setSelectedPersons(selectionsArr);
             },
@@ -767,11 +773,11 @@ export const RemoteControlWithPaginationExample = () => {
     },
     selection: {
       mode: 'radio',
-      disabled: (rowData: any) =&gt;
-        rowData.subscription.status.toLowerCase() === 'blocked',
-      hidden: (rowData: any) =&gt; rowData.subscription.status.toLowerCase() === 'idle',
-      onSelectionChange: (rowData: any) =&gt; {
-        setSelectedPerson(rowData);
+      disabled: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt;
+        getValue('subscription.status').toLowerCase() === 'blocked',
+      hidden: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === 'idle',
+      onSelectionChange: (rowData: Person | Person[]) =&gt; {
+        setSelectedPerson(rowData as Person);
       },
       dataKey: 'id',
       className: 'custom-input-className',
@@ -1062,11 +1068,13 @@ export const RemoteControlWithPaginationExample = () => {
           selection: {
             mode: 'radio',
             //it can be boolean => disabled: true
-            disabled: (rowData) => rowData.subscription.status.toLowerCase() === 'blocked',
+            disabled: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'blocked',
             //it can be boolean => hidden: true
-            hidden: (rowData) => rowData.subscription.status.toLowerCase() === 'idle',
-            onSelectionChange: (rowData) => {
-              setSelectedPerson(rowData);
+            hidden: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'idle',
+            onSelectionChange: (rowData: Person | Person[]) => {
+              setSelectedPerson(rowData as Person);
             },
             dataKey: 'id',
             className: 'custom-input-className',

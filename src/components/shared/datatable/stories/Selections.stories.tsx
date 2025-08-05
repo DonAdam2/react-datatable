@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import Datatable from '../Datatable';
 import { fakeBackend, Person } from '@/constants/FakeBackend';
+import { RowInfo } from '@/components/shared/datatable/Datatable.types';
 import { getMyTeamsDatatableConfig } from '@/constants/MyTeamsDatatableConfig';
 
 const meta: Meta<typeof Datatable> = {
@@ -57,10 +58,12 @@ const RadioSelectionComponent = () => {
           ui: { actionsColWidth: 40 },
           selection: {
             mode: 'radio',
-            disabled: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'blocked',
-            hidden: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'idle',
-            onSelectionChange: (rowData: Person) => {
-              setSelectedPerson(rowData);
+            disabled: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'blocked',
+            hidden: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'idle',
+            onSelectionChange: (data: Person | Person[]) => {
+              setSelectedPerson(data as Person);
             },
             dataKey: 'id',
             selectedData: selectedPerson,
@@ -118,8 +121,10 @@ const CheckboxSelectionComponent = () => {
           ui: { actionsColWidth: 40 },
           selection: {
             mode: 'checkbox',
-            disabled: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'blocked',
-            hidden: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'idle',
+            disabled: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'blocked',
+            hidden: ({ original, getValue }: RowInfo<Person>) =>
+              getValue('subscription.status').toLowerCase() === 'idle',
             onSelectionChange: (selectionsArr: Person | Person[]) => {
               setSelectedPersons(selectionsArr as Person[]);
             },

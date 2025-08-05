@@ -1,5 +1,6 @@
 import { DragEvent, useRef, useState } from 'react';
 import { DatatableBodyRowInterface } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
+import { RowInfo } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import useTouchScreenDetect from '@/hooks/useTouchScreenDetect';
 import {
   actionsColumnName,
@@ -33,6 +34,10 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
     rowRef = useRef<HTMLTableRowElement>(null),
     [isDragging, setIsDragging] = useState(false),
     [isDraggedOver, setIsDraggedOver] = useState(false),
+    // Helper function to get values from the row object
+    getValue = (key: string) => getNestedValue({ key, obj: row }),
+    // Row info object for cell functions
+    rowInfo = { original: row, getValue },
     actionsColumnData = {
       accessorKey: actionsColumnName,
       header: actionsColLabel,
@@ -40,7 +45,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
       minWidth: undefined,
       maxWidth: undefined,
       className: '',
-      cell: (rowData: any) => (
+      cell: (rowInfo: any) => (
         <>
           {actions?.map((el, i) => (
             <DatatableIconButton
@@ -49,7 +54,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
               hidden={el.hidden}
               icon={el.icon}
               onClick={el.onClick}
-              rowData={rowData}
+              rowInfo={rowInfo}
               tooltip={el.tooltip}
               cell={el.cell}
             />
@@ -64,7 +69,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
       width: selectionsColumnWidth,
       minWidth: undefined,
       maxWidth: undefined,
-      cell: (rowData: any) => (
+      cell: (rowInfo: any) => (
         <>
           {selection?.onSelectionChange && (
             <>
@@ -76,7 +81,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   onSelectionChange={selection?.onSelectionChange}
                   className={selection?.className}
                   dataKey={selection?.dataKey || ''}
-                  rowData={rowData}
+                  rowInfo={rowInfo}
                   selectedData={selection.selectedData}
                   candidateRecordsToSelectAll={candidateRecordsToSelectAll}
                 />
@@ -88,7 +93,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   onSelectionChange={selection?.onSelectionChange}
                   className={selection?.className}
                   dataKey={selection?.dataKey || ''}
-                  rowData={rowData}
+                  rowInfo={rowInfo}
                   selectedData={selection.selectedData}
                   isSelectAllRecords={isSelectAllRecords}
                   setIsSelectAllRecords={setIsSelectAllRecords}
@@ -125,37 +130,37 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
     e.preventDefault();
     setIsDraggedOver(false);
     if (rowEvents?.onDrop?.event) {
-      rowEvents.onDrop.event(e, row);
+      rowEvents.onDrop.event(e, rowInfo);
     }
   };
 
   // Helper functions to check if row events are enabled
   const isClickEventEnabled = (
-    eventConfig: { clickable?: boolean | ((rowData: T) => boolean) } | undefined
+    eventConfig: { clickable?: boolean | ((rowInfo: RowInfo<T>) => boolean) } | undefined
   ): boolean => {
     if (!eventConfig) return false;
     if (typeof eventConfig.clickable === 'function') {
-      return eventConfig.clickable(row);
+      return eventConfig.clickable(rowInfo);
     }
     return eventConfig.clickable !== false;
   };
 
   const isDropEventEnabled = (
-    eventConfig: { droppable?: boolean | ((rowData: T) => boolean) } | undefined
+    eventConfig: { droppable?: boolean | ((rowInfo: RowInfo<T>) => boolean) } | undefined
   ): boolean => {
     if (!eventConfig) return false;
     if (typeof eventConfig.droppable === 'function') {
-      return eventConfig.droppable(row);
+      return eventConfig.droppable(rowInfo);
     }
     return eventConfig.droppable !== false;
   };
 
   const isDragEventEnabled = (
-    eventConfig: { draggable?: boolean | ((rowData: T) => boolean) } | undefined
+    eventConfig: { draggable?: boolean | ((rowInfo: RowInfo<T>) => boolean) } | undefined
   ): boolean => {
     if (!eventConfig) return false;
     if (typeof eventConfig.draggable === 'function') {
-      return eventConfig.draggable(row);
+      return eventConfig.draggable(rowInfo);
     }
     return eventConfig.draggable !== false;
   };
@@ -185,14 +190,14 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
       onClick={
         isClickEnabled
           ? (e) => {
-              rowEvents?.onClick?.event(e, row);
+              rowEvents?.onClick?.event(e, rowInfo);
             }
           : undefined
       }
       onDoubleClick={
         isDoubleClickEnabled
           ? (e) => {
-              rowEvents?.onDoubleClick?.event(e, row);
+              rowEvents?.onDoubleClick?.event(e, rowInfo);
             }
           : undefined
       }
@@ -236,7 +241,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
           <div className={`${colIndex === 0 ? 'is-flex is-align-items-center' : ''}`}>
             {colIndex === 0 && col.accessorKey === selectionsColumnName && (
               <div className="selection-col">
-                {col.cell ? col.cell(row) : getNestedValue({ key: col.accessorKey, obj: row })}
+                {col.cell ? col.cell(rowInfo) : getNestedValue({ key: col.accessorKey, obj: row })}
               </div>
             )}
             {colIndex === 0 && isDragEnabled && !isTouchDevice && (
@@ -266,7 +271,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                     }, 0);
                   }
 
-                  rowEvents?.onDragStart?.event(e, row);
+                  rowEvents?.onDragStart?.event(e, rowInfo);
                 }}
                 onDragEnd={onDragEndHandler}
                 style={{
@@ -297,7 +302,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
             {col.accessorKey !== selectionsColumnName && (
               <div className={`${col.accessorKey === actionsColumnName ? 'actions-col' : ''}`}>
                 {col.cell
-                  ? col.cell(row)
+                  ? col.cell(rowInfo)
                   : getNestedValue({ key: String(col.accessorKey), obj: row })}
               </div>
             )}

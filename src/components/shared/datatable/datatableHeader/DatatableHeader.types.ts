@@ -3,6 +3,11 @@ import { ActionTooltipInterface } from '@/components/shared/datatable/Datatable.
 
 export type SelectionModeType = 'radio' | 'checkbox';
 
+export interface RowInfo<T = Record<string, any>> {
+  original: T;
+  getValue: (key: string) => any;
+}
+
 export interface SortIconsInterface {
   sortIcon?: ReactNode;
   ascendingSortIcon?: ReactNode;
@@ -15,7 +20,7 @@ export interface ColumnDef<T = Record<string, any>> {
   className?: string;
   enableSorting?: boolean;
   enableHiding?: boolean;
-  cell?: (rowData: T) => ReactNode;
+  cell?: (rowInfo: RowInfo<T>) => ReactNode;
   width?: string | number;
   noWrap?: boolean;
   minWidth?: string | number;
@@ -43,18 +48,18 @@ export interface DatatableHeaderInterface<T = Record<string, unknown>> extends S
 
 export interface ActionDef<T = Record<string, unknown>> {
   icon?: ReactNode;
-  disabled?: boolean | ((rowData: T) => boolean);
-  hidden?: boolean | ((rowData: T) => boolean);
+  disabled?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+  hidden?: boolean | ((rowInfo: RowInfo<T>) => boolean);
   tooltip?: ActionTooltipInterface;
-  onClick?: (event: MouseEvent<HTMLButtonElement>, rowData: T) => void;
-  cell?: (rowData: T) => ReactNode;
+  onClick?: (event: MouseEvent<HTMLButtonElement>, rowInfo: RowInfo<T>) => void;
+  cell?: (rowInfo: RowInfo<T>) => ReactNode;
 }
 
 export interface DatatableSelectionConfigInterface<T = Record<string, unknown>> {
-  disabled?: boolean | ((rowData: T) => boolean);
-  hidden?: boolean | ((rowData: T) => boolean);
+  disabled?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+  hidden?: boolean | ((rowInfo: RowInfo<T>) => boolean);
   mode: SelectionModeType;
-  onSelectionChange: (rowData: T) => void;
+  onSelectionChange: (data: T | T[]) => void;
   selectedData: T | T[] | null | undefined;
   className?: string;
   dataKey: Extract<keyof T, string> | string;

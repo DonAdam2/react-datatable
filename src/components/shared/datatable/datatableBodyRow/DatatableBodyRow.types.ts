@@ -2,28 +2,29 @@ import {
   ColumnDef,
   ActionDef,
   DatatableSelectionConfigInterface,
+  RowInfo,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import { Dispatch, SetStateAction, MouseEvent, DragEvent, ReactNode } from 'react';
 
 // Row events interface similar to ActionDef pattern
 export interface DatatableRowEvents<T = Record<string, unknown>> {
   onClick?: {
-    clickable?: boolean | ((rowData: T) => boolean);
-    event: (e: MouseEvent, row: T) => void;
+    clickable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    event: (e: MouseEvent, rowInfo: RowInfo<T>) => void;
   };
   onDoubleClick?: {
-    clickable?: boolean | ((rowData: T) => boolean);
-    event: (e: MouseEvent, row: T) => void;
+    clickable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    event: (e: MouseEvent, rowInfo: RowInfo<T>) => void;
   };
   onDrop?: {
-    droppable?: boolean | ((rowData: T) => boolean);
-    event: (e: DragEvent, row: T) => void;
+    droppable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    event: (e: DragEvent, rowInfo: RowInfo<T>) => void;
     className?: string;
   };
   onDragStart?: {
     icon?: ReactNode;
-    draggable?: boolean | ((rowData: T) => boolean);
-    event: (e: DragEvent, row: T) => void;
+    draggable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    event: (e: DragEvent, rowInfo: RowInfo<T>) => void;
     className?: string;
   };
 }

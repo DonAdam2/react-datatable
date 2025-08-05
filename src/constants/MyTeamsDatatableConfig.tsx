@@ -34,34 +34,39 @@ export const getMyTeamsDatatableConfig = (
   // Example row events configuration
   const teamsRowEvents: DatatableRowEvents<Person> = {
     onDrop: {
-      droppable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'idle',
-      event: (e: DragEvent, rowData: Person) => {
-        console.log(`Row dropped! Employee: ${rowData.first_name} ${rowData.last_name}`);
-        alert(`Dropped employee: ${rowData.first_name} ${rowData.last_name}`);
+      droppable: ({ original, getValue }) =>
+        getValue('subscription.status').toLowerCase() === 'idle',
+      event: (e: DragEvent, { original, getValue }) => {
+        console.log(`Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`);
+        alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
       },
     },
     onDragStart: {
       icon: <EditIcon />,
-      draggable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'active',
-      event: (e: DragEvent, rowData: Person) => {
-        console.log(`Row dragged! Employee: ${rowData.first_name} ${rowData.last_name}`);
+      draggable: ({ original, getValue }) =>
+        getValue('subscription.status').toLowerCase() === 'active',
+      event: (e: DragEvent, { original, getValue }) => {
+        console.log(`Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`);
       },
     },
     onClick: {
       // Only enable click for active users
-      clickable: (rowData) => rowData.subscription.status.toLowerCase() === 'active',
-      event: (e, row) => {
-        console.log('Row clicked:', row.first_name, row.last_name);
-        alert(`Clicked on ${row.first_name} ${row.last_name} (${row.employment.title})`);
+      clickable: ({ original, getValue }) =>
+        getValue('subscription.status').toLowerCase() === 'active',
+      event: (e, { original, getValue }) => {
+        console.log('Row clicked:', getValue('first_name'), getValue('last_name'));
+        alert(
+          `Clicked on ${getValue('first_name')} ${getValue('last_name')} (${getValue('employment.title')})`
+        );
       },
     },
     onDoubleClick: {
       // Enable double click for all users
       clickable: true,
-      event: (e, row) => {
-        console.log('Row double-clicked:', row.first_name, row.last_name);
+      event: (e, { original, getValue }) => {
+        console.log('Row double-clicked:', getValue('first_name'), getValue('last_name'));
         alert(
-          `Double-clicked on ${row.first_name} ${row.last_name}\nID: ${row.id}\nStatus: ${row.subscription.status}`
+          `Double-clicked on ${getValue('first_name')} ${getValue('last_name')}\nID: ${getValue('id')}\nStatus: ${getValue('subscription.status')}`
         );
       },
     },
@@ -73,9 +78,9 @@ export const getMyTeamsDatatableConfig = (
         header: 'Name',
         enableSorting: true,
         enableHiding: false, // Always visible - core identifier
-        cell: (rowData) => (
+        cell: ({ original, getValue }) => (
           <p style={{ margin: 0 }}>
-            {rowData.first_name} {rowData.last_name}
+            {getValue('first_name')} {getValue('last_name')}
           </p>
         ),
       },
@@ -90,17 +95,17 @@ export const getMyTeamsDatatableConfig = (
         header: 'Status',
         enableHiding: true, // Can be hidden via column visibility toggle
         // width: '10%',
-        cell: (rowData) => (
+        cell: ({ original, getValue }) => (
           <p
             className={`status ${
-              rowData.subscription.status.toLowerCase() === 'active'
+              getValue('subscription.status').toLowerCase() === 'active'
                 ? 'success'
-                : rowData.subscription.status.toLowerCase() === 'blocked'
+                : getValue('subscription.status').toLowerCase() === 'blocked'
                   ? 'danger'
                   : 'warn'
             }`}
           >
-            {rowData.subscription.status}
+            {getValue('subscription.status')}
           </p>
         ),
       },
@@ -109,9 +114,11 @@ export const getMyTeamsDatatableConfig = (
       {
         icon: <TrashIcon />,
         //it can be boolean => disabled: true
-        disabled: (rowData) => rowData.subscription.status.toLowerCase() === 'active',
+        disabled: ({ original, getValue }) =>
+          getValue('subscription.status').toLowerCase() === 'active',
         //it can be boolean => hidden: true
-        hidden: (rowData) => rowData.subscription.status.toLowerCase() === 'idle',
+        hidden: ({ original, getValue }) =>
+          getValue('subscription.status').toLowerCase() === 'idle',
         tooltip: {
           tooltipContent: 'Delete row',
           /*position: TooltipPositionEnum.TOP,
@@ -122,16 +129,17 @@ export const getMyTeamsDatatableConfig = (
           messageClassName: '',
           isDisplayTooltipIndicator: true,*/
         },
-        onClick: (e, rowData) => {
-          console.log('delete ', `${rowData.first_name} ${rowData.last_name}`);
+        onClick: (e, { original, getValue }) => {
+          console.log('delete ', `${getValue('first_name')} ${getValue('last_name')}`);
         },
       },
       {
         //it can be boolean => hidden: true
-        hidden: (rowData) => rowData.subscription.status.toLowerCase() !== 'idle',
+        hidden: ({ original, getValue }) =>
+          getValue('subscription.status').toLowerCase() !== 'idle',
         //keep in mind that if you use the cell function it's your
         //responsibility to set the disabled flag and on click event
-        cell: (rowData) => (
+        cell: ({ original, getValue }) => (
           <Dropdown
             header={{
               trigger: <DotsIcon />,
@@ -142,7 +150,8 @@ export const getMyTeamsDatatableConfig = (
                   displayValue: 'Edit',
                   leftIcon: <EditIcon />,
                   onClickData: {
-                    onClick: () => console.log(`Edit: ${rowData.first_name} ${rowData.last_name}`),
+                    onClick: () =>
+                      console.log(`Edit: ${getValue('first_name')} ${getValue('last_name')}`),
                     data: 'EDIT',
                   },
                 },
@@ -151,7 +160,7 @@ export const getMyTeamsDatatableConfig = (
                   leftIcon: <DeleteIcon />,
                   onClickData: {
                     onClick: () =>
-                      console.log(`Delete: ${rowData.first_name} ${rowData.last_name}`),
+                      console.log(`Delete: ${getValue('first_name')} ${getValue('last_name')}`),
                     data: 'DELETE',
                   },
                 },

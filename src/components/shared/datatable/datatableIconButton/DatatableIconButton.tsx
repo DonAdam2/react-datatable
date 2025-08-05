@@ -2,24 +2,24 @@ import { DatatableIconButtonInterface } from '@/components/shared/datatable/data
 import ConditionalWrapper from '@/components/shared/conditionalWrapper/ConditionalWrapper';
 import Tooltip from '@/components/shared/tooltip/Tooltip';
 
-const DatatableIconButton = ({
+const DatatableIconButton = <T extends Record<string, any> = Record<string, any>>({
   disabled,
   hidden,
   icon,
   onClick,
-  rowData,
+  rowInfo,
   cell,
   tooltip,
-}: DatatableIconButtonInterface) => {
+}: DatatableIconButtonInterface<T>) => {
   const disabledBtn = disabled
     ? typeof disabled === 'boolean'
       ? disabled
-      : disabled(rowData)
+      : disabled(rowInfo)
     : undefined;
 
   return (
     <>
-      {!(hidden ? (typeof hidden === 'boolean' ? hidden : hidden(rowData)) : undefined) && (
+      {!(hidden ? (typeof hidden === 'boolean' ? hidden : hidden(rowInfo)) : undefined) && (
         <ConditionalWrapper
           initialWrapper={(children: any) => <>{children}</>}
           condition={tooltip !== undefined}
@@ -34,11 +34,11 @@ const DatatableIconButton = ({
           )}
         >
           {cell ? (
-            cell(rowData)
+            cell(rowInfo)
           ) : (
             <button
               disabled={disabledBtn}
-              onClick={(e) => onClick?.(e, rowData)}
+              onClick={(e) => onClick?.(e, rowInfo)}
               className="datatable-icon-button"
             >
               {icon}

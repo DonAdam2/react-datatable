@@ -101,17 +101,23 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       () =>
         showTableHeader && config?.selection !== undefined && config?.selection.mode === 'checkbox'
           ? records.filter((record) => {
+              // Create rowInfo object for functions that need it
+              const rowInfo = {
+                original: record,
+                getValue: (key: string) => getNestedValue({ key, obj: record }),
+              };
+
               // Check if the record should be hidden
               const isHidden =
                 typeof config.selection?.hidden === 'boolean'
                   ? config.selection?.hidden
-                  : config.selection?.hidden?.(record);
+                  : config.selection?.hidden?.(rowInfo);
 
               // Check if the record should be disabled
               const isDisabled =
                 typeof config.selection?.disabled === 'boolean'
                   ? config.selection?.disabled
-                  : config.selection?.disabled?.(record);
+                  : config.selection?.disabled?.(rowInfo);
 
               // Include record only if it's not hidden and not disabled
               return !isHidden && !isDisabled;

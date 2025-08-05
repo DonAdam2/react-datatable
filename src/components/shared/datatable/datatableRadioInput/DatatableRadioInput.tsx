@@ -1,35 +1,35 @@
 import { DatatableRadioInputInterface } from '@/components/shared/datatable/datatableRadioInput/DatatableRadioInput.types';
 
-const DatatableRadioInput = ({
+const DatatableRadioInput = <T extends Record<string, any> = Record<string, any>>({
   disabled,
   hidden,
   onSelectionChange,
   selectedData,
   dataKey,
-  rowData,
+  rowInfo,
   name,
   className,
-}: DatatableRadioInputInterface) => {
+}: DatatableRadioInputInterface<T>) => {
   const disabledInput = disabled
     ? typeof disabled === 'boolean'
       ? disabled
-      : disabled(rowData)
+      : disabled(rowInfo)
     : undefined;
 
   return (
     <>
-      {!(hidden ? (typeof hidden === 'boolean' ? hidden : hidden(rowData)) : undefined) && (
+      {!(hidden ? (typeof hidden === 'boolean' ? hidden : hidden(rowInfo)) : undefined) && (
         <input
           type="radio"
           name={name}
           disabled={disabledInput}
-          value={rowData[dataKey].toString()}
-          checked={rowData[dataKey].toString() === selectedData[dataKey].toString()}
+          value={rowInfo.getValue(dataKey).toString()}
+          checked={rowInfo.getValue(dataKey).toString() === selectedData[dataKey].toString()}
           className={className}
           onChange={() => {
-            onSelectionChange(rowData);
+            onSelectionChange(rowInfo.original);
           }}
-          data-test={`radio-input-${rowData[dataKey]}`}
+          data-test={`radio-input-${rowInfo.getValue(dataKey)}`}
         />
       )}
     </>

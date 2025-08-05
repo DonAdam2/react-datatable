@@ -6,10 +6,11 @@ import {
   ColumnDef,
   ActionDef,
   DatatableSelectionConfigInterface,
+  RowInfo,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import { DatatableRowEvents } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 
-export type { ColumnDef, ActionDef, DatatableSelectionConfigInterface, DatatableRowEvents };
+export type { ColumnDef, ActionDef, DatatableSelectionConfigInterface, DatatableRowEvents, RowInfo };
 import { TitlePositionType } from '@/components/shared/datatable/datatableTitle/DatatableTitle.types';
 import { ButtonInterface } from '@/components/shared/button/Button.types';
 import { DeepLinkingConfig } from '@/hooks/usePagination';

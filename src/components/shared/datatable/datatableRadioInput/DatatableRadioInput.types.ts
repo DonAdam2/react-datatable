@@ -1,13 +1,13 @@
-import { BooleanFuncType } from '@/components/shared/datatable/Datatable.types';
+import { RowInfo } from '@/components/shared/datatable/Datatable.types';
 import { Dispatch, SetStateAction } from 'react';
 
-export interface DatatableRadioInputInterface {
-  disabled?: boolean | BooleanFuncType;
-  hidden?: boolean | BooleanFuncType;
-  onSelectionChange: (rowData: any) => void;
+export interface DatatableRadioInputInterface<T = Record<string, any>> {
+  disabled?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+  hidden?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+  onSelectionChange: (data: T | T[]) => void;
   selectedData: any;
   dataKey: string;
-  rowData: any;
+  rowInfo: RowInfo<T>;
   name: string;
   className?: string;
   isSelectAllRecords?: boolean;

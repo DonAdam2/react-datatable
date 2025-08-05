@@ -1,7 +1,10 @@
 import AscendingSortIcon from '@/assets/icons/AscendingSortIcon';
 import DescendingSortIcon from '@/assets/icons/DescendingSortIcon';
 import FilterIcon from '@/assets/icons/FilterIcon';
-import { DatatableHeaderInterface } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
+import {
+  DatatableHeaderInterface,
+  RowInfo,
+} from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import { ChangeEvent, useEffect, useState } from 'react';
 import DatatableIconButton from '../datatableIconButton/DatatableIconButton';
 import DatatableRadioInput from '@/components/shared/datatable/datatableRadioInput/DatatableRadioInput';
@@ -13,7 +16,7 @@ export const actionsColumnName = 'actionsCol';
 export const selectionsColumnName = 'selectionsCol';
 export const selectionsColumnWidth = 25;
 
-const DatatableHeader = <T = any,>({
+const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
   columns,
   actions,
   onSorting,
@@ -38,16 +41,16 @@ const DatatableHeader = <T = any,>({
       className: '',
       width: actionsColWidth,
       enableSorting: false,
-      cell: (rowData: any) => (
+      cell: (rowInfo: any) => (
         <>
           {actions?.map((el, i) => (
-            <DatatableIconButton
+            <DatatableIconButton<T>
               key={i}
               disabled={el.disabled}
               hidden={el.hidden}
               icon={el.icon}
               onClick={el.onClick}
-              rowData={rowData}
+              rowInfo={rowInfo}
               tooltip={el.tooltip}
               cell={el.cell}
             />
@@ -61,31 +64,31 @@ const DatatableHeader = <T = any,>({
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
       enableSorting: false,
-      cell: (rowData: any) => (
+      cell: (rowInfo: any) => (
         <>
           {selection?.onSelectionChange && (
             <>
               {selection.mode === 'radio' ? (
-                <DatatableRadioInput
+                <DatatableRadioInput<T>
                   name={uniqueId}
                   disabled={selection?.disabled}
                   hidden={selection?.hidden}
                   onSelectionChange={selection?.onSelectionChange}
                   className={selection?.className}
                   dataKey={selection?.dataKey || ''}
-                  rowData={rowData}
+                  rowInfo={rowInfo}
                   selectedData={selection.selectedData}
                   candidateRecordsToSelectAll={candidateRecordsToSelectAll}
                 />
               ) : (
-                <DatatableCheckbox
+                <DatatableCheckbox<T>
                   name={uniqueId}
                   disabled={selection?.disabled}
                   hidden={selection?.hidden}
                   onSelectionChange={selection?.onSelectionChange}
                   className={selection?.className}
                   dataKey={selection?.dataKey || ''}
-                  rowData={rowData}
+                  rowInfo={rowInfo}
                   selectedData={selection.selectedData}
                   setIsSelectAllRecords={setIsSelectAllRecords}
                   candidateRecordsToSelectAll={candidateRecordsToSelectAll}

@@ -1,31 +1,31 @@
 import { DatatableRadioInputInterface } from '@/components/shared/datatable/datatableRadioInput/DatatableRadioInput.types';
 import cloneDeep from 'lodash/cloneDeep';
 
-const DatatableCheckbox = ({
+const DatatableCheckbox = <T extends Record<string, any> = Record<string, any>>({
   disabled,
   hidden,
   onSelectionChange,
   selectedData,
   dataKey,
-  rowData,
+  rowInfo,
   name,
   className,
   isSelectAllRecords,
   setIsSelectAllRecords,
   candidateRecordsToSelectAll,
-}: DatatableRadioInputInterface) => {
+}: DatatableRadioInputInterface<T>) => {
   const disabledInput = disabled
       ? typeof disabled === 'boolean'
         ? disabled
-        : disabled(rowData)
+        : disabled(rowInfo)
       : undefined,
     isChecked = selectedData.some(
-      (item: any) => item[dataKey].toString() === rowData[dataKey].toString()
+      (item: any) => item[dataKey].toString() === rowInfo.getValue(dataKey).toString()
     );
 
   return (
     <>
-      {!(hidden ? (typeof hidden === 'boolean' ? hidden : hidden(rowData)) : undefined) && (
+      {!(hidden ? (typeof hidden === 'boolean' ? hidden : hidden(rowInfo)) : undefined) && (
         <input
           type="checkbox"
           name={name}
@@ -36,18 +36,18 @@ const DatatableCheckbox = ({
             const clonedSelectedData = cloneDeep(selectedData);
             // Check if the selected person is already in the array
             const isSelected = clonedSelectedData.some(
-              (el: any) => el[dataKey] === rowData[dataKey]
+              (el: any) => el[dataKey] === rowInfo.getValue(dataKey)
             );
             let newSelections = [];
 
             if (isSelected) {
               // If item is selected, remove it
               newSelections = clonedSelectedData.filter(
-                (el: any) => el[dataKey] !== rowData[dataKey]
+                (el: any) => el[dataKey] !== rowInfo.getValue(dataKey)
               );
             } else {
               // If the item is not selected, add it
-              newSelections = [...clonedSelectedData, rowData];
+              newSelections = [...clonedSelectedData, rowInfo.original];
             }
 
             //if isSelectAllRecords is selected => unselect it
@@ -78,7 +78,7 @@ const DatatableCheckbox = ({
               onSelectionChange(newSelections);
             }
           }}
-          data-test={`checkbox-input-${rowData[dataKey]}`}
+          data-test={`checkbox-input-${rowInfo.getValue(dataKey)}`}
         />
       )}
     </>
