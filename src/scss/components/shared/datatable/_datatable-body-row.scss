@@ -35,47 +35,23 @@
 
   // Row that can accept drops
   &.row-drop-target {
-    position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border: 2px dashed transparent;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      pointer-events: none;
-    }
+    transition: all 0.2s ease;
   }
 
   // Row with item being dragged over it
   &.row-drag-over {
-    background-color: rgba(16, 185, 129, 0.1);
     transform: translateY(-1px);
+    border-radius: 6px;
 
-    &::before {
-      border-color: rgba(16, 185, 129, 0.5);
-      background-color: rgba(16, 185, 129, 0.05);
-    }
+    // Use box-shadow to create dashed border effect and background
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.1),
+      inset 0 0 0 2px rgba(16, 185, 129, 0.5),
+      inset 0 0 0 1000px rgba(16, 185, 129, 0.1);
 
-    &::after {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: 12px;
-      right: 12px;
-      height: 2px;
-      background: linear-gradient(
-        90deg,
-        rgba(16, 185, 129, 0.8),
-        rgba(16, 185, 129, 0.4),
-        rgba(16, 185, 129, 0.8)
-      );
-      border-radius: 1px;
-      animation: drop-indicator 1.5s ease-in-out infinite;
+    td {
+      border-color: transparent;
+      background-color: transparent;
     }
   }
 }
@@ -130,35 +106,6 @@
   margin-inline-end: 10px;
 }
 
-// Keyframe animations
-@keyframes drop-indicator {
-  0%,
-  100% {
-    opacity: 0.6;
-    transform: scaleX(0.95);
-  }
-  50% {
-    opacity: 1;
-    transform: scaleX(1);
-  }
-}
-
-// Pulse animation for drop zones
-@keyframes pulse-drop-zone {
-  0%,
-  100% {
-    background-color: rgba(16, 185, 129, 0.05);
-  }
-  50% {
-    background-color: rgba(16, 185, 129, 0.15);
-  }
-}
-
-// Enhanced drag effects for better visual feedback
-.body-tr.row-drag-over {
-  animation: pulse-drop-zone 2s ease-in-out infinite;
-}
-
 // Improved transitions for all interactive states
 .body-tr {
   &:not(.row-dragging):not(.row-drag-over) {
@@ -188,20 +135,10 @@
 
 .custom-drop-zone {
   &.row-drag-over {
-    background-color: rgba(245, 158, 11, 0.1);
-
-    &::before {
-      border-color: rgba(245, 158, 11, 0.5);
-    }
-
-    &::after {
-      background: linear-gradient(
-        90deg,
-        rgba(245, 158, 11, 0.8),
-        rgba(245, 158, 11, 0.4),
-        rgba(245, 158, 11, 0.8)
-      );
-    }
+    box-shadow:
+      0 2px 8px rgba(245, 158, 11, 0.8),
+      inset 0 0 0 2px rgba(245, 158, 11, 0.4),
+      inset 0 0 0 1000px rgba(245, 158, 11, 0.1);
   }
 }
 
