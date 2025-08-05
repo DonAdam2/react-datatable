@@ -200,12 +200,18 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
       onDragLeave={isDropEnabled ? onDragLeaveHandler : undefined}
       onDrop={isDropEnabled ? onDropHandler : undefined}
       style={{ cursor: isClickEnabled || isDoubleClickEnabled ? 'pointer' : 'initial' }}
-      className={cx('body-tr', {
-        'row-dragging': isDragging,
-        'row-drag-over': isDraggedOver && isDropEnabled,
-        'row-drop-target': isDropEnabled,
-        'row-draggable': isDragEnabled,
-      })}
+      className={cx(
+        'body-tr',
+        {
+          'row-dragging': isDragging,
+          'row-drag-over': isDraggedOver && isDropEnabled,
+          'row-drop-target': isDropEnabled,
+          'row-draggable': isDragEnabled,
+        },
+        // Always apply custom classes so CSS can target states properly
+        rowEvents?.onDragStart?.className,
+        rowEvents?.onDrop?.className
+      )}
     >
       {updatedColumns.map((col, colIndex) => (
         <td
@@ -243,7 +249,13 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   // Create a custom drag image with styling
                   if (rowRef.current && e.dataTransfer) {
                     const dragImage = rowRef.current.cloneNode(true) as HTMLElement;
-                    dragImage.className += ' drag-image';
+
+                    // Apply default drag-image class and custom class if provided
+                    const dragImageClasses = ['drag-image'];
+                    if (rowEvents?.onDragStart?.className) {
+                      dragImageClasses.push(rowEvents.onDragStart.className);
+                    }
+                    dragImage.className += ` ${dragImageClasses.join(' ')}`;
 
                     document.body.appendChild(dragImage);
                     e.dataTransfer.setDragImage(dragImage, 0, 0);
@@ -265,9 +277,14 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   cursor: isDragging ? 'grabbing' : 'grab',
                   flexShrink: 0,
                 }}
-                className={cx('drag-handle', {
-                  'drag-handle-active': isDragging,
-                })}
+                className={cx(
+                  'drag-handle',
+                  {
+                    'drag-handle-active': isDragging,
+                  },
+                  // Apply custom drag class to handle if provided
+                  rowEvents?.onDragStart?.className && `${rowEvents.onDragStart.className}-handle`
+                )}
               >
                 <span className="move-element">{rowEvents?.onDragStart?.icon || <MoveIcon />}</span>
               </div>

@@ -116,3 +116,33 @@ export const WithRowDragAndCustomIcon: Story = {
     />
   ),
 };
+
+export const CustomDragDropStyles: Story = {
+  render: () => (
+    <StandardDatatableComponent
+      title={{
+        titleLabel: 'Custom Drag & Drop Styles Demo',
+      }}
+      config={{
+        rowEvents: {
+          onDrop: {
+            droppable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'idle',
+            event: (e: DragEvent, rowData: Person) => {
+              console.log(`Row dropped! Employee: ${rowData.first_name} ${rowData.last_name}`);
+              alert(`Dropped employee: ${rowData.first_name} ${rowData.last_name}`);
+            },
+            className: 'custom-drop-zone', // Custom orange styling for drop zones
+          },
+          onDragStart: {
+            icon: <EditIcon />,
+            draggable: (rowData: Person) => rowData.subscription.status.toLowerCase() === 'active',
+            event: (e: DragEvent, rowData: Person) => {
+              console.log(`Row dragged! Employee: ${rowData.first_name} ${rowData.last_name}`);
+            },
+            className: 'custom-drag-style', // Custom red styling for draggable rows
+          },
+        },
+      }}
+    />
+  ),
+};

@@ -159,3 +159,45 @@
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
+
+/****** Custom drag and drop classes - users can override these with their own styling ******/
+.custom-drag-style {
+  &.row-dragging {
+    box-shadow:
+      0 4px 12px rgba(239, 68, 68, 0.25),
+      inset 0 0 0 2px rgba(239, 68, 68, 0.4),
+      inset 0 0 0 1000px rgba(239, 68, 68, 0.1);
+  }
+}
+
+.custom-drop-zone {
+  &.row-drag-over {
+    background-color: rgba(245, 158, 11, 0.1);
+
+    &::before {
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    &::after {
+      background: linear-gradient(
+        90deg,
+        rgba(245, 158, 11, 0.8),
+        rgba(245, 158, 11, 0.4),
+        rgba(245, 158, 11, 0.8)
+      );
+    }
+  }
+}
+
+// Custom drag handle styling
+.custom-drag-style-handle {
+  background-color: rgba(239, 68, 68, 0.1);
+
+  &:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+  }
+
+  &.drag-handle-active {
+    background-color: rgba(239, 68, 68, 0.2);
+  }
+}

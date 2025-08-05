@@ -18,11 +18,13 @@ export interface DatatableRowEvents<T = Record<string, unknown>> {
   onDrop?: {
     droppable?: boolean | ((rowData: T) => boolean);
     event: (e: DragEvent, row: T) => void;
+    className?: string;
   };
   onDragStart?: {
     icon?: ReactNode;
     draggable?: boolean | ((rowData: T) => boolean);
     event: (e: DragEvent, row: T) => void;
+    className?: string;
   };
 }
 
