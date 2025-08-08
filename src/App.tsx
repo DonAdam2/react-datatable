@@ -122,20 +122,18 @@ export const LocalControlWithPaginationExample = () => {
     titleLocation: "searchRow",
     titlePosition: "end"
   }}
-  config={{
-    selection: {
-      mode: "checkbox",
-      //it can be boolean =&gt; disabled: true
-      disabled: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === "blocked",
-      //it can be boolean =&gt; hidden: true
-      hidden: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === "idle",
-      onSelectionChange: (selectionsArr: any) =&gt; {
-        setSelectedPersons(selectionsArr);
-      },
-      dataKey: "id",
-      className: "custom-input-className",
-      selectedData: selectedPersons
-    }
+  selection={{
+    mode: "checkbox",
+    //it can be boolean =&gt; disabled: true
+    disabled: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === "blocked",
+    //it can be boolean =&gt; hidden: true
+    hidden: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === "idle",
+    onSelectionChange: (selectionsArr: any) =&gt; {
+      setSelectedPersons(selectionsArr);
+    },
+    dataKey: "id",
+    className: "custom-input-className",
+    selectedData: selectedPersons
   }}
   columns={localConfig.teamsColumns}
   records={localConfig.teamsRecords}
@@ -179,24 +177,24 @@ export const LocalControlWithPaginationExample = () => {
           titleLocation: 'searchRow',
           titlePosition: 'end',
         }}
+        selection={{
+          mode: 'checkbox',
+          //it can be boolean => disabled: true
+          disabled: ({ /*original,*/ getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'blocked',
+          //it can be boolean => hidden: true
+          hidden: ({ /*original,*/ getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          onSelectionChange: (selectionsArr: any) => {
+            setSelectedPersons(selectionsArr);
+          },
+          dataKey: 'id',
+          className: 'custom-input-className',
+          selectedData: selectedPersons,
+        }}
         config={{
           ui: {
             actionsColWidth: 40,
-          },
-          selection: {
-            mode: 'checkbox',
-            //it can be boolean => disabled: true
-            disabled: ({ /*original,*/ getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'blocked',
-            //it can be boolean => hidden: true
-            hidden: ({ /*original,*/ getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'idle',
-            onSelectionChange: (selectionsArr: any) => {
-              setSelectedPersons(selectionsArr);
-            },
-            dataKey: 'id',
-            className: 'custom-input-className',
-            selectedData: selectedPersons,
           },
         }}
         columns={localConfig.teamsColumns}
@@ -744,6 +742,18 @@ export const RemoteControlWithPaginationExample = () => {
     onSorting: onRemoteSort,
     isLocalSort: false,
   }}
+  selection={{
+    mode: 'radio',
+    disabled: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt;
+      getValue('subscription.status').toLowerCase() === 'blocked',
+    hidden: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === 'idle',
+    onSelectionChange: (rowData: Person | Person[]) =&gt; {
+      setSelectedPerson(rowData as Person);
+    },
+    dataKey: 'id',
+    className: 'custom-input-className',
+    selectedData: selectedPerson,
+  }}
   config={{
     ui: {
       showTableHeader: showTableHeader === 'true',
@@ -771,18 +781,6 @@ export const RemoteControlWithPaginationExample = () => {
         pageNumKey: 'page',
         pageSizeKey: 'pageSize',
       },
-    },
-    selection: {
-      mode: 'radio',
-      disabled: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt;
-        getValue('subscription.status').toLowerCase() === 'blocked',
-      hidden: ({ original, getValue }: RowInfo&lt;Person&gt;) =&gt; getValue('subscription.status').toLowerCase() === 'idle',
-      onSelectionChange: (rowData: Person | Person[]) =&gt; {
-        setSelectedPerson(rowData as Person);
-      },
-      dataKey: 'id',
-      className: 'custom-input-className',
-      selectedData: selectedPerson,
     },
   }}
   isLoading={isRemoteLoading}
@@ -1037,6 +1035,21 @@ export const RemoteControlWithPaginationExample = () => {
           onSorting: onRemoteSort,
           isLocalSort: false,
         }}
+        selection={{
+          mode: 'radio',
+          //it can be boolean => disabled: true
+          disabled: ({ /*original,*/ getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'blocked',
+          //it can be boolean => hidden: true
+          hidden: ({ /*original,*/ getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          onSelectionChange: (rowData: Person | Person[]) => {
+            setSelectedPerson(rowData as Person);
+          },
+          dataKey: 'id',
+          className: 'custom-input-className',
+          selectedData: selectedPerson,
+        }}
         config={{
           ui: {
             showTableHeader: showTableHeader === 'true',
@@ -1064,21 +1077,6 @@ export const RemoteControlWithPaginationExample = () => {
               pageNumKey: 'page',
               pageSizeKey: 'pageSize',
             },
-          },
-          selection: {
-            mode: 'radio',
-            //it can be boolean => disabled: true
-            disabled: ({ /*original,*/ getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'blocked',
-            //it can be boolean => hidden: true
-            hidden: ({ /*original,*/ getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'idle',
-            onSelectionChange: (rowData: Person | Person[]) => {
-              setSelectedPerson(rowData as Person);
-            },
-            dataKey: 'id',
-            className: 'custom-input-className',
-            selectedData: selectedPerson,
           },
         }}
         isLoading={isRemoteLoading}

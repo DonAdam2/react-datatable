@@ -43,6 +43,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   columnVisibility,
   search,
   sort,
+  selection,
   config,
 }: RootDatatableInterface<T>) => {
   const uniqueId = uuidv4(),
@@ -102,7 +103,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     isTitleButtonsLocationOnSearchRow = titleButtonsLocation === 'searchRow',
     candidateRecordsToSelectAll = useMemo(
       () =>
-        showTableHeader && config?.selection !== undefined && config?.selection.mode === 'checkbox'
+        showTableHeader && selection !== undefined && selection.mode === 'checkbox'
           ? records.filter((record) => {
               // Create rowInfo object for functions that need it
               const rowInfo = {
@@ -112,21 +113,21 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 
               // Check if the record should be hidden
               const isHidden =
-                typeof config.selection?.hidden === 'boolean'
-                  ? config.selection?.hidden
-                  : config.selection?.hidden?.(rowInfo);
+                typeof selection.hidden === 'boolean'
+                  ? selection.hidden
+                  : selection.hidden?.(rowInfo);
 
               // Check if the record should be disabled
               const isDisabled =
-                typeof config.selection?.disabled === 'boolean'
-                  ? config.selection?.disabled
-                  : config.selection?.disabled?.(rowInfo);
+                typeof selection.disabled === 'boolean'
+                  ? selection.disabled
+                  : selection.disabled?.(rowInfo);
 
               // Include record only if it's not hidden and not disabled
               return !isHidden && !isDisabled;
             })
           : [],
-      [showTableHeader, records, config?.selection]
+      [showTableHeader, records, selection]
     );
 
   // Initialize column visibility state
@@ -353,7 +354,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
               actionsColLabel={actionsColLabel}
               isActionsColumnLast={isActionsColumnLast}
               actionsColWidth={actionsColWidth}
-              selection={config?.selection}
+              selection={selection}
               uniqueId={uniqueId}
               isSelectAllRecords={isSelectAllRecords}
               setIsSelectAllRecords={setIsSelectAllRecords}
@@ -373,7 +374,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
                 actionsColLabel={actionsColLabel}
                 isActionsColumnLast={isActionsColumnLast}
                 actionsColWidth={actionsColWidth}
-                selection={config?.selection}
+                selection={selection}
                 uniqueId={uniqueId}
                 isSelectAllRecords={isSelectAllRecords}
                 setIsSelectAllRecords={setIsSelectAllRecords}

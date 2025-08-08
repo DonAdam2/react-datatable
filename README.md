@@ -167,15 +167,15 @@ const App = () => {
         show: true,
         placeholder: 'Search employees...',
       }}
+      selection={{
+        mode: 'checkbox',
+        onSelectionChange: (selectedRows) => {
+          console.log('Selected:', selectedRows);
+        },
+      }}
       config={{
         ui: {
           actionsColWidth: 120,
-        },
-        selection: {
-          mode: 'checkbox',
-          onSelectionChange: (selectedRows) => {
-            console.log('Selected:', selectedRows);
-          },
         },
       }}
     />
@@ -270,10 +270,11 @@ const RemoteDataTable = () => {
 | columnVisibility | [ColumnVisibilityInterface](#columnvisibilityinterface) | `undefined` | No | Column show/hide functionality configuration |
 | search | [SearchConfigInterface](#searchconfiginterface) | `undefined` | No | Search functionality configuration |
 | sort | [SortConfigInterface](#sortconfiginterface) | `undefined` | No | Sorting functionality configuration |
+| selection | [SelectionConfigInterface](#selectionconfiginterface) | `undefined` | No | Row selection functionality configuration |
 | config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for remaining datatable features |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
 
-**Note:** As of the latest version, `columnVisibility`, `search`, and `sort` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
+**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, and `selection` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -284,7 +285,6 @@ const RemoteDataTable = () => {
 | Property | Type | Description |
 |----------|------|-------------|
 | ui | [UiConfigInterface](#uiconfiginterface) | UI customization options |
-| selection | [SelectionConfigInterface](#selectionconfiginterface) | Row selection configuration |
 | rowEvents | [RowEventsInterface](#roweventsinterface) | Row interaction events |
 | pagination | [PaginationConfigInterface](#paginationconfiginterface) | Pagination configuration |
 

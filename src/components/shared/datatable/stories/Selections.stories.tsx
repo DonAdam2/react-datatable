@@ -54,20 +54,20 @@ const RadioSelectionComponent = () => {
         columns={localConfig.teamsColumns}
         records={localConfig.teamsRecords}
         actions={localConfig.teamsActions}
+        selection={{
+          mode: 'radio',
+          disabled: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'blocked',
+          hidden: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          onSelectionChange: (data: Person | Person[]) => {
+            setSelectedPerson(data as Person);
+          },
+          dataKey: 'id',
+          selectedData: selectedPerson,
+        }}
         config={{
           ui: { actionsColWidth: 40 },
-          selection: {
-            mode: 'radio',
-            disabled: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'blocked',
-            hidden: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'idle',
-            onSelectionChange: (data: Person | Person[]) => {
-              setSelectedPerson(data as Person);
-            },
-            dataKey: 'id',
-            selectedData: selectedPerson,
-          },
         }}
         isLoading={isLocalLoading}
       />
@@ -117,20 +117,20 @@ const CheckboxSelectionComponent = () => {
         columns={localConfig.teamsColumns}
         records={localConfig.teamsRecords}
         actions={localConfig.teamsActions}
+        selection={{
+          mode: 'checkbox',
+          disabled: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'blocked',
+          hidden: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          onSelectionChange: (selectionsArr: Person | Person[]) => {
+            setSelectedPersons(selectionsArr as Person[]);
+          },
+          dataKey: 'id',
+          selectedData: selectedPersons,
+        }}
         config={{
           ui: { actionsColWidth: 40 },
-          selection: {
-            mode: 'checkbox',
-            disabled: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'blocked',
-            hidden: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'idle',
-            onSelectionChange: (selectionsArr: Person | Person[]) => {
-              setSelectedPersons(selectionsArr as Person[]);
-            },
-            dataKey: 'id',
-            selectedData: selectedPersons,
-          },
         }}
         isLoading={isLocalLoading}
       />
