@@ -425,7 +425,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 };
 
 // Unified controlled datatable component
-const ControlledDatatable = <T extends Record<string, any> = Record<string, unknown>>({
+const PaginatedDatatable = <T extends Record<string, any> = Record<string, unknown>>({
   config,
   search,
   sort,
@@ -600,7 +600,7 @@ const Datatable = <T extends Record<string, any> = Record<string, unknown>>({
         isCustomPagination ? (
           <RootDatatable {...rest} pagination={paginationConfig as any} config={config} />
         ) : (
-          <ControlledDatatable
+          <PaginatedDatatable
             {...rest}
             pagination={paginationConfig as any}
             config={config}
