@@ -5,25 +5,26 @@ import {
   RowInfo,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import { Dispatch, SetStateAction, MouseEvent, DragEvent, ReactNode } from 'react';
+import { BooleanFuncType } from '@/components/shared/datatable/Datatable.types';
 
 // Row events interface similar to ActionDef pattern
 export interface DatatableRowEvents<T = Record<string, unknown>> {
   onClick?: {
-    clickable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    clickable?: boolean | BooleanFuncType<T>;
     event: (e: MouseEvent, rowInfo: RowInfo<T>) => void;
   };
   onDoubleClick?: {
-    clickable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    clickable?: boolean | BooleanFuncType<T>;
     event: (e: MouseEvent, rowInfo: RowInfo<T>) => void;
   };
   onDrop?: {
-    droppable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    droppable?: boolean | BooleanFuncType<T>;
     event: (e: DragEvent, rowInfo: RowInfo<T>) => void;
     className?: string;
   };
   onDragStart?: {
     icon?: ReactNode;
-    draggable?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+    draggable?: boolean | BooleanFuncType<T>;
     event: (e: DragEvent, rowInfo: RowInfo<T>) => void;
     className?: string;
   };

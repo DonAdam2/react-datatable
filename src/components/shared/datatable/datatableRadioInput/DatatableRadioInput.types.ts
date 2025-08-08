@@ -1,9 +1,9 @@
-import { RowInfo } from '@/components/shared/datatable/Datatable.types';
+import { BooleanFuncType, RowInfo } from '@/components/shared/datatable/Datatable.types';
 import { Dispatch, SetStateAction } from 'react';
 
 export interface DatatableRadioInputInterface<T = Record<string, any>> {
-  disabled?: boolean | ((rowInfo: RowInfo<T>) => boolean);
-  hidden?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+  disabled?: boolean | BooleanFuncType<T>;
+  hidden?: boolean | BooleanFuncType<T>;
   onSelectionChange: (data: T | T[]) => void;
   selectedData: any;
   dataKey: string;

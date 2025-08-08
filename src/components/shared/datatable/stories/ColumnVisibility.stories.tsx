@@ -22,13 +22,11 @@ export const ColumnsVisibilityInTitleRow: Story = {
         titleLabel: 'Employees',
         titleLocation: 'titleRow',
       }}
-      config={{
-        columnVisibility: {
-          show: true,
-          location: 'titleRow',
-          trigger: { label: 'Show/Hide Columns' },
-          defaultVisibleColumns: ['employment.title'],
-        },
+      columnVisibility={{
+        show: true,
+        location: 'titleRow',
+        trigger: { label: 'Show/Hide Columns' },
+        defaultVisibleColumns: ['employment.title'],
       }}
     />
   ),
@@ -41,13 +39,11 @@ export const ColumnVisibilityInSearchRow: Story = {
         titleLabel: 'Employees',
         titleLocation: 'titleRow',
       }}
-      config={{
-        columnVisibility: {
-          show: true,
-          location: 'searchRow',
-          trigger: { label: 'Columns' },
-          defaultVisibleColumns: ['employment.title'],
-        },
+      columnVisibility={{
+        show: true,
+        location: 'searchRow',
+        trigger: { label: 'Columns' },
+        defaultVisibleColumns: ['employment.title'],
       }}
     />
   ),
@@ -60,13 +56,11 @@ export const ColumnVisibilityInActionsColumnWithActions: Story = {
         titleLabel: 'Employees',
         titleLocation: 'titleRow',
       }}
-      config={{
-        columnVisibility: {
-          show: true,
-          location: 'actionsColumn',
-          trigger: { label: '' },
-          defaultVisibleColumns: ['employment.title'],
-        },
+      columnVisibility={{
+        show: true,
+        location: 'actionsColumn',
+        trigger: { label: '' },
+        defaultVisibleColumns: ['employment.title'],
       }}
     />
   ),
@@ -80,13 +74,11 @@ export const ColumnVisibilityInActionsColumnWithoutActions: Story = {
         titleLocation: 'titleRow',
       }}
       actions={false}
-      config={{
-        columnVisibility: {
-          show: true,
-          location: 'actionsColumn',
-          trigger: { label: '' },
-          defaultVisibleColumns: ['employment.title'],
-        },
+      columnVisibility={{
+        show: true,
+        location: 'actionsColumn',
+        trigger: { label: '' },
+        defaultVisibleColumns: ['employment.title'],
       }}
     />
   ),
@@ -99,27 +91,25 @@ export const WithCustomVisibilityTriggerInTitleRow: Story = {
         titleLabel: 'Employees',
         titleLocation: 'titleRow',
       }}
-      config={{
-        columnVisibility: {
-          show: true,
-          location: 'titleRow',
-          trigger: {
-            label: 'Customize Columns',
-            icon: <SettingsIcon />,
-            style: {
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              borderRadius: '6px',
-              padding: '8px 12px',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            },
+      columnVisibility={{
+        show: true,
+        location: 'titleRow',
+        trigger: {
+          label: 'Customize Columns',
+          icon: <SettingsIcon />,
+          style: {
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            borderRadius: '6px',
+            padding: '8px 12px',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
           },
-          defaultVisibleColumns: ['employment.title'],
         },
+        defaultVisibleColumns: ['employment.title'],
       }}
     />
   ),

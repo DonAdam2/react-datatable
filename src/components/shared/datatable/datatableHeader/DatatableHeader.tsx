@@ -41,7 +41,7 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
       className: '',
       width: actionsColWidth,
       enableSorting: false,
-      cell: (rowInfo: any) => (
+      cell: (rowInfo: RowInfo<T>) => (
         <>
           {actions?.map((el, i) => (
             <DatatableIconButton<T>
@@ -64,7 +64,7 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
       className: 'selections-col-wrapper',
       width: selectionsColumnWidth,
       enableSorting: false,
-      cell: (rowInfo: any) => (
+      cell: (rowInfo: RowInfo<T>) => (
         <>
           {selection?.onSelectionChange && (
             <>

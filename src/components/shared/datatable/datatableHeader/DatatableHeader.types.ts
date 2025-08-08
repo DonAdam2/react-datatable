@@ -1,5 +1,8 @@
 import { Dispatch, ReactNode, SetStateAction, MouseEvent } from 'react';
-import { ActionTooltipInterface } from '@/components/shared/datatable/Datatable.types';
+import {
+  ActionTooltipInterface,
+  BooleanFuncType,
+} from '@/components/shared/datatable/Datatable.types';
 
 export type SelectionModeType = 'radio' | 'checkbox';
 
@@ -48,16 +51,16 @@ export interface DatatableHeaderInterface<T = Record<string, unknown>> extends S
 
 export interface ActionDef<T = Record<string, unknown>> {
   icon?: ReactNode;
-  disabled?: boolean | ((rowInfo: RowInfo<T>) => boolean);
-  hidden?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+  disabled?: boolean | BooleanFuncType<T>;
+  hidden?: boolean | BooleanFuncType<T>;
   tooltip?: ActionTooltipInterface;
   onClick?: (event: MouseEvent<HTMLButtonElement>, rowInfo: RowInfo<T>) => void;
   cell?: (rowInfo: RowInfo<T>) => ReactNode;
 }
 
 export interface DatatableSelectionConfigInterface<T = Record<string, unknown>> {
-  disabled?: boolean | ((rowInfo: RowInfo<T>) => boolean);
-  hidden?: boolean | ((rowInfo: RowInfo<T>) => boolean);
+  disabled?: boolean | BooleanFuncType<T>;
+  hidden?: boolean | BooleanFuncType<T>;
   mode: SelectionModeType;
   onSelectionChange: (data: T | T[]) => void;
   selectedData: T | T[] | null | undefined;

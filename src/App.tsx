@@ -186,10 +186,10 @@ export const LocalControlWithPaginationExample = () => {
           selection: {
             mode: 'checkbox',
             //it can be boolean => disabled: true
-            disabled: ({ original, getValue }: RowInfo<Person>) =>
+            disabled: ({ /*original,*/ getValue }: RowInfo<Person>) =>
               getValue('subscription.status').toLowerCase() === 'blocked',
             //it can be boolean => hidden: true
-            hidden: ({ original, getValue }: RowInfo<Person>) =>
+            hidden: ({ /*original,*/ getValue }: RowInfo<Person>) =>
               getValue('subscription.status').toLowerCase() === 'idle',
             onSelectionChange: (selectionsArr: any) => {
               setSelectedPersons(selectionsArr);
@@ -727,12 +727,11 @@ export const RemoteControlWithPaginationExample = () => {
   }}
   columns={teamsColumns}
   records={teamsRecords}
+  columnVisibility={{
+    ...columnVisibilityConfig,
+    location: columnVisibilityLocation,
+  }}
   config={{
-    // Column visibility configuration
-    columnVisibility: {
-      ...columnVisibilityConfig,
-      location: columnVisibilityLocation,
-    },
     ui: {
       showTableHeader: showTableHeader === 'true',
       tableWrapperClassName: 'title-wrapper-class-name',
@@ -1019,12 +1018,11 @@ export const RemoteControlWithPaginationExample = () => {
         }}
         columns={teamsColumns}
         records={teamsRecords}
+        columnVisibility={{
+          ...columnVisibilityConfig,
+          location: columnVisibilityLocation as 'titleRow' | 'searchRow' | 'actionsColumn',
+        }}
         config={{
-          // Column visibility configuration
-          columnVisibility: {
-            ...columnVisibilityConfig,
-            location: columnVisibilityLocation as 'titleRow' | 'searchRow' | 'actionsColumn',
-          },
           ui: {
             showTableHeader: showTableHeader === 'true',
             tableWrapperClassName: 'title-wrapper-class-name',
@@ -1068,10 +1066,10 @@ export const RemoteControlWithPaginationExample = () => {
           selection: {
             mode: 'radio',
             //it can be boolean => disabled: true
-            disabled: ({ original, getValue }: RowInfo<Person>) =>
+            disabled: ({ /*original,*/ getValue }: RowInfo<Person>) =>
               getValue('subscription.status').toLowerCase() === 'blocked',
             //it can be boolean => hidden: true
-            hidden: ({ original, getValue }: RowInfo<Person>) =>
+            hidden: ({ /*original,*/ getValue }: RowInfo<Person>) =>
               getValue('subscription.status').toLowerCase() === 'idle',
             onSelectionChange: (rowData: Person | Person[]) => {
               setSelectedPerson(rowData as Person);

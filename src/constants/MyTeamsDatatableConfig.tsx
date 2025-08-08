@@ -34,26 +34,26 @@ export const getMyTeamsDatatableConfig = (
   // Example row events configuration
   const teamsRowEvents: DatatableRowEvents<Person> = {
     onDrop: {
-      droppable: ({ original, getValue }) =>
+      droppable: ({ /*original,*/ getValue }) =>
         getValue('subscription.status').toLowerCase() === 'idle',
-      event: (e: DragEvent, { original, getValue }) => {
+      event: (e: DragEvent, { /*original,*/ getValue }) => {
         console.log(`Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`);
         alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
       },
     },
     onDragStart: {
       icon: <EditIcon />,
-      draggable: ({ original, getValue }) =>
+      draggable: ({ /*original,*/ getValue }) =>
         getValue('subscription.status').toLowerCase() === 'active',
-      event: (e: DragEvent, { original, getValue }) => {
+      event: (e: DragEvent, { /*original,*/ getValue }) => {
         console.log(`Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`);
       },
     },
     onClick: {
       // Only enable click for active users
-      clickable: ({ original, getValue }) =>
+      clickable: ({ /*original,*/ getValue }) =>
         getValue('subscription.status').toLowerCase() === 'active',
-      event: (e, { original, getValue }) => {
+      event: (e, { /*original,*/ getValue }) => {
         console.log('Row clicked:', getValue('first_name'), getValue('last_name'));
         alert(
           `Clicked on ${getValue('first_name')} ${getValue('last_name')} (${getValue('employment.title')})`
@@ -63,7 +63,7 @@ export const getMyTeamsDatatableConfig = (
     onDoubleClick: {
       // Enable double click for all users
       clickable: true,
-      event: (e, { original, getValue }) => {
+      event: (e, { /*original,*/ getValue }) => {
         console.log('Row double-clicked:', getValue('first_name'), getValue('last_name'));
         alert(
           `Double-clicked on ${getValue('first_name')} ${getValue('last_name')}\nID: ${getValue('id')}\nStatus: ${getValue('subscription.status')}`
@@ -78,7 +78,7 @@ export const getMyTeamsDatatableConfig = (
         header: 'Name',
         enableSorting: true,
         enableHiding: false, // Always visible - core identifier
-        cell: ({ original, getValue }) => (
+        cell: ({ /*original,*/ getValue }) => (
           <p style={{ margin: 0 }}>
             {getValue('first_name')} {getValue('last_name')}
           </p>
@@ -95,7 +95,7 @@ export const getMyTeamsDatatableConfig = (
         header: 'Status',
         enableHiding: true, // Can be hidden via column visibility toggle
         // width: '10%',
-        cell: ({ original, getValue }) => (
+        cell: ({ /*original,*/ getValue }) => (
           <p
             className={`status ${
               getValue('subscription.status').toLowerCase() === 'active'
@@ -114,10 +114,10 @@ export const getMyTeamsDatatableConfig = (
       {
         icon: <TrashIcon />,
         //it can be boolean => disabled: true
-        disabled: ({ original, getValue }) =>
+        disabled: ({ /*original,*/ getValue }) =>
           getValue('subscription.status').toLowerCase() === 'active',
         //it can be boolean => hidden: true
-        hidden: ({ original, getValue }) =>
+        hidden: ({ /*original,*/ getValue }) =>
           getValue('subscription.status').toLowerCase() === 'idle',
         tooltip: {
           tooltipContent: 'Delete row',
@@ -129,17 +129,17 @@ export const getMyTeamsDatatableConfig = (
           messageClassName: '',
           isDisplayTooltipIndicator: true,*/
         },
-        onClick: (e, { original, getValue }) => {
+        onClick: (e, { /*original,*/ getValue }) => {
           console.log('delete ', `${getValue('first_name')} ${getValue('last_name')}`);
         },
       },
       {
         //it can be boolean => hidden: true
-        hidden: ({ original, getValue }) =>
+        hidden: ({ /*original,*/ getValue }) =>
           getValue('subscription.status').toLowerCase() !== 'idle',
         //keep in mind that if you use the cell function it's your
         //responsibility to set the disabled flag and on click event
-        cell: ({ original, getValue }) => (
+        cell: ({ /*original,*/ getValue }) => (
           <Dropdown
             header={{
               trigger: <DotsIcon />,

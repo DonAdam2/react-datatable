@@ -9,7 +9,7 @@ import Button from '@/components/shared/button/Button';
 import FilterIcon from '@/assets/icons/FilterIcon';
 import AscendingSortIcon from '@/assets/icons/AscendingSortIcon';
 import DescendingSortIcon from '@/assets/icons/DescendingSortIcon';
-import SettingsIcon from '@/assets/icons/SettingsIcon';
+import { DatatableColumnVisibilityConfigInterface } from '@/components/shared/datatable/Datatable.types';
 
 // Helper component for stories that need to load data
 interface StandardDatatableComponentProps {
@@ -24,6 +24,7 @@ interface StandardDatatableComponentProps {
   config?: Record<string, unknown>;
   actions?: boolean;
   noDataToDisplayMessage?: ReactNode;
+  columnVisibility?: DatatableColumnVisibilityConfigInterface;
 }
 
 export const StandardDatatableComponent = ({
@@ -31,6 +32,7 @@ export const StandardDatatableComponent = ({
   config = {},
   actions = true,
   noDataToDisplayMessage,
+  columnVisibility,
 }: StandardDatatableComponentProps) => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -56,6 +58,7 @@ export const StandardDatatableComponent = ({
       columns={localConfig.teamsColumns}
       records={localConfig.teamsRecords}
       actions={actions ? localConfig.teamsActions : undefined}
+      columnVisibility={columnVisibility}
       config={{
         ui: { actionsColWidth: 40 },
         ...config,

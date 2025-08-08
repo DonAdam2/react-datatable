@@ -13,6 +13,7 @@ import DatatableCheckbox from '@/components/shared/datatable/datatableCheckbox/D
 import { getNestedValue, getTableDataCellWidth } from '@/constants/Helpers';
 import cx from 'classnames';
 import MoveIcon from '@/assets/icons/MoveIcon';
+import { BooleanFuncType } from '@/components/shared/datatable/Datatable.types';
 
 const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown>>({
   columns,
@@ -45,7 +46,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
       minWidth: undefined,
       maxWidth: undefined,
       className: '',
-      cell: (rowInfo: any) => (
+      cell: (rowInfo: RowInfo<T>) => (
         <>
           {actions?.map((el, i) => (
             <DatatableIconButton
@@ -69,7 +70,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
       width: selectionsColumnWidth,
       minWidth: undefined,
       maxWidth: undefined,
-      cell: (rowInfo: any) => (
+      cell: (rowInfo: RowInfo<T>) => (
         <>
           {selection?.onSelectionChange && (
             <>
@@ -136,7 +137,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
 
   // Helper functions to check if row events are enabled
   const isClickEventEnabled = (
-    eventConfig: { clickable?: boolean | ((rowInfo: RowInfo<T>) => boolean) } | undefined
+    eventConfig: { clickable?: boolean | BooleanFuncType<T> } | undefined
   ): boolean => {
     if (!eventConfig) return false;
     if (typeof eventConfig.clickable === 'function') {
@@ -146,7 +147,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   };
 
   const isDropEventEnabled = (
-    eventConfig: { droppable?: boolean | ((rowInfo: RowInfo<T>) => boolean) } | undefined
+    eventConfig: { droppable?: boolean | BooleanFuncType<T> } | undefined
   ): boolean => {
     if (!eventConfig) return false;
     if (typeof eventConfig.droppable === 'function') {
@@ -156,7 +157,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   };
 
   const isDragEventEnabled = (
-    eventConfig: { draggable?: boolean | ((rowInfo: RowInfo<T>) => boolean) } | undefined
+    eventConfig: { draggable?: boolean | BooleanFuncType<T> } | undefined
   ): boolean => {
     if (!eventConfig) return false;
     if (typeof eventConfig.draggable === 'function') {

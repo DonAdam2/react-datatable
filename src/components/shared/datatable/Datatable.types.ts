@@ -10,12 +10,18 @@ import {
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import { DatatableRowEvents } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 
-export type { ColumnDef, ActionDef, DatatableSelectionConfigInterface, DatatableRowEvents, RowInfo };
+export type {
+  ColumnDef,
+  ActionDef,
+  DatatableSelectionConfigInterface,
+  DatatableRowEvents,
+  RowInfo,
+};
 import { TitlePositionType } from '@/components/shared/datatable/datatableTitle/DatatableTitle.types';
 import { ButtonInterface } from '@/components/shared/button/Button.types';
 import { DeepLinkingConfig } from '@/hooks/usePagination';
 
-export type BooleanFuncType = (rowData: any) => boolean;
+export type BooleanFuncType<T = Record<string, any>> = (rowInfo: RowInfo<T>) => boolean;
 export type TitleLocationType = 'searchRow' | 'titleRow';
 export type ColumnVisibilityLocationType = TitleLocationType | 'actionsColumn';
 
@@ -72,7 +78,6 @@ interface CommonConfigInterface<T = Record<string, unknown>> {
   sort?: DatatableSortConfigInterface;
   selection?: DatatableSelectionConfigInterface<T>;
   rowEvents?: DatatableRowEvents<T>;
-  columnVisibility?: DatatableColumnVisibilityConfigInterface;
 }
 
 interface RootPaginationInterface {
@@ -105,6 +110,7 @@ interface CommonDatatableInterface<T = Record<string, unknown>> {
   isLoading?: boolean;
   dataTest?: string;
   noDataToDisplayMessage?: ReactNode;
+  columnVisibility?: DatatableColumnVisibilityConfigInterface;
 }
 
 export interface RootDatatableInterface<T = Record<string, unknown>>

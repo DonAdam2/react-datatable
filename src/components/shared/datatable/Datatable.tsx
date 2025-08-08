@@ -40,6 +40,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   isLoading,
   dataTest,
   noDataToDisplayMessage,
+  columnVisibility,
   config,
 }: RootDatatableInterface<T>) => {
   const uniqueId = uuidv4(),
@@ -85,7 +86,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       defaultVisibleColumns,
       hiddenColumns,
       location = 'actionsColumn',
-    } = config?.columnVisibility ?? {},
+    } = columnVisibility ?? {},
     {
       resetPagination,
       enablePagination,
@@ -258,7 +259,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 
   // Column visibility toggle element
   const columnVisibilityToggle =
-    showColumnVisibilityToggle && config?.columnVisibility ? (
+    showColumnVisibilityToggle && columnVisibility ? (
       <DatatableColumnVisibility
         columns={columns}
         visibleColumns={visibleColumns}

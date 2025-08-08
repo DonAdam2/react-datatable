@@ -158,6 +158,11 @@ const App = () => {
       columns={columns}
       records={data}
       actions={actions}
+      columnVisibility={{
+        show: true,
+        location: 'titleRow',
+        defaultVisibleColumns: ['name', 'email'],
+      }}
       config={{
         ui: {
           actionsColWidth: 120,
@@ -264,6 +269,8 @@ const RemoteDataTable = () => {
 | noDataToDisplayMessage | `ReactNode` | `'No data to display'` | No | Custom message when no data is available |
 | config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for all datatable features |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
+
+**Note:** As of the latest version, `columnVisibility` has been moved from the `config` object to be a top-level prop alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -424,16 +431,14 @@ const MyComponent = () => {
 <Datatable
   columns={columns}
   records={data}
-  config={{
-    columnVisibility: {
-      show: true,
-      location: 'titleRow', // 'titleRow' | 'searchRow' | 'actionsColumn'
-      defaultVisibleColumns: ['name', 'email'], // Show only these columns initially
-      trigger: {
-        label: 'Manage Columns',
-        icon: <SettingsIcon />,
-        variant: 'outline',
-      },
+  columnVisibility={{
+    show: true,
+    location: 'titleRow', // 'titleRow' | 'searchRow' | 'actionsColumn'
+    defaultVisibleColumns: ['name', 'email'], // Show only these columns initially
+    trigger: {
+      label: 'Manage Columns',
+      icon: <SettingsIcon />,
+      variant: 'outline',
     },
   }}
 />
