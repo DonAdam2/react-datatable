@@ -237,11 +237,11 @@ const RemoteDataTable = () => {
         onSearch: handleSearch,
         isLocalSearch: false,
       }}
+      sort={{
+        onSorting: handleSort,
+        isLocalSort: false,
+      }}
       config={{
-        sort: {
-          onSorting: handleSort,
-          isLocalSort: false,
-        },
         pagination: {
           remoteControl: {
             onPaginationDataUpdate: handlePagination,
@@ -269,10 +269,11 @@ const RemoteDataTable = () => {
 | noDataToDisplayMessage | `ReactNode` | `'No data to display'` | No | Custom message when no data is available |
 | columnVisibility | [ColumnVisibilityInterface](#columnvisibilityinterface) | `undefined` | No | Column show/hide functionality configuration |
 | search | [SearchConfigInterface](#searchconfiginterface) | `undefined` | No | Search functionality configuration |
+| sort | [SortConfigInterface](#sortconfiginterface) | `undefined` | No | Sorting functionality configuration |
 | config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for remaining datatable features |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
 
-**Note:** As of the latest version, `columnVisibility` and `search` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
+**Note:** As of the latest version, `columnVisibility`, `search`, and `sort` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -283,7 +284,6 @@ const RemoteDataTable = () => {
 | Property | Type | Description |
 |----------|------|-------------|
 | ui | [UiConfigInterface](#uiconfiginterface) | UI customization options |
-| sort | [SortConfigInterface](#sortconfiginterface) | Sorting functionality configuration |
 | selection | [SelectionConfigInterface](#selectionconfiginterface) | Row selection configuration |
 | rowEvents | [RowEventsInterface](#roweventsinterface) | Row interaction events |
 | pagination | [PaginationConfigInterface](#paginationconfiginterface) | Pagination configuration |

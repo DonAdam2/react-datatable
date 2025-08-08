@@ -740,6 +740,10 @@ export const RemoteControlWithPaginationExample = () => {
     placeholder: searchPlaceholder,
     searchDataTest: 'search-data-test',
   }}
+  sort={{
+    onSorting: onRemoteSort,
+    isLocalSort: false,
+  }}
   config={{
     ui: {
       showTableHeader: showTableHeader === 'true',
@@ -767,10 +771,6 @@ export const RemoteControlWithPaginationExample = () => {
         pageNumKey: 'page',
         pageSizeKey: 'pageSize',
       },
-    },
-    sort: {
-      onSorting: onRemoteSort,
-      isLocalSort: false,
     },
     selection: {
       mode: 'radio',
@@ -1033,6 +1033,10 @@ export const RemoteControlWithPaginationExample = () => {
           placeholder: searchPlaceholder,
           searchDataTest: 'search-data-test',
         }}
+        sort={{
+          onSorting: onRemoteSort,
+          isLocalSort: false,
+        }}
         config={{
           ui: {
             showTableHeader: showTableHeader === 'true',
@@ -1060,10 +1064,6 @@ export const RemoteControlWithPaginationExample = () => {
               pageNumKey: 'page',
               pageSizeKey: 'pageSize',
             },
-          },
-          sort: {
-            onSorting: onRemoteSort,
-            isLocalSort: false,
           },
           selection: {
             mode: 'radio',

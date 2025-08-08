@@ -42,6 +42,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   noDataToDisplayMessage,
   columnVisibility,
   search,
+  sort,
   config,
 }: RootDatatableInterface<T>) => {
   const uniqueId = uuidv4(),
@@ -80,7 +81,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       searchPosition = 'end',
       onUpdateFilteredRecordsCount,
     } = search ?? {},
-    { isLocalSort = true, onSorting } = config?.sort ?? {},
+    { isLocalSort = true, onSorting } = sort ?? {},
     {
       show: showColumnVisibilityToggle = true,
       trigger,
@@ -425,6 +426,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 const ControlledDatatable = <T extends Record<string, any> = Record<string, unknown>>({
   config,
   search,
+  sort,
   ref,
   ...rest
 }: (LocalControlledDatatableInterface<T> | RemoteControlledDatatableInterface<T>) & {
@@ -433,7 +435,7 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   const { rowsDropdown, enablePagination = true, deepLinking } = config?.pagination ?? {};
   const { rowsPerPage = 10, enableRowsDropdown = true, optionsList } = rowsDropdown ?? {};
   const { isLocalSearch = true, ...otherSearchProps } = search ?? {};
-  const { isLocalSort = true, onSorting } = config?.sort ?? {};
+  const { isLocalSort = true, onSorting } = sort ?? {};
 
   // Safe access to remoteControl properties
   const remoteControl = (config?.pagination as any)?.remoteControl;
@@ -531,12 +533,12 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
         onUpdateFilteredRecordsCount:
           !isRemotePagination && isLocalSearch ? handleUpdateFilteredRecordsCount : undefined,
       }}
+      sort={{
+        isLocalSort,
+        onSorting,
+      }}
       config={{
         ...config,
-        sort: {
-          isLocalSort,
-          onSorting,
-        },
         pagination: {
           enablePagination,
           // Only provide content indices for local pagination (for data slicing)

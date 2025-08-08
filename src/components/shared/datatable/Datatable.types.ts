@@ -74,7 +74,6 @@ interface DatatableSortConfigInterface {
 
 interface CommonConfigInterface<T = Record<string, unknown>> {
   ui?: UiConfigInterface;
-  sort?: DatatableSortConfigInterface;
   selection?: DatatableSelectionConfigInterface<T>;
   rowEvents?: DatatableRowEvents<T>;
 }
@@ -111,6 +110,7 @@ interface CommonDatatableInterface<T = Record<string, unknown>> {
   noDataToDisplayMessage?: ReactNode;
   columnVisibility?: DatatableColumnVisibilityConfigInterface;
   search?: DatatableSearchConfigInterface;
+  sort?: DatatableSortConfigInterface;
 }
 
 export interface RootDatatableInterface<T = Record<string, unknown>>

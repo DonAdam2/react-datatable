@@ -26,6 +26,7 @@ interface StandardDatatableComponentProps {
   noDataToDisplayMessage?: ReactNode;
   columnVisibility?: DatatableColumnVisibilityConfigInterface;
   search?: Record<string, unknown>;
+  sort?: Record<string, unknown>;
 }
 
 export const StandardDatatableComponent = ({
@@ -35,6 +36,7 @@ export const StandardDatatableComponent = ({
   noDataToDisplayMessage,
   columnVisibility,
   search,
+  sort,
 }: StandardDatatableComponentProps) => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -62,6 +64,7 @@ export const StandardDatatableComponent = ({
       actions={actions ? localConfig.teamsActions : undefined}
       columnVisibility={columnVisibility}
       search={search}
+      sort={sort}
       config={{
         ui: { actionsColWidth: 40 },
         ...config,
@@ -206,12 +209,12 @@ const RemoteDatatableComponent = () => {
         onSearch: onRemoteSearch,
         isLocalSearch: false,
       }}
+      sort={{
+        onSorting: onRemoteSort,
+        isLocalSort: false,
+      }}
       config={{
         ui: { actionsColWidth: 40 },
-        sort: {
-          onSorting: onRemoteSort,
-          isLocalSort: false,
-        },
         pagination: {
           remoteControl: {
             onPaginationDataUpdate,
