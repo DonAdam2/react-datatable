@@ -85,8 +85,6 @@ export interface RootPaginationInterface {
   lastContentIndex?: number;
 }
 
-type RootDatatableConfigInterface<T = Record<string, unknown>> = CommonConfigInterface<T>;
-
 interface DatatableTitleConfigInterface {
   titleLabel?: string | ReactNode;
   titlePosition?: TitlePositionType;
@@ -96,7 +94,8 @@ interface DatatableTitleConfigInterface {
   titleButtonsLocation?: TitleLocationType;
 }
 
-interface CommonDatatableInterface<T = Record<string, unknown>> {
+// Base datatable interface that all components use
+export interface DatatableInterface<T = Record<string, unknown>> {
   columns: ColumnDef<T>[];
   actions?: ActionDef<T>[];
   records: T[];
@@ -109,11 +108,7 @@ interface CommonDatatableInterface<T = Record<string, unknown>> {
   sort?: DatatableSortConfigInterface;
   selection?: DatatableSelectionConfigInterface<T>;
   pagination?: DatatablePaginationConfig;
-}
-
-export interface RootDatatableInterface<T = Record<string, unknown>>
-  extends CommonDatatableInterface<T> {
-  config?: RootDatatableConfigInterface<T>;
+  config?: CommonConfigInterface<T>;
 }
 
 // New interfaces for enhanced pagination support
@@ -146,38 +141,11 @@ export interface RemoteControlledPaginationInterface {
   deepLinking?: DeepLinkingConfig;
 }
 
-// Enhanced datatable config interfaces
-type LocalControlledDatatableConfigInterface<T = Record<string, unknown>> =
-  CommonConfigInterface<T>;
-
-type RemoteControlledDatatableConfigInterface<T = Record<string, unknown>> =
-  CommonConfigInterface<T>;
-
 // Union type for all possible pagination configurations
 type DatatablePaginationConfig =
   | RootPaginationInterface
   | LocalControlledPaginationInterface
   | RemoteControlledPaginationInterface;
-
-// Enhanced datatable config interface
-type EnhancedDatatableConfigInterface<T = Record<string, unknown>> = CommonConfigInterface<T>;
-
-// Enhanced datatable interface
-export interface DatatableInterface<T = Record<string, unknown>>
-  extends CommonDatatableInterface<T> {
-  config?: EnhancedDatatableConfigInterface<T>;
-}
-
-// Individual component interfaces for internal use
-export interface LocalControlledDatatableInterface<T = Record<string, unknown>>
-  extends CommonDatatableInterface<T> {
-  config?: LocalControlledDatatableConfigInterface<T>;
-}
-
-export interface RemoteControlledDatatableInterface<T = Record<string, unknown>>
-  extends CommonDatatableInterface<T> {
-  config?: RemoteControlledDatatableConfigInterface<T>;
-}
 
 export interface DatatableRef {
   resetPagination: () => { activePage: number; rowsPerPageNum: number };

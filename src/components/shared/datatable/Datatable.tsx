@@ -1,9 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  RootDatatableInterface,
   DatatableInterface,
-  LocalControlledDatatableInterface,
-  RemoteControlledDatatableInterface,
   DatatableRef,
   RootPaginationInterface,
   LocalControlledPaginationInterface,
@@ -49,7 +46,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   selection,
   pagination,
   config,
-}: RootDatatableInterface<T>) => {
+}: DatatableInterface<T>) => {
   const uniqueId = uuidv4(),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
     [isDragActive, setIsDragActive] = useState(false),
@@ -435,7 +432,7 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   pagination,
   ref,
   ...rest
-}: (LocalControlledDatatableInterface<T> | RemoteControlledDatatableInterface<T>) & {
+}: DatatableInterface<T> & {
   ref?: Ref<DatatableRef>;
 }) => {
   const {
