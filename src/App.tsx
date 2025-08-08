@@ -75,10 +75,10 @@ export const LocalControlWithoutPaginationExample = () => {
         records={localConfig.teamsRecords}
         config={{
           ui: { actionsColWidth: 40 },
-          pagination: {
-            enablePagination: false,
-          },
           rowEvents: localConfig.teamsRowEvents,
+        }}
+        pagination={{
+          enablePagination: false,
         }}
         isLoading={isLocalLoading}
         actions={localConfig.teamsActions}
@@ -338,12 +338,12 @@ const LocalControlledWithCustomPagination = () => {
           ui: {
             actionsColWidth: 40,
           },
-          pagination: {
-            firstContentIndex,
-            lastContentIndex,
-            resetPagination: () => navigateToFirstPage(),
-            paginationComponent: <CustomPagination {...paginationData} />,
-          },
+        }}
+        pagination={{
+          firstContentIndex,
+          lastContentIndex,
+          resetPagination: () => navigateToFirstPage(),
+          paginationComponent: <CustomPagination {...paginationData} />,
         }}
         isLoading={isLocalLoading}
         actions={localConfig.teamsActions}
@@ -1065,18 +1065,18 @@ export const RemoteControlWithPaginationExample = () => {
             loadingIcon: <LoadingIcon />,
             paginationRangeSeparatorLabel,
           },
-          pagination: {
-            remoteControl: {
-              onPaginationDataUpdate,
-              totalRecords: remoteTotalRecords,
-            },
-            rowsDropdown: {
-              optionsList: customOptionsList,
-            },
-            deepLinking: {
-              pageNumKey: 'page',
-              pageSizeKey: 'pageSize',
-            },
+        }}
+        pagination={{
+          remoteControl: {
+            onPaginationDataUpdate,
+            totalRecords: remoteTotalRecords,
+          },
+          rowsDropdown: {
+            optionsList: customOptionsList,
+          },
+          deepLinking: {
+            pageNumKey: 'page',
+            pageSizeKey: 'pageSize',
           },
         }}
         isLoading={isRemoteLoading}

@@ -173,6 +173,12 @@ const App = () => {
           console.log('Selected:', selectedRows);
         },
       }}
+      pagination={{
+        enablePagination: true,
+        rowsDropdown: {
+          rowsPerPage: 10,
+        },
+      }}
       config={{
         ui: {
           actionsColWidth: 120,
@@ -241,12 +247,10 @@ const RemoteDataTable = () => {
         onSorting: handleSort,
         isLocalSort: false,
       }}
-      config={{
-        pagination: {
-          remoteControl: {
-            onPaginationDataUpdate: handlePagination,
-            totalRecords: totalRecords,
-          },
+      pagination={{
+        remoteControl: {
+          onPaginationDataUpdate: handlePagination,
+          totalRecords: totalRecords,
         },
       }}
     />
@@ -271,10 +275,11 @@ const RemoteDataTable = () => {
 | search | [SearchConfigInterface](#searchconfiginterface) | `undefined` | No | Search functionality configuration |
 | sort | [SortConfigInterface](#sortconfiginterface) | `undefined` | No | Sorting functionality configuration |
 | selection | [SelectionConfigInterface](#selectionconfiginterface) | `undefined` | No | Row selection functionality configuration |
-| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for remaining datatable features |
+| pagination | [PaginationConfigInterface](#paginationconfiginterface) | `undefined` | No | Pagination functionality configuration |
+| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for UI and row events |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
 
-**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, and `selection` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
+**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, `selection`, and `pagination` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -286,7 +291,6 @@ const RemoteDataTable = () => {
 |----------|------|-------------|
 | ui | [UiConfigInterface](#uiconfiginterface) | UI customization options |
 | rowEvents | [RowEventsInterface](#roweventsinterface) | Row interaction events |
-| pagination | [PaginationConfigInterface](#paginationconfiginterface) | Pagination configuration |
 
 ### UiConfigInterface:
 
@@ -334,10 +338,8 @@ When using **custom pagination** (providing your own `paginationComponent`), you
       setTotalRecords(filteredCount); // Update your pagination state
     },
   }}
-  config={{
-    pagination: {
-      paginationComponent: <CustomPagination totalRecords={totalRecords} />,
-    },
+  pagination={{
+    paginationComponent: <CustomPagination totalRecords={totalRecords} />,
   }}
 />
 ```
@@ -472,6 +474,9 @@ const MyComponent = () => {
       icon: <SettingsIcon />,
       variant: 'outline',
     },
+  }}
+  pagination={{
+    enablePagination: true,
   }}
 />
 ```

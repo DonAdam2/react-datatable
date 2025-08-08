@@ -5,6 +5,9 @@ import {
   LocalControlledDatatableInterface,
   RemoteControlledDatatableInterface,
   DatatableRef,
+  RootPaginationInterface,
+  LocalControlledPaginationInterface,
+  RemoteControlledPaginationInterface,
 } from './Datatable.types';
 import { useEffect, useMemo, useState, useCallback, useImperativeHandle, Ref } from 'react';
 import { ColumnOrderType } from './datatableHeader/DatatableHeader.types';
@@ -44,6 +47,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   search,
   sort,
   selection,
+  pagination,
   config,
 }: RootDatatableInterface<T>) => {
   const uniqueId = uuidv4(),
@@ -96,7 +100,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       paginationComponent,
       firstContentIndex,
       lastContentIndex,
-    } = config?.pagination ?? {},
+    } = (pagination as RootPaginationInterface) ?? {},
     isTitleLocationOnTitleRow = titleLocation === 'titleRow',
     isTitleButtonsLocationOnTitleRow = titleButtonsLocation === 'titleRow',
     isTitleLocationOnSearchRow = titleLocation === 'searchRow',
@@ -428,18 +432,24 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   config,
   search,
   sort,
+  pagination,
   ref,
   ...rest
 }: (LocalControlledDatatableInterface<T> | RemoteControlledDatatableInterface<T>) & {
   ref?: Ref<DatatableRef>;
 }) => {
-  const { rowsDropdown, enablePagination = true, deepLinking } = config?.pagination ?? {};
+  const {
+    rowsDropdown,
+    enablePagination = true,
+    deepLinking,
+  } = (pagination as LocalControlledPaginationInterface | RemoteControlledPaginationInterface) ??
+  {};
   const { rowsPerPage = 10, enableRowsDropdown = true, optionsList } = rowsDropdown ?? {};
   const { isLocalSearch = true, ...otherSearchProps } = search ?? {};
   const { isLocalSort = true, onSorting } = sort ?? {};
 
   // Safe access to remoteControl properties
-  const remoteControl = (config?.pagination as any)?.remoteControl;
+  const remoteControl = (pagination as RemoteControlledPaginationInterface)?.remoteControl;
   const { onPaginationDataUpdate, totalRecords: remoteTotalRecords = 0 } = remoteControl ?? {};
 
   const [localTotalRecords, setLocalTotalRecords] = useState(0);
@@ -476,7 +486,10 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   const modifiedOptionsList = useMemo(
     () =>
       optionsList
-        ? optionsList.map((el) => ({ ...el, value: JSON.stringify(el.value) }))
+        ? optionsList.map((el) => ({
+            ...el,
+            value: JSON.stringify(el.value),
+          }))
         : rowsPerPageOptions,
     [optionsList]
   );
@@ -538,64 +551,67 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
         isLocalSort,
         onSorting,
       }}
-      config={{
-        ...config,
-        pagination: {
-          enablePagination,
-          // Only provide content indices for local pagination (for data slicing)
-          firstContentIndex: !isRemotePagination ? firstContentIndex : undefined,
-          lastContentIndex: !isRemotePagination ? lastContentIndex : undefined,
-          resetPagination: enablePagination ? resetPagination : undefined,
-          paginationComponent: enablePagination ? (
-            <DatatableFooter
-              paginationComponent={
-                <DatatablePagination
-                  navigateToFirstPage={navigateToFirstPage}
-                  navigateToLastPage={navigateToLastPage}
-                  navigateToPrevPage={navigateToPrevPage}
-                  navigateToNextPage={navigateToNextPage}
-                  totalPages={totalPages}
-                  totalRecords={totalRecords}
-                  recordsPerPage={contentPerPage}
-                  activePage={activePage}
-                  paginationRangeSeparatorLabel={config?.ui?.paginationRangeSeparatorLabel}
-                />
-              }
-              enableRowsDropdown={enableRowsDropdown}
-              rowsPerPageOptions={modifiedOptionsList}
-              rowsPerPageNum={String(contentPerPage)}
-              onChangeRowsPerPage={onChangeRowsPerPage}
-            />
-          ) : undefined,
-        },
+      pagination={{
+        enablePagination,
+        // Only provide content indices for local pagination (for data slicing)
+        firstContentIndex: !isRemotePagination ? firstContentIndex : undefined,
+        lastContentIndex: !isRemotePagination ? lastContentIndex : undefined,
+        resetPagination: enablePagination ? resetPagination : undefined,
+        paginationComponent: enablePagination ? (
+          <DatatableFooter
+            paginationComponent={
+              <DatatablePagination
+                navigateToFirstPage={navigateToFirstPage}
+                navigateToLastPage={navigateToLastPage}
+                navigateToPrevPage={navigateToPrevPage}
+                navigateToNextPage={navigateToNextPage}
+                totalPages={totalPages}
+                totalRecords={totalRecords}
+                recordsPerPage={contentPerPage}
+                activePage={activePage}
+                paginationRangeSeparatorLabel={config?.ui?.paginationRangeSeparatorLabel}
+              />
+            }
+            enableRowsDropdown={enableRowsDropdown}
+            rowsPerPageOptions={modifiedOptionsList}
+            rowsPerPageNum={String(contentPerPage)}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+          />
+        ) : undefined,
       }}
+      config={config}
     />
   );
 };
 
 const Datatable = <T extends Record<string, any> = Record<string, unknown>>({
   config,
+  pagination,
   ref,
   ...rest
 }: DatatableInterface<T> & {
   ref?: Ref<DatatableRef>;
 }) => {
-  const paginationConfig = { enablePagination: true, ...config?.pagination };
-  const enhancedConfig = { ...config, pagination: paginationConfig };
+  const paginationConfig = { enablePagination: true, ...pagination };
 
   // Type guard to determine if custom pagination component is provided
   const isCustomPagination = !!(paginationConfig as any)?.paginationComponent;
 
   return (
     <>
-      {enhancedConfig.pagination.enablePagination ? (
+      {paginationConfig.enablePagination ? (
         isCustomPagination ? (
-          <RootDatatable {...rest} config={enhancedConfig as any} />
+          <RootDatatable {...rest} pagination={paginationConfig as any} config={config} />
         ) : (
-          <ControlledDatatable {...rest} config={enhancedConfig as any} ref={ref} />
+          <ControlledDatatable
+            {...rest}
+            pagination={paginationConfig as any}
+            config={config}
+            ref={ref}
+          />
         )
       ) : (
-        <RootDatatable {...rest} config={enhancedConfig as any} />
+        <RootDatatable {...rest} pagination={paginationConfig as any} config={config} />
       )}
     </>
   );

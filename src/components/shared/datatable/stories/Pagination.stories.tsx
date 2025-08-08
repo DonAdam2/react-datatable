@@ -83,12 +83,12 @@ const CustomPaginationComponentStory = () => {
       }}
       config={{
         ui: { actionsColWidth: 40 },
-        pagination: {
-          firstContentIndex,
-          lastContentIndex,
-          resetPagination: () => navigateToFirstPage(),
-          paginationComponent: <CustomPagination {...paginationData} />,
-        },
+      }}
+      pagination={{
+        firstContentIndex,
+        lastContentIndex,
+        resetPagination: () => navigateToFirstPage(),
+        paginationComponent: <CustomPagination {...paginationData} />,
       }}
       isLoading={isLocalLoading}
     />
@@ -105,10 +105,8 @@ export const WithoutPagination: Story = {
       title={{
         titleLabel: 'Employees (No Pagination)',
       }}
-      config={{
-        pagination: {
-          enablePagination: false,
-        },
+      pagination={{
+        enablePagination: false,
       }}
     />
   ),

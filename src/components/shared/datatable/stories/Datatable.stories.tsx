@@ -27,6 +27,7 @@ interface StandardDatatableComponentProps {
   columnVisibility?: DatatableColumnVisibilityConfigInterface;
   search?: Record<string, unknown>;
   sort?: Record<string, unknown>;
+  pagination?: Record<string, unknown>;
 }
 
 export const StandardDatatableComponent = ({
@@ -37,6 +38,7 @@ export const StandardDatatableComponent = ({
   columnVisibility,
   search,
   sort,
+  pagination,
 }: StandardDatatableComponentProps) => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -65,6 +67,7 @@ export const StandardDatatableComponent = ({
       columnVisibility={columnVisibility}
       search={search}
       sort={sort}
+      pagination={pagination}
       config={{
         ui: { actionsColWidth: 40 },
         ...config,
@@ -215,11 +218,11 @@ const RemoteDatatableComponent = () => {
       }}
       config={{
         ui: { actionsColWidth: 40 },
-        pagination: {
-          remoteControl: {
-            onPaginationDataUpdate,
-            totalRecords: remoteTotalRecords,
-          },
+      }}
+      pagination={{
+        remoteControl: {
+          onPaginationDataUpdate,
+          totalRecords: remoteTotalRecords,
         },
       }}
       isLoading={isRemoteLoading}
