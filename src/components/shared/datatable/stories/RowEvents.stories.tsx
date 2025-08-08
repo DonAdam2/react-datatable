@@ -23,18 +23,16 @@ export const WithOnRowClick: Story = {
       title={{
         titleLabel: 'Employees (Click on active rows)',
       }}
-      config={{
-        rowEvents: {
-          onClick: {
-            // Only enable click for active users
-            clickable: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'active',
-            event: (e: MouseEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log('Row clicked:', getValue('first_name'), getValue('last_name'));
-              alert(
-                `Clicked on ${getValue('first_name')} ${getValue('last_name')} (${getValue('employment.title')})`
-              );
-            },
+      rowEvents={{
+        onClick: {
+          // Only enable click for active users
+          clickable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'active',
+          event: (e: MouseEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log('Row clicked:', getValue('first_name'), getValue('last_name'));
+            alert(
+              `Clicked on ${getValue('first_name')} ${getValue('last_name')} (${getValue('employment.title')})`
+            );
           },
         },
       }}
@@ -48,17 +46,15 @@ export const WithOnRowDoubleClick: Story = {
       title={{
         titleLabel: 'Employees (Double Click on any row)',
       }}
-      config={{
-        rowEvents: {
-          onDoubleClick: {
-            // Enable double click for all users
-            clickable: true,
-            event: (e: MouseEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log('Row double-clicked:', getValue('first_name'), getValue('last_name'));
-              alert(
-                `Double-clicked on ${getValue('first_name')} ${getValue('last_name')}\nID: ${getValue('id')}\nStatus: ${getValue('subscription.status')}`
-              );
-            },
+      rowEvents={{
+        onDoubleClick: {
+          // Enable double click for all users
+          clickable: true,
+          event: (e: MouseEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log('Row double-clicked:', getValue('first_name'), getValue('last_name'));
+            alert(
+              `Double-clicked on ${getValue('first_name')} ${getValue('last_name')}\nID: ${getValue('id')}\nStatus: ${getValue('subscription.status')}`
+            );
           },
         },
       }}
@@ -72,26 +68,24 @@ export const WithOnRowDragAndDrop: Story = {
       title={{
         titleLabel: 'Employees (Drag active rows to idle rows)',
       }}
-      config={{
-        rowEvents: {
-          onDrop: {
-            droppable: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'idle',
-            event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log(
-                `Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`
-              );
-              alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
-            },
+      rowEvents={{
+        onDrop: {
+          droppable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
+            alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
           },
-          onDragStart: {
-            draggable: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'active',
-            event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log(
-                `Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`
-              );
-            },
+        },
+        onDragStart: {
+          draggable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'active',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
           },
         },
       }}
@@ -105,27 +99,25 @@ export const WithRowDragAndCustomIcon: Story = {
       title={{
         titleLabel: 'Employees (Drag active rows to idle rows)',
       }}
-      config={{
-        rowEvents: {
-          onDrop: {
-            droppable: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'idle',
-            event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log(
-                `Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`
-              );
-              alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
-            },
+      rowEvents={{
+        onDrop: {
+          droppable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
+            alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
           },
-          onDragStart: {
-            icon: <EditIcon />,
-            draggable: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'active',
-            event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log(
-                `Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`
-              );
-            },
+        },
+        onDragStart: {
+          icon: <EditIcon />,
+          draggable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'active',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
           },
         },
       }}
@@ -139,29 +131,27 @@ export const CustomDragDropStyles: Story = {
       title={{
         titleLabel: 'Custom Drag & Drop Styles Demo',
       }}
-      config={{
-        rowEvents: {
-          onDrop: {
-            droppable: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'idle',
-            event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log(
-                `Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`
-              );
-              alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
-            },
-            className: 'custom-drop-zone', // Custom orange styling for drop zones
+      rowEvents={{
+        onDrop: {
+          droppable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
+            alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
           },
-          onDragStart: {
-            draggable: ({ original, getValue }: RowInfo<Person>) =>
-              getValue('subscription.status').toLowerCase() === 'active',
-            event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
-              console.log(
-                `Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`
-              );
-            },
-            className: 'custom-drag-style', // Custom red styling for draggable rows
+          className: 'custom-drop-zone', // Custom orange styling for drop zones
+        },
+        onDragStart: {
+          draggable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'active',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
           },
+          className: 'custom-drag-style', // Custom red styling for draggable rows
         },
       }}
     />

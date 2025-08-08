@@ -75,8 +75,8 @@ export const LocalControlWithoutPaginationExample = () => {
         records={localConfig.teamsRecords}
         config={{
           ui: { actionsColWidth: 40 },
-          rowEvents: localConfig.teamsRowEvents,
         }}
+        rowEvents={localConfig.teamsRowEvents}
         pagination={{
           enablePagination: false,
         }}
@@ -197,6 +197,7 @@ export const LocalControlWithPaginationExample = () => {
             actionsColWidth: 40,
           },
         }}
+        rowEvents={localConfig.teamsRowEvents}
         columns={localConfig.teamsColumns}
         records={localConfig.teamsRecords}
         isLoading={isLocalLoading}
@@ -339,6 +340,7 @@ const LocalControlledWithCustomPagination = () => {
             actionsColWidth: 40,
           },
         }}
+        rowEvents={localConfig.teamsRowEvents}
         pagination={{
           firstContentIndex,
           lastContentIndex,

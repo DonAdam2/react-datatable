@@ -28,6 +28,7 @@ interface StandardDatatableComponentProps {
   search?: Record<string, unknown>;
   sort?: Record<string, unknown>;
   pagination?: Record<string, unknown>;
+  rowEvents?: Record<string, unknown>;
 }
 
 export const StandardDatatableComponent = ({
@@ -39,6 +40,7 @@ export const StandardDatatableComponent = ({
   search,
   sort,
   pagination,
+  rowEvents,
 }: StandardDatatableComponentProps) => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -68,6 +70,7 @@ export const StandardDatatableComponent = ({
       search={search}
       sort={sort}
       pagination={pagination}
+      rowEvents={rowEvents}
       config={{
         ui: { actionsColWidth: 40 },
         ...config,

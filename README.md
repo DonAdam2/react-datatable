@@ -276,10 +276,11 @@ const RemoteDataTable = () => {
 | sort | [SortConfigInterface](#sortconfiginterface) | `undefined` | No | Sorting functionality configuration |
 | selection | [SelectionConfigInterface](#selectionconfiginterface) | `undefined` | No | Row selection functionality configuration |
 | pagination | [PaginationConfigInterface](#paginationconfiginterface) | `undefined` | No | Pagination functionality configuration |
-| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for UI and row events |
+| rowEvents | `DatatableRowEvents<T>` | `undefined` | No | Row interaction events configuration |
+| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for UI customization |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
 
-**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, `selection`, and `pagination` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
+**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, `selection`, `pagination`, and `rowEvents` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -290,7 +291,6 @@ const RemoteDataTable = () => {
 | Property | Type | Description |
 |----------|------|-------------|
 | ui | [UiConfigInterface](#uiconfiginterface) | UI customization options |
-| rowEvents | [RowEventsInterface](#roweventsinterface) | Row interaction events |
 
 ### UiConfigInterface:
 
@@ -487,16 +487,29 @@ const MyComponent = () => {
 <Datatable
   columns={columns}
   records={data}
-  config={{
-    rowEvents: {
-      onRowClick: (row, index) => {
-        console.log('Row clicked:', row);
+  rowEvents={{
+    onClick: {
+      clickable: true,
+      event: (e, rowInfo) => {
+        console.log('Row clicked:', rowInfo.original);
       },
-      onRowDoubleClick: (row, index) => {
-        console.log('Row double-clicked:', row);
+    },
+    onDoubleClick: {
+      clickable: true,
+      event: (e, rowInfo) => {
+        console.log('Row double-clicked:', rowInfo.original);
       },
-      onRowMouseEnter: (row, index) => {
-        console.log('Mouse entered row:', row);
+    },
+    onDragStart: {
+      draggable: true,
+      event: (e, rowInfo) => {
+        console.log('Row drag started:', rowInfo.original);
+      },
+    },
+    onDrop: {
+      droppable: true,
+      event: (e, rowInfo) => {
+        console.log('Row dropped:', rowInfo.original);
       },
     },
   }}

@@ -74,7 +74,6 @@ interface DatatableSortConfigInterface {
 
 interface CommonConfigInterface<T = Record<string, unknown>> {
   ui?: UiConfigInterface;
-  rowEvents?: DatatableRowEvents<T>;
 }
 
 export interface RootPaginationInterface {
@@ -108,6 +107,7 @@ export interface DatatableInterface<T = Record<string, unknown>> {
   sort?: DatatableSortConfigInterface;
   selection?: DatatableSelectionConfigInterface<T>;
   pagination?: DatatablePaginationConfig;
+  rowEvents?: DatatableRowEvents<T>;
   config?: CommonConfigInterface<T>;
 }
 

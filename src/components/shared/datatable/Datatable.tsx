@@ -45,6 +45,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   sort,
   selection,
   pagination,
+  rowEvents,
   config,
 }: DatatableInterface<T>) => {
   const uniqueId = uuidv4(),
@@ -381,22 +382,22 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
                 setIsSelectAllRecords={setIsSelectAllRecords}
                 candidateRecordsToSelectAll={candidateRecordsToSelectAll}
                 rowEvents={{
-                  ...config?.rowEvents,
-                  onDragStart: config?.rowEvents?.onDragStart
+                  ...rowEvents,
+                  onDragStart: rowEvents?.onDragStart
                     ? {
-                        ...config.rowEvents.onDragStart,
+                        ...rowEvents.onDragStart,
                         event: (e, rowData) => {
                           setIsDragActive(true);
-                          config.rowEvents?.onDragStart?.event(e, rowData);
+                          rowEvents.onDragStart?.event(e, rowData);
                         },
                       }
                     : undefined,
-                  onDrop: config?.rowEvents?.onDrop
+                  onDrop: rowEvents?.onDrop
                     ? {
-                        ...config.rowEvents.onDrop,
+                        ...rowEvents.onDrop,
                         event: (e, rowData) => {
                           setIsDragActive(false);
-                          config.rowEvents?.onDrop?.event(e, rowData);
+                          rowEvents.onDrop?.event(e, rowData);
                         },
                       }
                     : undefined,
