@@ -78,11 +78,11 @@ const CustomPaginationComponentStory = () => {
       columns={localConfig.teamsColumns}
       records={localConfig.teamsRecords}
       actions={localConfig.teamsActions}
+      search={{
+        onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
+      }}
       config={{
         ui: { actionsColWidth: 40 },
-        search: {
-          onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
-        },
         pagination: {
           firstContentIndex,
           lastContentIndex,

@@ -25,6 +25,7 @@ interface StandardDatatableComponentProps {
   actions?: boolean;
   noDataToDisplayMessage?: ReactNode;
   columnVisibility?: DatatableColumnVisibilityConfigInterface;
+  search?: Record<string, unknown>;
 }
 
 export const StandardDatatableComponent = ({
@@ -33,6 +34,7 @@ export const StandardDatatableComponent = ({
   actions = true,
   noDataToDisplayMessage,
   columnVisibility,
+  search,
 }: StandardDatatableComponentProps) => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -59,6 +61,7 @@ export const StandardDatatableComponent = ({
       records={localConfig.teamsRecords}
       actions={actions ? localConfig.teamsActions : undefined}
       columnVisibility={columnVisibility}
+      search={search}
       config={{
         ui: { actionsColWidth: 40 },
         ...config,
@@ -199,12 +202,12 @@ const RemoteDatatableComponent = () => {
       columns={remoteConfig.teamsColumns}
       records={remoteConfig.teamsRecords}
       actions={remoteConfig.teamsActions}
+      search={{
+        onSearch: onRemoteSearch,
+        isLocalSearch: false,
+      }}
       config={{
         ui: { actionsColWidth: 40 },
-        search: {
-          onSearch: onRemoteSearch,
-          isLocalSearch: false,
-        },
         sort: {
           onSorting: onRemoteSort,
           isLocalSort: false,

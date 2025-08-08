@@ -19,10 +19,8 @@ export const SearchPositionStart: Story = {
       title={{
         titleLabel: 'Employees (Search Start)',
       }}
-      config={{
-        search: {
-          searchPosition: 'start',
-        },
+      search={{
+        searchPosition: 'start',
       }}
     />
   ),
@@ -34,10 +32,8 @@ export const SearchPositionEnd: Story = {
       title={{
         titleLabel: 'Employees (Search End)',
       }}
-      config={{
-        search: {
-          searchPosition: 'end',
-        },
+      search={{
+        searchPosition: 'end',
       }}
     />
   ),
@@ -49,10 +45,8 @@ export const HideTableSearch: Story = {
       title={{
         titleLabel: 'Employees (No Search)',
       }}
-      config={{
-        search: {
-          show: false,
-        },
+      search={{
+        show: false,
       }}
     />
   ),
@@ -64,10 +58,8 @@ export const FullWidthSearch: Story = {
       title={{
         titleLabel: 'Employees (Full Width Search)',
       }}
-      config={{
-        search: {
-          isFullWidth: true,
-        },
+      search={{
+        isFullWidth: true,
       }}
     />
   ),
@@ -79,10 +71,8 @@ export const SearchPlaceholder: Story = {
       title={{
         titleLabel: 'Employees (Custom Placeholder)',
       }}
-      config={{
-        search: {
-          placeholder: 'Search employees...',
-        },
+      search={{
+        placeholder: 'Search employees...',
       }}
     />
   ),

@@ -163,13 +163,13 @@ const App = () => {
         location: 'titleRow',
         defaultVisibleColumns: ['name', 'email'],
       }}
+      search={{
+        show: true,
+        placeholder: 'Search employees...',
+      }}
       config={{
         ui: {
           actionsColWidth: 120,
-        },
-        search: {
-          show: true,
-          placeholder: 'Search employees...',
         },
         selection: {
           mode: 'checkbox',
@@ -233,11 +233,11 @@ const RemoteDataTable = () => {
       columns={columns}
       records={data}
       isLoading={loading}
+      search={{
+        onSearch: handleSearch,
+        isLocalSearch: false,
+      }}
       config={{
-        search: {
-          onSearch: handleSearch,
-          isLocalSearch: false,
-        },
         sort: {
           onSorting: handleSort,
           isLocalSort: false,
@@ -267,10 +267,12 @@ const RemoteDataTable = () => {
 | isLoading | `boolean` | `false` | No | Shows loading state when true |
 | dataTest | `string` | `undefined` | No | Data test attribute for testing |
 | noDataToDisplayMessage | `ReactNode` | `'No data to display'` | No | Custom message when no data is available |
-| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for all datatable features |
+| columnVisibility | [ColumnVisibilityInterface](#columnvisibilityinterface) | `undefined` | No | Column show/hide functionality configuration |
+| search | [SearchConfigInterface](#searchconfiginterface) | `undefined` | No | Search functionality configuration |
+| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for remaining datatable features |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
 
-**Note:** As of the latest version, `columnVisibility` has been moved from the `config` object to be a top-level prop alongside `records`, `columns`, and other main datatable properties.
+**Note:** As of the latest version, `columnVisibility` and `search` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -281,11 +283,9 @@ const RemoteDataTable = () => {
 | Property | Type | Description |
 |----------|------|-------------|
 | ui | [UiConfigInterface](#uiconfiginterface) | UI customization options |
-| search | [SearchConfigInterface](#searchconfiginterface) | Search functionality configuration |
 | sort | [SortConfigInterface](#sortconfiginterface) | Sorting functionality configuration |
 | selection | [SelectionConfigInterface](#selectionconfiginterface) | Row selection configuration |
 | rowEvents | [RowEventsInterface](#roweventsinterface) | Row interaction events |
-| columnVisibility | [ColumnVisibilityInterface](#columnvisibilityinterface) | Column show/hide functionality |
 | pagination | [PaginationConfigInterface](#paginationconfiginterface) | Pagination configuration |
 
 ### UiConfigInterface:
@@ -472,17 +472,15 @@ const MyComponent = () => {
 <Datatable
   columns={columns}
   records={data}
-  config={{
-    search: {
-      show: true,
-      placeholder: 'Search by name, email, or department...',
-      searchPosition: 'start',
-      isFullWidth: true,
-      onSearch: async (searchTerm) => {
-        // Custom search logic
-        const results = await searchAPI(searchTerm);
-        setFilteredData(results);
-      },
+  search={{
+    show: true,
+    placeholder: 'Search by name, email, or department...',
+    searchPosition: 'start',
+    isFullWidth: true,
+    onSearch: async (searchTerm) => {
+      // Custom search logic
+      const results = await searchAPI(searchTerm);
+      setFilteredData(results);
     },
   }}
 />

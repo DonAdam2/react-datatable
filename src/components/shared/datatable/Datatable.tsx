@@ -41,6 +41,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   dataTest,
   noDataToDisplayMessage,
   columnVisibility,
+  search,
   config,
 }: RootDatatableInterface<T>) => {
   const uniqueId = uuidv4(),
@@ -78,7 +79,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       isLocalSearch = true,
       searchPosition = 'end',
       onUpdateFilteredRecordsCount,
-    } = config?.search ?? {},
+    } = search ?? {},
     { isLocalSort = true, onSorting } = config?.sort ?? {},
     {
       show: showColumnVisibilityToggle = true,
@@ -313,14 +314,14 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
             showColumnVisibilityInSearchRow ? columnVisibilityToggle : undefined
           }
           search={{
-            ...config?.search,
+            ...search,
             onSearch: async (value) => {
               if (value === '') {
                 onUpdateFilteredRecordsCount?.(records.length);
               }
               setSearchQuery(value);
               resetPagination?.();
-              await config?.search?.onSearch?.(value);
+              await search?.onSearch?.(value);
             },
             show,
             isLocalSearch,
@@ -423,6 +424,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 // Unified controlled datatable component
 const ControlledDatatable = <T extends Record<string, any> = Record<string, unknown>>({
   config,
+  search,
   ref,
   ...rest
 }: (LocalControlledDatatableInterface<T> | RemoteControlledDatatableInterface<T>) & {
@@ -430,7 +432,7 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
 }) => {
   const { rowsDropdown, enablePagination = true, deepLinking } = config?.pagination ?? {};
   const { rowsPerPage = 10, enableRowsDropdown = true, optionsList } = rowsDropdown ?? {};
-  const { isLocalSearch = true, ...otherSearchProps } = config?.search ?? {};
+  const { isLocalSearch = true, ...otherSearchProps } = search ?? {};
   const { isLocalSort = true, onSorting } = config?.sort ?? {};
 
   // Safe access to remoteControl properties
@@ -522,15 +524,15 @@ const ControlledDatatable = <T extends Record<string, any> = Record<string, unkn
   return (
     <RootDatatable
       {...rest}
+      search={{
+        ...otherSearchProps,
+        isLocalSearch,
+        // Only provide the callback for local pagination with local search
+        onUpdateFilteredRecordsCount:
+          !isRemotePagination && isLocalSearch ? handleUpdateFilteredRecordsCount : undefined,
+      }}
       config={{
         ...config,
-        search: {
-          ...otherSearchProps,
-          isLocalSearch,
-          // Only provide the callback for local pagination with local search
-          onUpdateFilteredRecordsCount:
-            !isRemotePagination && isLocalSearch ? handleUpdateFilteredRecordsCount : undefined,
-        },
         sort: {
           isLocalSort,
           onSorting,

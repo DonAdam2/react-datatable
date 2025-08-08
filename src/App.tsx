@@ -281,10 +281,10 @@ const LocalControlledWithCustomPagination = () => {
   }}
   columns={localConfig.teamsColumns}
   records={localConfig.teamsRecords}
+  search={{
+    onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount
+  }}
   config={{
-    search: {
-      onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount
-    },
     pagination: {
       firstContentIndex,
       lastContentIndex,
@@ -333,12 +333,12 @@ const LocalControlledWithCustomPagination = () => {
         }}
         columns={localConfig.teamsColumns}
         records={localConfig.teamsRecords}
+        search={{
+          onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
+        }}
         config={{
           ui: {
             actionsColWidth: 40,
-          },
-          search: {
-            onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
           },
           pagination: {
             firstContentIndex,
@@ -731,6 +731,15 @@ export const RemoteControlWithPaginationExample = () => {
     ...columnVisibilityConfig,
     location: columnVisibilityLocation,
   }}
+  search={{
+    onSearch: onRemoteSearch,
+    isLocalSearch: false,
+    searchPosition,
+    show: showSearch === 'true',
+    isFullWidth: isSearchFullWidth === 'true',
+    placeholder: searchPlaceholder,
+    searchDataTest: 'search-data-test',
+  }}
   config={{
     ui: {
       showTableHeader: showTableHeader === 'true',
@@ -745,14 +754,6 @@ export const RemoteControlWithPaginationExample = () => {
       descendingSortIcon: &lt;DescendingSortIcon /&gt;,
       loadingIcon: &lt;LoadingIcon /&gt;,
       paginationRangeSeparatorLabel,
-    },
-    search: {
-      onSearch: onRemoteSearch,
-      searchPosition,
-      show: showSearch === 'true',
-      isFullWidth: isSearchFullWidth === 'true',
-      placeholder: searchPlaceholder,
-      searchDataTest: 'search-data-test',
     },
     pagination: {
       remoteControl: {
@@ -769,6 +770,7 @@ export const RemoteControlWithPaginationExample = () => {
     },
     sort: {
       onSorting: onRemoteSort,
+      isLocalSort: false,
     },
     selection: {
       mode: 'radio',
@@ -1022,6 +1024,15 @@ export const RemoteControlWithPaginationExample = () => {
           ...columnVisibilityConfig,
           location: columnVisibilityLocation as 'titleRow' | 'searchRow' | 'actionsColumn',
         }}
+        search={{
+          onSearch: onRemoteSearch,
+          isLocalSearch: false,
+          searchPosition,
+          show: showSearch === 'true',
+          isFullWidth: isSearchFullWidth === 'true',
+          placeholder: searchPlaceholder,
+          searchDataTest: 'search-data-test',
+        }}
         config={{
           ui: {
             showTableHeader: showTableHeader === 'true',
@@ -1036,15 +1047,6 @@ export const RemoteControlWithPaginationExample = () => {
             descendingSortIcon: <DescendingSortIcon />,
             loadingIcon: <LoadingIcon />,
             paginationRangeSeparatorLabel,
-          },
-          search: {
-            onSearch: onRemoteSearch,
-            isLocalSearch: false,
-            searchPosition,
-            show: showSearch === 'true',
-            isFullWidth: isSearchFullWidth === 'true',
-            placeholder: searchPlaceholder,
-            searchDataTest: 'search-data-test',
           },
           pagination: {
             remoteControl: {
