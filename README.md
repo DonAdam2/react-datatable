@@ -316,6 +316,38 @@ const RemoteDataTable = () => {
 | placeholder | `string` | `'Search...'` | Search input placeholder |
 | searchDataTest | `string` | `undefined` | Data test attribute for search |
 | searchPosition | `'start' \| 'end'` | `'end'` | Position of search input |
+| onUpdateFilteredRecordsCount | `(count: number) => void` | `undefined` | **Required for custom pagination** - Callback for filtered record count updates |
+
+#### ⚠️ Important: Custom Pagination Requirement
+
+When using **custom pagination** (providing your own `paginationComponent`), you **must** include the `onUpdateFilteredRecordsCount` prop in your search configuration:
+
+```jsx
+// ✅ REQUIRED when using custom pagination
+<Datatable
+  columns={columns}
+  records={data}
+  search={{
+    show: true,
+    isLocalSearch: true,
+    onUpdateFilteredRecordsCount: (filteredCount) => {
+      setTotalRecords(filteredCount); // Update your pagination state
+    },
+  }}
+  config={{
+    pagination: {
+      paginationComponent: <CustomPagination totalRecords={totalRecords} />,
+    },
+  }}
+/>
+```
+
+**Why is this needed?**
+- When users search/filter data, the total record count changes
+- Custom pagination components need the updated count for correct page calculations
+- Without this prop, pagination will show incorrect totals and navigation
+
+**Note:** This prop is **not required** when using the built-in pagination component.
 
 ### SelectionConfigInterface:
 
