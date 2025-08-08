@@ -36,11 +36,9 @@ export const LocalControlWithoutPaginationExample = () => {
   }}
   columns={localConfig.teamsColumns}
   records={localConfig.teamsRecords}
-  config={{
-    pagination: {
-      enablePagination: false
-    },
-    rowEvents: localConfig.teamsRowEvents
+  rowEvents={localConfig.teamsRowEvents}
+  pagination={{
+    enablePagination: false
   }}
   isLoading={isLocalLoading}
   actions={localConfig.teamsActions}
@@ -73,9 +71,7 @@ export const LocalControlWithoutPaginationExample = () => {
         }}
         columns={localConfig.teamsColumns}
         records={localConfig.teamsRecords}
-        config={{
-          ui: { actionsColWidth: 40 },
-        }}
+        ui={{ actionsColWidth: 40 }}
         rowEvents={localConfig.teamsRowEvents}
         pagination={{
           enablePagination: false,
@@ -192,10 +188,8 @@ export const LocalControlWithPaginationExample = () => {
           className: 'custom-input-className',
           selectedData: selectedPersons,
         }}
-        config={{
-          ui: {
-            actionsColWidth: 40,
-          },
+        ui={{
+          actionsColWidth: 40,
         }}
         rowEvents={localConfig.teamsRowEvents}
         columns={localConfig.teamsColumns}
@@ -283,13 +277,11 @@ const LocalControlledWithCustomPagination = () => {
   search={{
     onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount
   }}
-  config={{
-    pagination: {
-      firstContentIndex,
-      lastContentIndex,
-      resetPagination: () =&gt; navigateToFirstPage(),
-      paginationComponent: &lt;CustomPagination {...paginationData} /&gt;
-    }
+  pagination={{
+    firstContentIndex,
+    lastContentIndex,
+    resetPagination: () =&gt; navigateToFirstPage(),
+    paginationComponent: &lt;CustomPagination {...paginationData} /&gt;
   }}
   isLoading={isLocalLoading}
   actions={localConfig.teamsActions}
@@ -335,10 +327,8 @@ const LocalControlledWithCustomPagination = () => {
         search={{
           onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
         }}
-        config={{
-          ui: {
-            actionsColWidth: 40,
-          },
+        ui={{
+          actionsColWidth: 40,
         }}
         rowEvents={localConfig.teamsRowEvents}
         pagination={{
@@ -756,34 +746,32 @@ export const RemoteControlWithPaginationExample = () => {
     className: 'custom-input-className',
     selectedData: selectedPerson,
   }}
-  config={{
-    ui: {
-      showTableHeader: showTableHeader === 'true',
-      tableWrapperClassName: 'title-wrapper-class-name',
-      tableClassName: 'title-class-name',
-      titleStyles: { color: '#475569' },
-      isActionsColumnLast: isActionsColumnLast === 'true',
-      actionsColLabel,
-      actionsColWidth: 40,
-      sortIcon: &lt;FilterIcon /&gt;,
-      ascendingSortIcon: &lt;AscendingSortIcon /&gt;,
-      descendingSortIcon: &lt;DescendingSortIcon /&gt;,
-      loadingIcon: &lt;LoadingIcon /&gt;,
-      paginationRangeSeparatorLabel,
+  ui={{
+    showTableHeader: showTableHeader === 'true',
+    tableWrapperClassName: 'title-wrapper-class-name',
+    tableClassName: 'title-class-name',
+    titleStyles: { color: '#475569' },
+    isActionsColumnLast: isActionsColumnLast === 'true',
+    actionsColLabel,
+    actionsColWidth: 40,
+    sortIcon: &lt;FilterIcon /&gt;,
+    ascendingSortIcon: &lt;AscendingSortIcon /&gt;,
+    descendingSortIcon: &lt;DescendingSortIcon /&gt;,
+    loadingIcon: &lt;LoadingIcon /&gt;,
+  }}
+  pagination={{
+    remoteControl: {
+      onPaginationDataUpdate,
+      totalRecords: remoteTotalRecords,
     },
-    pagination: {
-      remoteControl: {
-        onPaginationDataUpdate,
-        totalRecords: remoteTotalRecords,
-      },
-      rowsDropdown: {
-        optionsList: customOptionsList,
-      },
-      deepLinking: {
-        pageNumKey: 'page',
-        pageSizeKey: 'pageSize',
-      },
+    rowsDropdown: {
+      optionsList: customOptionsList,
     },
+    deepLinking: {
+      pageNumKey: 'page',
+      pageSizeKey: 'pageSize',
+    },
+    rangeSeparatorLabel: paginationRangeSeparatorLabel,
   }}
   isLoading={isRemoteLoading}
   actions={teamsActions}
@@ -1052,21 +1040,18 @@ export const RemoteControlWithPaginationExample = () => {
           className: 'custom-input-className',
           selectedData: selectedPerson,
         }}
-        config={{
-          ui: {
-            showTableHeader: showTableHeader === 'true',
-            tableWrapperClassName: 'title-wrapper-class-name',
-            tableClassName: 'title-class-name',
-            titleStyles: { color: '#475569' },
-            isActionsColumnLast: isActionsColumnLast === 'true',
-            actionsColLabel,
-            actionsColWidth: 40,
-            sortIcon: <FilterIcon />,
-            ascendingSortIcon: <AscendingSortIcon />,
-            descendingSortIcon: <DescendingSortIcon />,
-            loadingIcon: <LoadingIcon />,
-            paginationRangeSeparatorLabel,
-          },
+        ui={{
+          showTableHeader: showTableHeader === 'true',
+          tableWrapperClassName: 'title-wrapper-class-name',
+          tableClassName: 'title-class-name',
+          titleStyles: { color: '#475569' },
+          isActionsColumnLast: isActionsColumnLast === 'true',
+          actionsColLabel,
+          actionsColWidth: 40,
+          sortIcon: <FilterIcon />,
+          ascendingSortIcon: <AscendingSortIcon />,
+          descendingSortIcon: <DescendingSortIcon />,
+          loadingIcon: <LoadingIcon />,
         }}
         pagination={{
           remoteControl: {
@@ -1080,6 +1065,7 @@ export const RemoteControlWithPaginationExample = () => {
             pageNumKey: 'page',
             pageSizeKey: 'pageSize',
           },
+          rangeSeparatorLabel: paginationRangeSeparatorLabel,
         }}
         isLoading={isRemoteLoading}
         actions={teamsActions}

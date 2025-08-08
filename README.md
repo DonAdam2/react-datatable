@@ -179,10 +179,8 @@ const App = () => {
           rowsPerPage: 10,
         },
       }}
-      config={{
-        ui: {
-          actionsColWidth: 120,
-        },
+      ui={{
+        actionsColWidth: 120,
       }}
     />
   );
@@ -277,20 +275,14 @@ const RemoteDataTable = () => {
 | selection | [SelectionConfigInterface](#selectionconfiginterface) | `undefined` | No | Row selection functionality configuration |
 | pagination | [PaginationConfigInterface](#paginationconfiginterface) | `undefined` | No | Pagination functionality configuration |
 | rowEvents | `DatatableRowEvents<T>` | `undefined` | No | Row interaction events configuration |
-| config | [DatatableConfigInterface](#datatableconfiginterface) | `undefined` | No | Main configuration object for UI customization |
+| ui | [UiConfigInterface](#uiconfiginterface) | `undefined` | No | UI appearance and behavior configuration |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
 
-**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, `selection`, `pagination`, and `rowEvents` have been moved from the `config` object to be top-level props alongside `records`, `columns`, and other main datatable properties.
+**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, `selection`, `pagination`, `rowEvents`, and `ui` are all top-level props alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
 ## Configuration Options:
-
-### DatatableConfigInterface:
-
-| Property | Type | Description |
-|----------|------|-------------|
-| ui | [UiConfigInterface](#uiconfiginterface) | UI customization options |
 
 ### UiConfigInterface:
 
@@ -307,7 +299,7 @@ const RemoteDataTable = () => {
 | sortIcon | `ReactNode` | `undefined` | Default sort icon |
 | ascendingSortIcon | `ReactNode` | `undefined` | Ascending sort icon |
 | descendingSortIcon | `ReactNode` | `undefined` | Descending sort icon |
-| paginationRangeSeparatorLabel | `string` | `'of'` | Separator text in pagination range |
+
 
 ### SearchConfigInterface:
 
@@ -369,6 +361,7 @@ When using **custom pagination** (providing your own `paginationComponent`), you
 | rowsDropdown | [RowsDropdownInterface](#rowsdropdowninterface) | `undefined` | Rows per page configuration |
 | remoteControl | [RemoteControlInterface](#remotecontrolinterface) | `undefined` | Remote pagination configuration |
 | deepLinking | `DeepLinkingConfig` | `undefined` | URL-based pagination state |
+| rangeSeparatorLabel | `string` | `'of'` | Separator text in pagination range (e.g., "1 of 10") |
 
 ### RowsDropdownInterface:
 
@@ -477,6 +470,9 @@ const MyComponent = () => {
   }}
   pagination={{
     enablePagination: true,
+  }}
+  ui={{
+    actionsColWidth: 120,
   }}
 />
 ```
@@ -604,6 +600,10 @@ const MyTypedDatatable: React.FC = () => {
       columns={columns}
       records={employees}
       actions={actions}
+      ui={{
+        actionsColWidth: 120,
+        showTableHeader: true,
+      }}
       // TypeScript will validate all props and configurations
     />
   );

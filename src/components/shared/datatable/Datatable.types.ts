@@ -36,7 +36,7 @@ export interface ActionTooltipInterface {
   isDisplayIndicator?: boolean;
 }
 
-interface UiConfigInterface extends SortIconsInterface {
+interface DatatableUiConfigInterface extends SortIconsInterface {
   showTableHeader?: boolean;
   tableWrapperClassName?: string;
   tableClassName?: string;
@@ -45,7 +45,6 @@ interface UiConfigInterface extends SortIconsInterface {
   actionsColLabel?: string;
   actionsColWidth?: number | string;
   loadingIcon?: ReactNode;
-  paginationRangeSeparatorLabel?: string;
 }
 
 export interface DatatableColumnVisibilityConfigInterface {
@@ -72,16 +71,13 @@ interface DatatableSortConfigInterface {
   onSorting?: (accessorKey: string, order: ColumnOrderType) => void | Promise<void>;
 }
 
-interface CommonConfigInterface<T = Record<string, unknown>> {
-  ui?: UiConfigInterface;
-}
-
 export interface RootPaginationInterface {
   enablePagination?: boolean;
   paginationComponent?: ReactNode;
   resetPagination?: () => { activePage: number; rowsPerPageNum: number } | void | Promise<void>;
   firstContentIndex?: number;
   lastContentIndex?: number;
+  rangeSeparatorLabel?: string;
 }
 
 interface DatatableTitleConfigInterface {
@@ -108,7 +104,7 @@ export interface DatatableInterface<T = Record<string, unknown>> {
   selection?: DatatableSelectionConfigInterface<T>;
   pagination?: DatatablePaginationConfig;
   rowEvents?: DatatableRowEvents<T>;
-  config?: CommonConfigInterface<T>;
+  ui?: DatatableUiConfigInterface;
 }
 
 // New interfaces for enhanced pagination support
@@ -125,6 +121,7 @@ export interface LocalControlledPaginationInterface {
     optionsList?: DatatableRowsDropdownOption[];
   };
   deepLinking?: DeepLinkingConfig;
+  rangeSeparatorLabel?: string;
 }
 
 export interface RemoteControlledPaginationInterface {
@@ -139,6 +136,7 @@ export interface RemoteControlledPaginationInterface {
     totalRecords: number;
   };
   deepLinking?: DeepLinkingConfig;
+  rangeSeparatorLabel?: string;
 }
 
 // Union type for all possible pagination configurations

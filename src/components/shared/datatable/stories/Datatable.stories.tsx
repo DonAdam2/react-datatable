@@ -21,7 +21,7 @@ interface StandardDatatableComponentProps {
     titleButtonsPosition?: 'start' | 'end';
     titleButtonsLocation?: 'titleRow' | 'searchRow';
   };
-  config?: Record<string, unknown>;
+  ui?: Record<string, unknown>;
   actions?: boolean;
   noDataToDisplayMessage?: ReactNode;
   columnVisibility?: DatatableColumnVisibilityConfigInterface;
@@ -33,7 +33,7 @@ interface StandardDatatableComponentProps {
 
 export const StandardDatatableComponent = ({
   title,
-  config = {},
+  ui = {},
   actions = true,
   noDataToDisplayMessage,
   columnVisibility,
@@ -71,9 +71,9 @@ export const StandardDatatableComponent = ({
       sort={sort}
       pagination={pagination}
       rowEvents={rowEvents}
-      config={{
-        ui: { actionsColWidth: 40 },
-        ...config,
+      ui={{
+        actionsColWidth: 40,
+        ...ui,
       }}
       isLoading={isLocalLoading}
       noDataToDisplayMessage={noDataToDisplayMessage}
@@ -121,9 +121,7 @@ const LocalDatatableComponent = () => {
       columns={localConfig.teamsColumns}
       records={localConfig.teamsRecords}
       actions={localConfig.teamsActions}
-      config={{
-        ui: { actionsColWidth: 40 },
-      }}
+      ui={{ actionsColWidth: 40 }}
       isLoading={isLocalLoading}
     />
   );
@@ -219,9 +217,7 @@ const RemoteDatatableComponent = () => {
         onSorting: onRemoteSort,
         isLocalSort: false,
       }}
-      config={{
-        ui: { actionsColWidth: 40 },
-      }}
+      ui={{ actionsColWidth: 40 }}
       pagination={{
         remoteControl: {
           onPaginationDataUpdate,
@@ -270,10 +266,8 @@ export const HideTableHeader: Story = {
       title={{
         titleLabel: 'Employees (No Header)',
       }}
-      config={{
-        ui: {
-          showTableHeader: false,
-        },
+      ui={{
+        showTableHeader: false,
       }}
     />
   ),
@@ -286,12 +280,10 @@ export const WithCustomFilterIcons: Story = {
       title={{
         titleLabel: 'Employees (Custom Filter Icons)',
       }}
-      config={{
-        ui: {
-          sortIcon: <FilterIcon />,
-          ascendingSortIcon: <AscendingSortIcon />,
-          descendingSortIcon: <DescendingSortIcon />,
-        },
+      ui={{
+        sortIcon: <FilterIcon />,
+        ascendingSortIcon: <AscendingSortIcon />,
+        descendingSortIcon: <DescendingSortIcon />,
       }}
     />
   ),

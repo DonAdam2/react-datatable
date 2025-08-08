@@ -66,9 +66,7 @@ const RadioSelectionComponent = () => {
           dataKey: 'id',
           selectedData: selectedPerson,
         }}
-        config={{
-          ui: { actionsColWidth: 40 },
-        }}
+        ui={{ actionsColWidth: 40 }}
         isLoading={isLocalLoading}
       />
     </div>
@@ -129,9 +127,7 @@ const CheckboxSelectionComponent = () => {
           dataKey: 'id',
           selectedData: selectedPersons,
         }}
-        config={{
-          ui: { actionsColWidth: 40 },
-        }}
+        ui={{ actionsColWidth: 40 }}
         isLoading={isLocalLoading}
       />
     </div>

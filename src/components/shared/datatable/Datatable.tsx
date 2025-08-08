@@ -46,7 +46,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   selection,
   pagination,
   rowEvents,
-  config,
+  ui,
 }: DatatableInterface<T>) => {
   const uniqueId = uuidv4(),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
@@ -77,7 +77,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       sortIcon,
       ascendingSortIcon,
       descendingSortIcon,
-    } = config?.ui ?? {},
+    } = ui ?? {},
     {
       show = true,
       isLocalSearch = true,
@@ -427,10 +427,10 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 
 // Unified controlled datatable component
 const PaginatedDatatable = <T extends Record<string, any> = Record<string, unknown>>({
-  config,
   search,
   sort,
   pagination,
+  ui,
   ref,
   ...rest
 }: DatatableInterface<T> & {
@@ -440,6 +440,7 @@ const PaginatedDatatable = <T extends Record<string, any> = Record<string, unkno
     rowsDropdown,
     enablePagination = true,
     deepLinking,
+    rangeSeparatorLabel = 'of',
   } = (pagination as LocalControlledPaginationInterface | RemoteControlledPaginationInterface) ??
   {};
   const { rowsPerPage = 10, enableRowsDropdown = true, optionsList } = rowsDropdown ?? {};
@@ -567,7 +568,7 @@ const PaginatedDatatable = <T extends Record<string, any> = Record<string, unkno
                 totalRecords={totalRecords}
                 recordsPerPage={contentPerPage}
                 activePage={activePage}
-                paginationRangeSeparatorLabel={config?.ui?.paginationRangeSeparatorLabel}
+                paginationRangeSeparatorLabel={rangeSeparatorLabel}
               />
             }
             enableRowsDropdown={enableRowsDropdown}
@@ -577,13 +578,12 @@ const PaginatedDatatable = <T extends Record<string, any> = Record<string, unkno
           />
         ) : undefined,
       }}
-      config={config}
+      ui={ui}
     />
   );
 };
 
 const Datatable = <T extends Record<string, any> = Record<string, unknown>>({
-  config,
   pagination,
   ref,
   ...rest
@@ -599,17 +599,12 @@ const Datatable = <T extends Record<string, any> = Record<string, unknown>>({
     <>
       {paginationConfig.enablePagination ? (
         isCustomPagination ? (
-          <RootDatatable {...rest} pagination={paginationConfig as any} config={config} />
+          <RootDatatable {...rest} pagination={paginationConfig as any} />
         ) : (
-          <PaginatedDatatable
-            {...rest}
-            pagination={paginationConfig as any}
-            config={config}
-            ref={ref}
-          />
+          <PaginatedDatatable {...rest} pagination={paginationConfig as any} ref={ref} />
         )
       ) : (
-        <RootDatatable {...rest} pagination={paginationConfig as any} config={config} />
+        <RootDatatable {...rest} pagination={paginationConfig as any} />
       )}
     </>
   );

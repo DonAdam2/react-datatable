@@ -21,10 +21,8 @@ export const ActionsColumnPositionLast: Story = {
       title={{
         titleLabel: 'Employees (Actions on last column)',
       }}
-      config={{
-        ui: {
-          isActionsColumnLast: true,
-        },
+      ui={{
+        isActionsColumnLast: true,
       }}
     />
   ),
@@ -36,11 +34,9 @@ export const ActionsColumnLabel: Story = {
       title={{
         titleLabel: 'Employees (Custom Actions Label)',
       }}
-      config={{
-        ui: {
-          actionsColWidth: 60,
-          actionsColLabel: <GradientTextColor variant="primary">Operations</GradientTextColor>,
-        },
+      ui={{
+        actionsColWidth: 60,
+        actionsColLabel: <GradientTextColor variant="primary">Operations</GradientTextColor>,
       }}
     />
   ),

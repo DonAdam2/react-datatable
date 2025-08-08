@@ -73,11 +73,37 @@ const LocalPaginationExample = () => {
             { value: 50, displayValue: '50 rows' },
           ],
         },
+        rangeSeparatorLabel: 'out of', // Changes "1 of 10" to "1 out of 10"
       }}
     />
   );
 };
 ```
+
+### Customizing Pagination Range Separator
+
+You can customize the text that appears between page numbers in the pagination display by using the `rangeSeparatorLabel` property:
+
+```jsx
+const CustomSeparatorExample = () => {
+  return (
+    <Datatable
+      columns={columns}
+      records={data}
+      pagination={{
+        rangeSeparatorLabel: 'out of', // Default is 'of'
+        // Results in: "Showing 1-10 out of 100"
+      }}
+    />
+  );
+};
+```
+
+Common separator values:
+- `'of'` (default) → "1 of 10 pages"
+- `'out of'` → "1 out of 10 pages"  
+- `'/'` → "1 / 10 pages"
+- `'|'` → "1 | 10 pages"
 
 ## Remote Pagination
 
@@ -253,6 +279,7 @@ interface LocalControlledPaginationInterface {
     optionsList?: DatatableRowsDropdownOption[];
   };
   deepLinking?: DeepLinkingConfig;
+  rangeSeparatorLabel?: string;
 }
 ```
 
@@ -271,6 +298,7 @@ interface RemoteControlledPaginationInterface {
     totalRecords: number;
   };
   deepLinking?: DeepLinkingConfig;
+  rangeSeparatorLabel?: string;
 }
 ```
 
@@ -283,6 +311,7 @@ interface RootPaginationInterface {
   resetPagination?: () => { activePage: number; rowsPerPageNum: number } | void | Promise<void>;
   firstContentIndex?: number;
   lastContentIndex?: number;
+  rangeSeparatorLabel?: string;
 }
 ```
 
@@ -339,9 +368,18 @@ const CompleteLocalExample = () => {
             ],
           },
         }}
-        config={{
-          ui: {
-            paginationRangeSeparatorLabel: 'out of',
+        pagination={{
+          enablePagination: true,
+          rangeSeparatorLabel: 'out of',
+          rowsDropdown: {
+            enableRowsDropdown: true,
+            rowsPerPage: 15,
+            optionsList: [
+              { value: 5, displayValue: '5 rows' },
+              { value: 15, displayValue: '15 rows' },
+              { value: 30, displayValue: '30 rows' },
+              { value: 50, displayValue: '50 rows' },
+            ],
           },
         }}
       />

@@ -26,10 +26,8 @@ export const PaginationRangeSeparatorLabel: Story = {
       title={{
         titleLabel: 'Employees (Separator "out of")',
       }}
-      config={{
-        ui: {
-          paginationRangeSeparatorLabel: 'out of',
-        },
+      pagination={{
+        rangeSeparatorLabel: 'out of',
       }}
     />
   ),
@@ -81,9 +79,7 @@ const CustomPaginationComponentStory = () => {
       search={{
         onUpdateFilteredRecordsCount: handleUpdateFilteredRecordsCount,
       }}
-      config={{
-        ui: { actionsColWidth: 40 },
-      }}
+      ui={{ actionsColWidth: 40 }}
       pagination={{
         firstContentIndex,
         lastContentIndex,
