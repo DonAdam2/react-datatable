@@ -721,6 +721,11 @@ export const RemoteControlWithPaginationExample = () => {
     ...columnVisibilityConfig,
     location: columnVisibilityLocation,
   }}
+  columnOrdering={{
+    onColumnReorder: (fromIndex, toIndex, newOrder) =&gt; {
+      console.log('Remote datatable - Column reordered:', { fromIndex, toIndex, newOrder });
+    },
+  }}
   search={{
     onSearch: onRemoteSearch,
     isLocalSearch: false,
@@ -1011,6 +1016,11 @@ export const RemoteControlWithPaginationExample = () => {
         columnVisibility={{
           ...columnVisibilityConfig,
           location: columnVisibilityLocation as 'titleRow' | 'searchRow' | 'actionsColumn',
+        }}
+        columnOrdering={{
+          onColumnReorder: (fromIndex, toIndex, newOrder) => {
+            console.log('Remote datatable - Column reordered:', { fromIndex, toIndex, newOrder });
+          },
         }}
         search={{
           onSearch: onRemoteSearch,

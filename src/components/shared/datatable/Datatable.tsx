@@ -22,6 +22,10 @@ import DatatablePagination from '@/components/shared/datatable/datatablePaginati
 import DatatableColumnVisibility from '@/components/shared/datatable/datatableColumnVisibility/DatatableColumnVisibility';
 import usePagination from '@/hooks/usePagination';
 import SettingsIcon from '@/assets/icons/SettingsIcon';
+import {
+  actionsColumnName,
+  selectionsColumnName,
+} from '@/components/shared/datatable/datatableHeader/DatatableHeader';
 
 // Default rows per page options
 const rowsPerPageOptions: { value: string; displayValue: string }[] = [
@@ -41,6 +45,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   dataTest,
   noDataToDisplayMessage,
   columnVisibility,
+  columnOrdering,
   search,
   sort,
   selection,
@@ -57,6 +62,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     }),
     [searchQuery, setSearchQuery] = useState(''),
     [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({}),
+    [columnOrder, setColumnOrder] = useState<string[]>([]),
     {
       titleLabel,
       titlePosition,
@@ -92,6 +98,12 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       hiddenColumns,
       location = 'actionsColumn',
     } = columnVisibility ?? {},
+    {
+      enabled: columnOrderingEnabled = true,
+      onColumnReorder,
+      persistOrder = false,
+      defaultColumnOrder,
+    } = columnOrdering ?? {},
     {
       resetPagination,
       enablePagination,
@@ -130,7 +142,23 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
             })
           : [],
       [showTableHeader, records, selection]
-    );
+    ),
+    // Determine if column ordering is enabled based on column configuration
+    enableColumnOrdering = useMemo(() => {
+      // If enabled flag is explicitly set to false, ordering is completely disabled
+      if (columnOrderingEnabled === false) return false;
+
+      // Check if any column allows ordering
+      return columns.some((column) => {
+        // If enableOrdering is explicitly false, column is not orderable
+        if (column.enableOrdering === false) return false;
+        // If enableOrdering is not set or true, and it's not actions/selections column, it's orderable
+        const accessorKey = String(column.accessorKey);
+        if (accessorKey === actionsColumnName || accessorKey === selectionsColumnName) return false;
+        // If enableOrdering is explicitly true, or not set (defaults to true), column is orderable
+        return column.enableOrdering === true || column.enableOrdering === undefined;
+      });
+    }, [columnOrderingEnabled, columns]);
 
   // Initialize column visibility state
   useEffect(() => {
@@ -163,13 +191,39 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     setVisibleColumns(initialVisibility);
   }, [columns, defaultVisibleColumns, hiddenColumns]);
 
-  // Filter visible columns
+  // Initialize column order state
+  useEffect(() => {
+    if (enableColumnOrdering && columnOrder.length === 0) {
+      const initialOrder = defaultColumnOrder || columns.map((col) => String(col.accessorKey));
+      setColumnOrder(initialOrder);
+    }
+  }, [enableColumnOrdering, defaultColumnOrder, columnOrder.length, columns]);
+
+  // Filter and order visible columns
   const visibleColumnsData = useMemo(() => {
-    return columns.filter((column) => {
+    let filteredColumns = columns.filter((column) => {
       const columnKey = String(column.accessorKey);
       return visibleColumns[columnKey] !== false;
     });
-  }, [columns, visibleColumns]);
+
+    // Apply column ordering if enabled
+    if (enableColumnOrdering && columnOrder.length > 0) {
+      const columnMap = new Map(filteredColumns.map((col) => [String(col.accessorKey), col]));
+      const orderedColumns = columnOrder
+        .map((key) => columnMap.get(key))
+        .filter((col) => col !== undefined);
+
+      // Add any new columns that aren't in the order array
+      const existingKeys = new Set(columnOrder);
+      const newColumns = filteredColumns.filter(
+        (col) => !existingKeys.has(String(col.accessorKey))
+      );
+
+      filteredColumns = [...orderedColumns, ...newColumns];
+    }
+
+    return filteredColumns;
+  }, [columns, visibleColumns, enableColumnOrdering, columnOrder]);
 
   // Handle column visibility toggle
   const handleToggleColumn = useCallback((columnKey: string) => {
@@ -178,6 +232,34 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       [columnKey]: !prev[columnKey],
     }));
   }, []);
+
+  // Handle column reordering
+  const handleColumnReorder = useCallback(
+    async (fromIndex: number, toIndex: number) => {
+      if (!enableColumnOrdering) return;
+
+      // If columnOrder is empty, initialize it from columns
+      const currentOrder =
+        columnOrder.length > 0 ? columnOrder : columns.map((col) => String(col.accessorKey));
+
+      const newOrder = [...currentOrder];
+      const [removed] = newOrder.splice(fromIndex, 1);
+      newOrder.splice(toIndex, 0, removed);
+
+      setColumnOrder(newOrder);
+
+      // Call the onColumnReorder callback if provided
+      await onColumnReorder?.(fromIndex, toIndex, newOrder);
+
+      // If persistOrder is enabled, you could add persistence logic here
+      if (persistOrder) {
+        // Example: localStorage.setItem('columnOrder', JSON.stringify(newOrder));
+        // Or call an API to persist the order
+        console.log('Persisting column order:', newOrder);
+      }
+    },
+    [enableColumnOrdering, columnOrder, onColumnReorder, persistOrder, columns]
+  );
 
   const recordsData = useMemo(() => {
     let clonedRecords = cloneDeep(records);
@@ -364,6 +446,8 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
               columnVisibilityToggle={
                 showColumnVisibilityInActionsColumn ? columnVisibilityToggle : undefined
               }
+              enableColumnOrdering={enableColumnOrdering}
+              onColumnReorder={handleColumnReorder}
             />
           )}
           <tbody>

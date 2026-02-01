@@ -23,6 +23,7 @@ export interface ColumnDef<T = Record<string, any>> {
   className?: string;
   enableSorting?: boolean;
   enableHiding?: boolean;
+  enableOrdering?: boolean;
   cell?: (rowInfo: RowInfo<T>) => ReactNode;
   width?: string | number;
   noWrap?: boolean;
@@ -47,6 +48,8 @@ export interface DatatableHeaderInterface<T = Record<string, unknown>> extends S
   setIsSelectAllRecords: Dispatch<SetStateAction<boolean>>;
   candidateRecordsToSelectAll: T[];
   columnVisibilityToggle?: ReactNode;
+  enableColumnOrdering?: boolean;
+  onColumnReorder?: (fromIndex: number, toIndex: number) => void | Promise<void>;
 }
 
 export interface ActionDef<T = Record<string, unknown>> {

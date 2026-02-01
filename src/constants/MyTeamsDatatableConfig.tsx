@@ -78,6 +78,7 @@ export const getMyTeamsDatatableConfig = (
         header: 'Name',
         enableSorting: true,
         enableHiding: false, // Always visible - core identifier
+        enableOrdering: true, // Enable column ordering for name column
         cell: ({ /*original,*/ getValue }) => (
           <p style={{ margin: 0 }}>
             {getValue('first_name')} {getValue('last_name')}
@@ -89,11 +90,14 @@ export const getMyTeamsDatatableConfig = (
         header: 'Occupation',
         enableSorting: true,
         enableHiding: true, // Can be hidden via column visibility toggle
+        enableOrdering: true, // Enable column ordering for occupation column
       },
       {
         accessorKey: 'subscription.status',
         header: 'Status',
+        enableSorting: true, // Enable sorting for status column
         enableHiding: true, // Can be hidden via column visibility toggle
+        enableOrdering: false, // Disable column ordering for status column
         // width: '10%',
         cell: ({ /*original,*/ getValue }) => (
           <p

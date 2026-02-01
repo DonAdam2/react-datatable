@@ -34,6 +34,50 @@
         line-height: 24px;
         font-weight: 500;
       }
+
+      // Column reordering styles
+      &.column-reorderable {
+        position: relative;
+
+        .column-drag-handle {
+          opacity: 0.7;
+          transition: all 0.2s ease;
+          cursor: move;
+          
+          &:hover {
+            opacity: 1;
+            background-color: rgba(59, 130, 246, 0.15);
+            transform: scale(1.05);
+          }
+
+          &:active {
+            transform: scale(0.95);
+          }
+        }
+
+        &:hover .column-drag-handle {
+          opacity: 0.9;
+        }
+      }
+
+      &.column-dragging {
+        opacity: 0.4;
+        // Removed pointer-events: none to allow drop events
+      }
+
+      // Drop target: show where the column will be placed when dropped
+      &.column-drag-over {
+        position: relative;
+        box-shadow: inset 0 3px 0 0 $blue-500;
+        background-color: rgba(59, 130, 246, 0.08);
+      }
+
+      // Add visual feedback when dragging is active
+      &.column-reorderable {
+        &:hover {
+          background-color: rgba(59, 130, 246, 0.05);
+        }
+      }
     }
   }
 }

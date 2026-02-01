@@ -25,6 +25,7 @@ interface StandardDatatableComponentProps {
   actions?: boolean;
   noDataToDisplayMessage?: ReactNode;
   columnVisibility?: DatatableColumnVisibilityConfigInterface;
+  columnOrdering?: Record<string, unknown>;
   search?: Record<string, unknown>;
   sort?: Record<string, unknown>;
   pagination?: Record<string, unknown>;
@@ -37,6 +38,7 @@ export const StandardDatatableComponent = ({
   actions = true,
   noDataToDisplayMessage,
   columnVisibility,
+  columnOrdering,
   search,
   sort,
   pagination,
@@ -67,6 +69,7 @@ export const StandardDatatableComponent = ({
       records={localConfig.teamsRecords}
       actions={actions ? localConfig.teamsActions : undefined}
       columnVisibility={columnVisibility}
+      columnOrdering={columnOrdering}
       search={search}
       sort={sort}
       pagination={pagination}

@@ -55,6 +55,17 @@ export interface DatatableColumnVisibilityConfigInterface {
   location?: ColumnVisibilityLocationType;
 }
 
+export interface DatatableColumnOrderingConfigInterface {
+  enabled?: boolean;
+  onColumnReorder?: (
+    fromIndex: number,
+    toIndex: number,
+    columnOrder: string[]
+  ) => void | Promise<void>;
+  persistOrder?: boolean;
+  defaultColumnOrder?: string[];
+}
+
 interface DatatableSearchConfigInterface {
   show?: boolean;
   onSearch?: (key: string) => void | Promise<void>;
@@ -99,6 +110,7 @@ export interface DatatableInterface<T = Record<string, unknown>> {
   dataTest?: string;
   noDataToDisplayMessage?: ReactNode;
   columnVisibility?: DatatableColumnVisibilityConfigInterface;
+  columnOrdering?: DatatableColumnOrderingConfigInterface;
   search?: DatatableSearchConfigInterface;
   sort?: DatatableSortConfigInterface;
   selection?: DatatableSelectionConfigInterface<T>;
