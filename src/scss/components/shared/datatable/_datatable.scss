@@ -67,6 +67,28 @@
     text-align: center;
   }
 
+  // Mobile UI table (when mobileUiData is provided and viewport is below breakpoint)
+  .table.datatable-mobile {
+    .datatable-mobile-row {
+      &:not(:last-child) {
+        border-bottom: 1px solid $cool-gray-300;
+      }
+    }
+
+    .datatable-mobile-column {
+      width: 100%;
+    }
+
+    .datatable-mobile-action {
+      white-space: nowrap;
+      width: 1%;
+    }
+
+    .datatable-mobile-no-data {
+      text-align: center;
+    }
+  }
+
   // Enhanced drag and drop experience
   &.drag-active {
     .body-tr:not(.row-dragging):not(.row-drop-target) {

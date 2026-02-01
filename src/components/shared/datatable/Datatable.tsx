@@ -38,6 +38,8 @@ const rowsPerPageOptions: { value: string; displayValue: string }[] = [
 
 const COLUMN_ORDER_STORAGE_KEY_PREFIX = 'datatable-column-order';
 
+const DEFAULT_MOBILE_BREAKPOINT = 768;
+
 const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>({
   columns,
   actions,
@@ -54,8 +56,10 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   pagination,
   rowEvents,
   ui,
+  mobileUiData,
 }: DatatableInterface<T>) => {
   const uniqueId = useMemo(() => uuidv4(), []),
+    [isMobileView, setIsMobileView] = useState(false),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
     [isDragActive, setIsDragActive] = useState(false),
     [sorting, setSorting] = useState<{ accessorKey: string; order: ColumnOrderType }>({
@@ -161,6 +165,16 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
         return column.enableOrdering === true || column.enableOrdering === undefined;
       });
     }, [columnOrderingEnabled, columns]);
+
+  // Detect mobile viewport for mobileUiData
+  const mobileBreakpoint = mobileUiData?.mobileBreakpoint ?? DEFAULT_MOBILE_BREAKPOINT;
+  useEffect(() => {
+    const query = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`);
+    const handler = (e: MediaQueryListEvent) => setIsMobileView(e.matches);
+    setIsMobileView(query.matches);
+    query.addEventListener('change', handler);
+    return () => query.removeEventListener('change', handler);
+  }, [mobileBreakpoint]);
 
   // Initialize column visibility state
   useEffect(() => {
@@ -454,37 +468,40 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       )}
       <div className="table-wrapper">
         {isLoading && <div className="center-loader-wrapper">{loadingIcon}</div>}
-        <table className={`table ${tableClassName} ${isDragActive ? 'drag-active' : ''}`}>
-          {showTableHeader && (
-            <DatatableHeader
-              columns={visibleColumnsData}
-              actions={actions}
-              onSorting={sortHandler}
-              sortIcon={sortIcon}
-              ascendingSortIcon={ascendingSortIcon}
-              descendingSortIcon={descendingSortIcon}
-              actionsColLabel={actionsColLabel}
-              isActionsColumnLast={isActionsColumnLast}
-              actionsColWidth={actionsColWidth}
-              selection={selection}
-              uniqueId={uniqueId}
-              isSelectAllRecords={isSelectAllRecords}
-              setIsSelectAllRecords={setIsSelectAllRecords}
-              candidateRecordsToSelectAll={candidateRecordsToSelectAll}
-              columnVisibilityToggle={
-                showColumnVisibilityInActionsColumn ? columnVisibilityToggle : undefined
-              }
-              enableColumnOrdering={enableColumnOrdering}
-              onColumnReorder={handleColumnReorder}
-            />
-          )}
-          <tbody>
-            {recordsData.map((row, i) => (
-              <DatatableBodyRow
-                key={i}
-                row={row}
+        {isMobileView && mobileUiData ? (
+          <table
+            className={`table datatable-mobile ${tableClassName}`}
+            data-testid="datatable-mobile"
+          >
+            <tbody>
+              {recordsData.length > 0 ? (
+                recordsData.map((row, i) => (
+                  <tr key={i} className="datatable-mobile-row">
+                    <td className="datatable-mobile-column">{mobileUiData.column(row, i)}</td>
+                    <td className="datatable-mobile-action actions-col-wrapper at-end">
+                      {mobileUiData.action(row, i)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={2} className="datatable-mobile-no-data">
+                    {noDataToDisplayMessage ?? <p className="no-data">No data to display</p>}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        ) : (
+          <table className={`table ${tableClassName} ${isDragActive ? 'drag-active' : ''}`}>
+            {showTableHeader && (
+              <DatatableHeader
                 columns={visibleColumnsData}
                 actions={actions}
+                onSorting={sortHandler}
+                sortIcon={sortIcon}
+                ascendingSortIcon={ascendingSortIcon}
+                descendingSortIcon={descendingSortIcon}
                 actionsColLabel={actionsColLabel}
                 isActionsColumnLast={isActionsColumnLast}
                 actionsColWidth={actionsColWidth}
@@ -493,36 +510,59 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
                 isSelectAllRecords={isSelectAllRecords}
                 setIsSelectAllRecords={setIsSelectAllRecords}
                 candidateRecordsToSelectAll={candidateRecordsToSelectAll}
-                rowEvents={{
-                  ...rowEvents,
-                  onDragStart: rowEvents?.onDragStart
-                    ? {
-                        ...rowEvents.onDragStart,
-                        event: (e, rowData) => {
-                          setIsDragActive(true);
-                          rowEvents.onDragStart?.event(e, rowData);
-                        },
-                      }
-                    : undefined,
-                  onDrop: rowEvents?.onDrop
-                    ? {
-                        ...rowEvents.onDrop,
-                        event: (e, rowData) => {
-                          setIsDragActive(false);
-                          rowEvents.onDrop?.event(e, rowData);
-                        },
-                      }
-                    : undefined,
-                }}
                 columnVisibilityToggle={
                   showColumnVisibilityInActionsColumn ? columnVisibilityToggle : undefined
                 }
-                onDragEnd={() => setIsDragActive(false)}
+                enableColumnOrdering={enableColumnOrdering}
+                onColumnReorder={handleColumnReorder}
               />
-            ))}
-          </tbody>
-        </table>
-        {recordsData.length === 0 && (
+            )}
+            <tbody>
+              {recordsData.map((row, i) => (
+                <DatatableBodyRow
+                  key={i}
+                  row={row}
+                  columns={visibleColumnsData}
+                  actions={actions}
+                  actionsColLabel={actionsColLabel}
+                  isActionsColumnLast={isActionsColumnLast}
+                  actionsColWidth={actionsColWidth}
+                  selection={selection}
+                  uniqueId={uniqueId}
+                  isSelectAllRecords={isSelectAllRecords}
+                  setIsSelectAllRecords={setIsSelectAllRecords}
+                  candidateRecordsToSelectAll={candidateRecordsToSelectAll}
+                  rowEvents={{
+                    ...rowEvents,
+                    onDragStart: rowEvents?.onDragStart
+                      ? {
+                          ...rowEvents.onDragStart,
+                          event: (e, rowData) => {
+                            setIsDragActive(true);
+                            rowEvents.onDragStart?.event(e, rowData);
+                          },
+                        }
+                      : undefined,
+                    onDrop: rowEvents?.onDrop
+                      ? {
+                          ...rowEvents.onDrop,
+                          event: (e, rowData) => {
+                            setIsDragActive(false);
+                            rowEvents.onDrop?.event(e, rowData);
+                          },
+                        }
+                      : undefined,
+                  }}
+                  columnVisibilityToggle={
+                    showColumnVisibilityInActionsColumn ? columnVisibilityToggle : undefined
+                  }
+                  onDragEnd={() => setIsDragActive(false)}
+                />
+              ))}
+            </tbody>
+          </table>
+        )}
+        {recordsData.length === 0 && !(isMobileView && mobileUiData) && (
           <>
             {noDataToDisplayMessage ? (
               noDataToDisplayMessage

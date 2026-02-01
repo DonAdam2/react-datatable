@@ -36,6 +36,13 @@ export interface ActionTooltipInterface {
   isDisplayIndicator?: boolean;
 }
 
+export interface MobileUiDataInterface<T = Record<string, unknown>> {
+  column: (row: T, index?: number) => ReactNode;
+  action: (row: T, index?: number) => ReactNode;
+  /** Breakpoint in px below which mobile UI is shown. Optional; default 768. */
+  mobileBreakpoint?: number;
+}
+
 interface DatatableUiConfigInterface extends SortIconsInterface {
   showTableHeader?: boolean;
   tableWrapperClassName?: string;
@@ -128,6 +135,7 @@ export interface DatatableInterface<T = Record<string, unknown>> {
   pagination?: DatatablePaginationConfig;
   rowEvents?: DatatableRowEvents<T>;
   ui?: DatatableUiConfigInterface;
+  mobileUiData?: MobileUiDataInterface<T>;
 }
 
 // New interfaces for enhanced pagination support
