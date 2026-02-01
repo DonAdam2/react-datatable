@@ -55,6 +55,16 @@ export interface DatatableColumnVisibilityConfigInterface {
   location?: ColumnVisibilityLocationType;
 }
 
+/**
+ * When provided, column order is persisted to localStorage. Both keys are required.
+ * - enabled: whether to persist order
+ * - key: stable localStorage key (required for order to survive page refresh)
+ */
+export interface DatatablePersistOrderConfig {
+  enabled: boolean;
+  key: string;
+}
+
 export interface DatatableColumnOrderingConfigInterface {
   enabled?: boolean;
   onColumnReorder?: (
@@ -62,7 +72,8 @@ export interface DatatableColumnOrderingConfigInterface {
     toIndex: number,
     columnOrder: string[]
   ) => void | Promise<void>;
-  persistOrder?: boolean;
+  /** Optional. When provided, both `enabled` and `key` are required. */
+  persistOrder?: DatatablePersistOrderConfig;
   defaultColumnOrder?: string[];
 }
 

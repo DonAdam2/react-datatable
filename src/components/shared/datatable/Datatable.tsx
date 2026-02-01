@@ -36,6 +36,8 @@ const rowsPerPageOptions: { value: string; displayValue: string }[] = [
   { value: '40', displayValue: '40 rows' },
 ];
 
+const COLUMN_ORDER_STORAGE_KEY_PREFIX = 'datatable-column-order';
+
 const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>({
   columns,
   actions,
@@ -53,7 +55,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   rowEvents,
   ui,
 }: DatatableInterface<T>) => {
-  const uniqueId = uuidv4(),
+  const uniqueId = useMemo(() => uuidv4(), []),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
     [isDragActive, setIsDragActive] = useState(false),
     [sorting, setSorting] = useState<{ accessorKey: string; order: ColumnOrderType }>({
@@ -101,7 +103,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     {
       enabled: columnOrderingEnabled = true,
       onColumnReorder,
-      persistOrder = false,
+      persistOrder,
       defaultColumnOrder,
     } = columnOrdering ?? {},
     {
@@ -191,13 +193,37 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     setVisibleColumns(initialVisibility);
   }, [columns, defaultVisibleColumns, hiddenColumns]);
 
-  // Initialize column order state
+  // Initialize column order state (including persisted order from localStorage when persistOrder is enabled)
   useEffect(() => {
     if (enableColumnOrdering && columnOrder.length === 0) {
-      const initialOrder = defaultColumnOrder || columns.map((col) => String(col.accessorKey));
+      const columnKeys = columns.map((col) => String(col.accessorKey));
+      let initialOrder: string[];
+
+      if (persistOrder?.enabled) {
+        try {
+          const storageKeyId = persistOrder.key;
+          const storageKey = `${COLUMN_ORDER_STORAGE_KEY_PREFIX}-${storageKeyId}`;
+          const stored = localStorage.getItem(storageKey);
+          if (stored) {
+            const parsed = JSON.parse(stored) as string[];
+            const validOrder = Array.isArray(parsed)
+              ? parsed.filter((key) => columnKeys.includes(key))
+              : [];
+            const newColumns = columnKeys.filter((key) => !validOrder.includes(key));
+            initialOrder = validOrder.length > 0 ? [...validOrder, ...newColumns] : columnKeys;
+          } else {
+            initialOrder = defaultColumnOrder || columnKeys;
+          }
+        } catch {
+          initialOrder = defaultColumnOrder || columnKeys;
+        }
+      } else {
+        initialOrder = defaultColumnOrder || columnKeys;
+      }
+
       setColumnOrder(initialOrder);
     }
-  }, [enableColumnOrdering, defaultColumnOrder, columnOrder.length, columns]);
+  }, [enableColumnOrdering, defaultColumnOrder, columnOrder.length, columns, persistOrder]);
 
   // Filter and order visible columns
   const visibleColumnsData = useMemo(() => {
@@ -251,11 +277,13 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       // Call the onColumnReorder callback if provided
       await onColumnReorder?.(fromIndex, toIndex, newOrder);
 
-      // If persistOrder is enabled, you could add persistence logic here
-      if (persistOrder) {
-        // Example: localStorage.setItem('columnOrder', JSON.stringify(newOrder));
-        // Or call an API to persist the order
-        console.log('Persisting column order:', newOrder);
+      if (persistOrder?.enabled) {
+        try {
+          const storageKey = `${COLUMN_ORDER_STORAGE_KEY_PREFIX}-${persistOrder.key}`;
+          localStorage.setItem(storageKey, JSON.stringify(newOrder));
+        } catch {
+          // Ignore localStorage errors (e.g. quota, private mode)
+        }
       }
     },
     [enableColumnOrdering, columnOrder, onColumnReorder, persistOrder, columns]
