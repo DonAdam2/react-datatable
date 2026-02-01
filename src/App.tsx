@@ -23,6 +23,46 @@ import DescendingSortIcon from '@/assets/icons/DescendingSortIcon';
 import LoadingIcon from '@/components/shared/LoadingIcon';
 import useRouter from '@/hooks/useRouter';
 
+export const LocalDatatableExample = () => {
+  const [localPeople, setLocalPeople] = useState<Person[]>([]),
+    [localError, setLocalError] = useState(false),
+    [isLocalLoading, setIsLocalLoading] = useState(false),
+    localConfig = getMyTeamsDatatableConfig(localPeople);
+
+  useEffect(() => {
+    (async () => {
+      setIsLocalLoading(true);
+      try {
+        const localData = await fakeBackend({ itemsPerPage: 30 });
+        setLocalPeople(localData.data);
+      } catch (err) {
+        console.log(err);
+        setLocalError(true);
+      } finally {
+        setIsLocalLoading(false);
+      }
+    })();
+  }, []);
+
+  return (
+    <>
+      {localError && <span>Local error: {localError}</span>}
+      <Datatable
+        title={{
+          titleLabel: 'Local Employees',
+          titleLocation: 'titleRow',
+        }}
+        columns={localConfig.teamsColumns}
+        records={localConfig.teamsRecords}
+        ui={{ actionsColWidth: 40 }}
+        rowEvents={localConfig.teamsRowEvents}
+        isLoading={isLocalLoading}
+        actions={localConfig.teamsActions}
+      />
+    </>
+  );
+};
+
 export const LocalControlWithoutPaginationExample = () => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]),
     [localError, setLocalError] = useState(false),
@@ -221,7 +261,9 @@ export const CustomNoDataToDisplayExample = () => {
   actions={localConfig.teamsActions}
   noDataToDisplayMessage={
     &lt;div style={{ padding: "5rem 0", textAlign: "center" }}&gt;
-      &lt;span&gt;This is a custom no data to display&lt;/span&gt;
+      &lt;h3&gt;No employees found&lt;/h3&gt;
+      &lt;p&gt;This is a custom no data message with custom styling.&lt;/p&gt;
+      &lt;Button label="Add Employee" onClick={() =&gt; alert('Add employee clicked!')} /&gt;
     &lt;/div&gt;
   }
 /&gt;
@@ -240,7 +282,9 @@ export const CustomNoDataToDisplayExample = () => {
         actions={localConfig.teamsActions}
         noDataToDisplayMessage={
           <div style={{ padding: '5rem 0', textAlign: 'center' }}>
-            <span>This is a custom no data to display</span>
+            <h3>No employees found</h3>
+            <p>This is a custom no data message with custom styling.</p>
+            <Button label="Add Employee" onClick={() => alert('Add employee clicked!')} />
           </div>
         }
       />
@@ -250,6 +294,94 @@ export const CustomNoDataToDisplayExample = () => {
           <code dangerouslySetInnerHTML={{ __html: codeSnippet }} />
         </pre>
       </details>
+    </>
+  );
+};
+
+export const HideTableHeaderExample = () => {
+  const [localPeople, setLocalPeople] = useState<Person[]>([]),
+    [localError, setLocalError] = useState(false),
+    [isLocalLoading, setIsLocalLoading] = useState(false),
+    localConfig = getMyTeamsDatatableConfig(localPeople);
+
+  useEffect(() => {
+    (async () => {
+      setIsLocalLoading(true);
+      try {
+        const localData = await fakeBackend({ itemsPerPage: 30 });
+        setLocalPeople(localData.data);
+      } catch (err) {
+        console.log(err);
+        setLocalError(true);
+      } finally {
+        setIsLocalLoading(false);
+      }
+    })();
+  }, []);
+
+  return (
+    <>
+      {localError && <span>Local error: {localError}</span>}
+      <Datatable
+        title={{
+          titleLabel: 'Employees (No Header)',
+          titleLocation: 'titleRow',
+        }}
+        columns={localConfig.teamsColumns}
+        records={localConfig.teamsRecords}
+        ui={{
+          actionsColWidth: 40,
+          showTableHeader: false,
+        }}
+        rowEvents={localConfig.teamsRowEvents}
+        isLoading={isLocalLoading}
+        actions={localConfig.teamsActions}
+      />
+    </>
+  );
+};
+
+export const WithCustomFilterIconsExample = () => {
+  const [localPeople, setLocalPeople] = useState<Person[]>([]),
+    [localError, setLocalError] = useState(false),
+    [isLocalLoading, setIsLocalLoading] = useState(false),
+    localConfig = getMyTeamsDatatableConfig(localPeople);
+
+  useEffect(() => {
+    (async () => {
+      setIsLocalLoading(true);
+      try {
+        const localData = await fakeBackend({ itemsPerPage: 30 });
+        setLocalPeople(localData.data);
+      } catch (err) {
+        console.log(err);
+        setLocalError(true);
+      } finally {
+        setIsLocalLoading(false);
+      }
+    })();
+  }, []);
+
+  return (
+    <>
+      {localError && <span>Local error: {localError}</span>}
+      <Datatable
+        title={{
+          titleLabel: 'Employees (Custom Filter Icons)',
+          titleLocation: 'titleRow',
+        }}
+        columns={localConfig.teamsColumns}
+        records={localConfig.teamsRecords}
+        ui={{
+          actionsColWidth: 40,
+          sortIcon: <FilterIcon />,
+          ascendingSortIcon: <AscendingSortIcon />,
+          descendingSortIcon: <DescendingSortIcon />,
+        }}
+        rowEvents={localConfig.teamsRowEvents}
+        isLoading={isLocalLoading}
+        actions={localConfig.teamsActions}
+      />
     </>
   );
 };
@@ -1108,6 +1240,9 @@ const App = () => (
         <strong>&lt;body dir="ltr"&gt;</strong> for LTR languages, depending on the current
         language. direction
       </p>
+      <h3 className="demo-title">Basic Local (titleRow)</h3>
+      <LocalDatatableExample />
+      <hr style={{ margin: '25px 0' }} />
       <h3 className="demo-title">Remote & pagination</h3>
       <RemoteControlWithPaginationExample />
       <hr style={{ margin: '25px 0' }} />
@@ -1122,6 +1257,12 @@ const App = () => (
       <hr style={{ margin: '25px 0' }} />
       <h3 className="demo-title">Custom no data to display</h3>
       <CustomNoDataToDisplayExample />
+      <hr style={{ margin: '25px 0' }} />
+      <h3 className="demo-title">Hide table header</h3>
+      <HideTableHeaderExample />
+      <hr style={{ margin: '25px 0' }} />
+      <h3 className="demo-title">Custom filter icons</h3>
+      <WithCustomFilterIconsExample />
     </div>
   </ErrorBoundary>
 );

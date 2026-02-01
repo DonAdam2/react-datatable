@@ -165,27 +165,61 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
     stylesRef.current = styles;
   }, [styles]);
 
-  const updateScrollableParentScroll = ({ target: { scrollTop, scrollLeft } }: any) => {
-    setWrapperParentUpdated({
-      top: scrollTop,
-      left: scrollLeft,
-    });
-  };
+  const updateScrollableParentScroll = useCallback(
+    ({ target }: { target?: { scrollTop?: number; scrollLeft?: number } }) => {
+      const scrollTop = target?.scrollTop ?? document.documentElement.scrollTop ?? 0;
+      const scrollLeft = target?.scrollLeft ?? document.documentElement.scrollLeft ?? 0;
+      setWrapperParentUpdated((prev) =>
+        prev.top === scrollTop && prev.left === scrollLeft
+          ? prev
+          : { top: scrollTop, left: scrollLeft }
+      );
+    },
+    []
+  );
+
+  const handleResize = useCallback(() => {
+    if (tooltipWrapperRef.current) {
+      const scrollableParent = getScrollParent(tooltipWrapperRef.current);
+      const scrollTop =
+        scrollableParent?.scrollTop ??
+        document.documentElement.scrollTop ??
+        document.body.scrollTop ??
+        0;
+      const scrollLeft =
+        scrollableParent?.scrollLeft ??
+        document.documentElement.scrollLeft ??
+        document.body.scrollLeft ??
+        0;
+      setWrapperParentUpdated({ top: scrollTop, left: scrollLeft });
+    }
+  }, []);
+
+  const resizeScheduledRef = useRef(false);
 
   useEffect(() => {
     if (tooltipWrapperRef.current) {
       const wrapperRef = tooltipWrapperRef.current,
         scrollableParent = getScrollParent(wrapperRef);
 
-      window.addEventListener('resize', updateScrollableParentScroll);
+      const resizeHandler = () => {
+        if (resizeScheduledRef.current) return;
+        resizeScheduledRef.current = true;
+        requestAnimationFrame(() => {
+          handleResize();
+          resizeScheduledRef.current = false;
+        });
+      };
+
+      window.addEventListener('resize', resizeHandler);
       scrollableParent.addEventListener('scroll', updateScrollableParentScroll);
 
       return () => {
-        window.removeEventListener('resize', updateScrollableParentScroll);
+        window.removeEventListener('resize', resizeHandler);
         scrollableParent.removeEventListener('scroll', updateScrollableParentScroll);
       };
     }
-  }, []);
+  }, [updateScrollableParentScroll, handleResize]);
 
   useEffect(() => {
     const handleScroll = () => {
