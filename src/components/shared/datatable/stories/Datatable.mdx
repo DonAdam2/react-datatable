@@ -1,0 +1,59 @@
+import { Meta, Stories } from '@storybook/addon-docs/blocks';
+import * as DatatableStories from './Datatable.stories';
+
+<Meta of={DatatableStories} />
+
+# Datatable
+
+A feature-rich, customizable datatable component for React that supports both local and remote data operations.
+
+## Features
+
+- **Local & Remote Data** — supports client-side operations or server-side with callbacks
+- **Search** — global search with debouncing, local or remote filtering
+- **Sorting** — clickable column headers with customizable sort icons
+- **Pagination** — built-in or custom pagination components, with deep linking support
+- **Column Visibility** — show/hide columns via a dropdown toggle
+- **Column Ordering** — drag-to-reorder columns with optional localStorage persistence
+- **Row Selection** — radio (single) or checkbox (multi) selection with per-row disable/hide logic
+- **Row Events** — click, double-click, and drag-and-drop with custom styling
+- **Actions Column** — per-row action buttons with tooltip support
+- **Mobile UI** — responsive layout with custom column/action rendering below a breakpoint
+- **Custom No Data Message** — fully customizable empty state
+
+## Basic Usage
+
+```tsx
+import Datatable from '@/components/shared/datatable/Datatable';
+
+<Datatable
+  title={{ titleLabel: 'Employees' }}
+  columns={columns}
+  records={records}
+  actions={actions}
+/>
+```
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `columns` | `ColumnDef[]` | Column definitions (header, accessor, render, etc.) |
+| `records` | `T[]` | Data rows |
+| `actions` | `ActionDef[]` | Per-row action buttons |
+| `title` | `object` | Title label, position, location, and title buttons |
+| `search` | `object` | Search config (show, placeholder, position, local/remote) |
+| `sort` | `object` | Sort config (local/remote, callback) |
+| `pagination` | `object` | Pagination config (local, remote, rows dropdown, deep linking) |
+| `columnVisibility` | `object` | Column visibility toggle config |
+| `columnOrdering` | `object` | Column ordering (drag-to-reorder) config |
+| `selection` | `object` | Row selection config (radio/checkbox) |
+| `rowEvents` | `object` | Row event handlers (click, double-click, drag-and-drop) |
+| `ui` | `object` | UI customization (class names, sort icons, actions column) |
+| `mobileUiData` | `object` | Mobile responsive layout config |
+| `isLoading` | `boolean` | Show loading indicator |
+| `noDataToDisplayMessage` | `ReactNode` | Custom empty state |
+
+## Stories
+
+<Stories />
