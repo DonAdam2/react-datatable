@@ -1,9 +1,9 @@
-import { FallbackProps } from 'react-error-boundary';
+import { FallbackProps, getErrorMessage } from 'react-error-boundary';
 
 const ErrorBoundaryFallback = ({ error, resetErrorBoundary }: FallbackProps) => (
   <div>
     <h3>Something went wrong:</h3>
-    <pre>{error.message}</pre>
+    <pre>{getErrorMessage(error)}</pre>
     <button onClick={resetErrorBoundary}>Try Again</button>
   </div>
 );
