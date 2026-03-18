@@ -7,6 +7,7 @@ const hasJsxRuntime = (() => {
     require.resolve('react/jsx-runtime');
     return true;
   } catch (e) {
+    console.log(e);
     return false;
   }
 })();
@@ -19,10 +20,8 @@ module.exports = (api) => {
         '@babel/preset-env',
         {
           targets: {
-            browsers: ['ie >= 11', 'last 2 versions'],
+            browsers: ['last 2 versions'],
           },
-          useBuiltIns: 'entry',
-          corejs: '3',
         },
       ],
       ['@babel/preset-react', { runtime: hasJsxRuntime ? 'automatic' : 'classic' }],
