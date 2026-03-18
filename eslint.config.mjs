@@ -1,16 +1,20 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-const storybook = require('eslint-plugin-storybook'),
-  path = require('path'),
-  js = require('@eslint/js'),
-  react = require('eslint-plugin-react'),
-  reactHooks = require('eslint-plugin-react-hooks'),
-  prettier = require('eslint-plugin-prettier'),
-  prettierConfig = require('eslint-config-prettier'),
-  typescriptEslint = require('@typescript-eslint/eslint-plugin'),
-  typescriptParser = require('@typescript-eslint/parser'),
-  globals = require('globals');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import storybook from 'eslint-plugin-storybook';
+import js from '@eslint/js';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import prettier from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
+import globals from 'globals';
 
-module.exports = [
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default [
   // Allow linting of .storybook folder
   {
     ignores: ['!.storybook'],
