@@ -603,7 +603,7 @@ const PaginatedDatatable = <T extends Record<string, any> = Record<string, unkno
   const remoteControl = (pagination as RemoteControlledPaginationInterface)?.remoteControl;
   const { onPaginationDataUpdate, totalRecords: remoteTotalRecords = 0 } = remoteControl ?? {};
 
-  const [localTotalRecords, setLocalTotalRecords] = useState(0);
+  const [localTotalRecords, setLocalTotalRecords] = useState(rest.records.length);
 
   // Determine if we're using remote pagination
   const isRemotePagination = !!remoteControl;
@@ -645,12 +645,12 @@ const PaginatedDatatable = <T extends Record<string, any> = Record<string, unkno
     [optionsList]
   );
 
-  // Update local total records for local pagination
-  useEffect(() => {
-    if (!isRemotePagination) {
-      setLocalTotalRecords(rest.records.length);
-    }
-  }, [rest.records.length, isRemotePagination]);
+  // Update local total records when records array changes (e.g. parent adds/removes records)
+  const [prevRecordsLength, setPrevRecordsLength] = useState(rest.records.length);
+  if (!isRemotePagination && prevRecordsLength !== rest.records.length) {
+    setPrevRecordsLength(rest.records.length);
+    setLocalTotalRecords(rest.records.length);
+  }
 
   const onChangeRowsPerPage = async (value: string | string[]) => {
     const newRowsPerPage = +value;

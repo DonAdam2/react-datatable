@@ -28,7 +28,7 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
     }),
     tooltipWrapperRef = useRef<HTMLDivElement>(null),
     tooltipMessage = useRef<HTMLSpanElement>(null),
-    newPosition = useRef(position),
+    [currentPosition, setCurrentPosition] = useState(position),
     stylesRef = useRef({ top: 0, left: 0 }),
     space = 15,
     [childrenWidth, setChildrenWidth] = useState<undefined | number>(undefined),
@@ -41,20 +41,18 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
     isHoverTrigger = useMemo(() => trigger === TooltipTriggerEnum.HOVER, [trigger]),
     isClickTrigger = useMemo(() => trigger === TooltipTriggerEnum.CLICK, [trigger]);
 
-  //set children width and height
+  //set children width, height and visibility after DOM measurement
+  /* eslint-disable react-hooks/set-state-in-effect -- DOM measurement requires effect */
   useEffect(() => {
     if (show && childrenWidth === undefined && childrenHeight === undefined) {
       setChildrenHeight(tooltipMessage.current?.offsetHeight);
       setChildrenWidth(tooltipMessage.current?.offsetWidth);
     }
-  }, [show, childrenWidth, childrenHeight]);
-
-  //update tooltip visibility
-  useEffect(() => {
     if (show && !isTooltipVisible && childrenWidth !== undefined && childrenHeight !== undefined) {
       setIsTooltipVisible(true);
     }
-  }, [show, isTooltipVisible, childrenWidth, childrenHeight]);
+  }, [show, childrenWidth, childrenHeight, isTooltipVisible]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const showTooltip = () => {
     if (!show) {
@@ -107,7 +105,7 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
         pos = TooltipPositionEnum.RIGHT;
       }
 
-      newPosition.current = pos;
+      setCurrentPosition(pos);
 
       if (pos === TooltipPositionEnum.TOP) {
         style.top = Math.max(
@@ -156,6 +154,7 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
     const newStyles = getStylesList();
     if (newStyles.top !== stylesRef.current.top || newStyles.left !== stylesRef.current.left) {
       stylesRef.current = newStyles;
+      // eslint-disable-next-line
       setStyles(newStyles);
     }
   }, [getStylesList]);
@@ -296,7 +295,7 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
           {show && tooltipContent && (
             <span
               ref={tooltipMessage}
-              className={`tooltip-message on-${newPosition.current} ${messageClassName} ${isDisplayTooltipIndicator ? 'is-indicator' : ''}`}
+              className={`tooltip-message on-${currentPosition} ${messageClassName} ${isDisplayTooltipIndicator ? 'is-indicator' : ''}`}
               dangerouslySetInnerHTML={{ __html: tooltipContent }}
               style={{
                 color: color ? color : '#ffffff',
@@ -304,8 +303,8 @@ const Tooltip: FC<PropsWithChildren<ToolTipInterface>> = ({
                   ? { '--background-color': backgroundColor }
                   : { '--background-color': 'rgba(97, 97, 97, 0.92)' }),
                 ...(customPosition ? customPosition : styles),
-                ...(newPosition.current === TooltipPositionEnum.LEFT ||
-                newPosition.current === TooltipPositionEnum.TOP
+                ...(currentPosition === TooltipPositionEnum.LEFT ||
+                currentPosition === TooltipPositionEnum.TOP
                   ? { visibility: isTooltipVisible ? 'visible' : 'hidden' }
                   : {}),
               }}

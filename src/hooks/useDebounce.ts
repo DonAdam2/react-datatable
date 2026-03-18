@@ -1,14 +1,8 @@
 import debounce from 'lodash/debounce';
-import { useEffect, useRef } from 'react';
+import { useMemo } from 'react';
 
 function useDebounce(callback: any, delay: number) {
-  const debouncedFn = useRef(debounce(callback, delay));
-
-  useEffect(() => {
-    debouncedFn.current = debounce(callback, delay);
-  }, [delay, callback]);
-
-  return debouncedFn.current;
+  return useMemo(() => debounce(callback, delay), [delay, callback]);
 }
 
 export default useDebounce;
