@@ -1,5 +1,5 @@
 ARG APP_ROOT_PATH="/usr/app"
-ARG NODE_VERSION="17"
+ARG NODE_VERSION="20"
 ARG PRODUCTION_ENV_FILE=".env"
 
 ##########################################################
