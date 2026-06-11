@@ -265,42 +265,50 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   if (e.dataTransfer) {
                     const customPreview = rowEvents?.onDragStart?.preview;
                     const previewOffset = rowEvents?.onDragStart?.previewOffset;
-                    // Anchor X at the grab point so the (full-width) row doesn't overflow
-                    // the page; only the Y axis is brought close to the cursor.
+                    // The preview is shown with a small gap from the cursor: the cursor
+                    // comes first, then the element offset down/right. previewOffset
+                    // overrides the default 5px gap on each axis.
                     const rowRect = rowRef.current?.getBoundingClientRect();
-                    const grabOffsetX = rowRect ? e.clientX - rowRect.left : 0;
-                    const grabOffsetY = rowRect ? e.clientY - rowRect.top : 0;
+                    const gapX = previewOffset?.x ?? 15;
+                    const gapY = previewOffset?.y ?? 15;
 
                     if (customPreview) {
                       // Render the consumer-supplied preview into an off-screen container
                       // and use it as the drag image (similar to react-dnd).
+                      // The element passed to setDragImage must NOT have a CSS transform,
+                      // otherwise the browser ignores the offset. So the outer container
+                      // (the drag-image target) stays transform-free and an inner element
+                      // carries the .drag-image styling (which includes a rotate).
                       const container = document.createElement('div');
                       container.style.position = 'absolute';
                       container.style.top = '-10000px';
                       container.style.left = '-10000px';
                       container.style.pointerEvents = 'none';
 
+                      const inner = document.createElement('div');
                       const previewClasses = ['drag-image'];
                       if (rowEvents?.onDragStart?.className) {
                         previewClasses.push(rowEvents.onDragStart.className);
                       }
-                      container.className = previewClasses.join(' ');
+                      inner.className = previewClasses.join(' ');
+                      // The .drag-image rotate skews the preview diagonally; keep it straight.
+                      inner.style.transform = 'none';
+                      container.appendChild(inner);
 
                       document.body.appendChild(container);
 
-                      const root = createRoot(container);
+                      const root = createRoot(inner);
                       // flushSync ensures the preview is in the DOM before setDragImage reads it
                       flushSync(() => {
                         root.render(customPreview(rowInfo));
                       });
 
-                      // X at the grab point; Y centered on the preview's real rendered
-                      // height so the cursor sits on the preview (no gap).
-                      e.dataTransfer.setDragImage(
-                        container,
-                        previewOffset?.x ?? grabOffsetX,
-                        previewOffset?.y ?? container.getBoundingClientRect().height / 2
-                      );
+                      // Inset the preview from the wrapper's top-left by the gap, then
+                      // anchor at (0,0) so the cursor sits at the corner and the preview
+                      // appears offset down/right by the gap.
+                      container.style.paddingLeft = `${gapX}px`;
+                      container.style.paddingTop = `${gapY}px`;
+                      e.dataTransfer.setDragImage(container, 0, 0);
 
                       // Clean up the temporary preview
                       setTimeout(() => {
@@ -315,42 +323,52 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                       // collapse together. Wrap the clone in a real table (matching the
                       // source table's width/styles) to preserve column spacing.
                       const sourceTable = rowRef.current.closest('table');
-                      const dragImage = document.createElement('table');
-                      dragImage.className = sourceTable?.className ?? '';
+
+                      // The element passed to setDragImage must NOT have a CSS transform,
+                      // otherwise the browser ignores the offset. So the outer wrapper (the
+                      // drag-image target) stays transform-free, and the inner table carries
+                      // the .drag-image styling (which includes a rotate).
+                      const dragImage = document.createElement('div');
                       dragImage.style.position = 'absolute';
                       dragImage.style.top = '-10000px';
                       dragImage.style.left = '-10000px';
-                      dragImage.style.borderCollapse = 'collapse';
-                      dragImage.style.backgroundColor = 'white';
+
+                      const previewTable = document.createElement('table');
+                      previewTable.className = sourceTable?.className ?? '';
+                      previewTable.style.borderCollapse = 'collapse';
+                      previewTable.style.backgroundColor = 'white';
                       if (sourceTable) {
-                        dragImage.style.width = `${sourceTable.getBoundingClientRect().width}px`;
+                        previewTable.style.width = `${sourceTable.getBoundingClientRect().width}px`;
                       }
                       // Match the preview height to the actual row height (the off-screen
                       // table otherwise loses the row height it gets from ancestor CSS).
                       if (rowRect) {
-                        dragImage.style.height = `${rowRect.height}px`;
+                        previewTable.style.height = `${rowRect.height}px`;
                         rowClone.style.height = `${rowRect.height}px`;
                       }
 
                       const tbody = document.createElement('tbody');
                       tbody.appendChild(rowClone);
-                      dragImage.appendChild(tbody);
+                      previewTable.appendChild(tbody);
 
                       // Apply default drag-image class and custom class if provided
                       const dragImageClasses = ['drag-image'];
                       if (rowEvents?.onDragStart?.className) {
                         dragImageClasses.push(rowEvents.onDragStart.className);
                       }
-                      dragImage.className += ` ${dragImageClasses.join(' ')}`;
+                      previewTable.className += ` ${dragImageClasses.join(' ')}`;
+                      // The .drag-image rotate looks like a diagonal skew on a full-width
+                      // row, so keep the row preview straight.
+                      previewTable.style.transform = 'none';
 
+                      dragImage.appendChild(previewTable);
                       document.body.appendChild(dragImage);
-                      // X at the left edge (cursor); Y at the grab point plus a nudge so the
-                      // preview hugs the cursor (compensates the browser's drag-image gap).
-                      e.dataTransfer.setDragImage(
-                        dragImage,
-                        previewOffset?.x ?? 0,
-                        previewOffset?.y ?? grabOffsetY + 16
-                      );
+                      // Inset the preview from the wrapper's top-left by the gap, then
+                      // anchor at (0,0) so the cursor sits at the corner and the preview
+                      // appears offset down/right by the gap.
+                      dragImage.style.paddingLeft = `${gapX}px`;
+                      dragImage.style.paddingTop = `${gapY}px`;
+                      e.dataTransfer.setDragImage(dragImage, 0, 0);
 
                       // Clean up the temporary drag image
                       setTimeout(() => {

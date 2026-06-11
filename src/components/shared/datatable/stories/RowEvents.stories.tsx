@@ -125,6 +125,61 @@ export const WithRowDragAndCustomIcon: Story = {
   ),
 };
 
+export const WithCustomDragPreview: Story = {
+  render: () => (
+    <StandardDatatableComponent
+      title={{
+        titleLabel: 'Employees (Drag active rows - custom preview)',
+      }}
+      rowEvents={{
+        onDrop: {
+          droppable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'idle',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dropped! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
+            alert(`Dropped employee: ${getValue('first_name')} ${getValue('last_name')}`);
+          },
+        },
+        onDragStart: {
+          draggable: ({ original, getValue }: RowInfo<Person>) =>
+            getValue('subscription.status').toLowerCase() === 'active',
+          event: (e: DragEvent, { original, getValue }: RowInfo<Person>) => {
+            console.log(
+              `Row dragged! Employee: ${getValue('first_name')} ${getValue('last_name')}`
+            );
+          },
+          // Render a custom drag preview instead of cloning the full row
+          preview: ({ getValue }: RowInfo<Person>) => (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 12px',
+                background: '#1f2937',
+                color: '#fff',
+                borderRadius: 8,
+                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.25)',
+                fontSize: 13,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <EditIcon />
+              <span>
+                Moving {getValue('first_name')} {getValue('last_name')}
+              </span>
+            </div>
+          ),
+          // Anchor the preview slightly below-right of the cursor
+          previewOffset: { x: 10, y: 10 },
+        },
+      }}
+    />
+  ),
+};
+
 export const CustomDragDropStyles: Story = {
   render: () => (
     <StandardDatatableComponent
