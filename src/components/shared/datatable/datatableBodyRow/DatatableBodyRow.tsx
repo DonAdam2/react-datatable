@@ -1,4 +1,6 @@
 import { DragEvent, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { DatatableBodyRowInterface } from '@/components/shared/datatable/datatableBodyRow/DatatableBodyRow.types';
 import { RowInfo } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import useTouchScreenDetect from '@/hooks/useTouchScreenDetect';
@@ -107,7 +109,13 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
       ),
     };
 
+  // A column reorder drag (started from the header) tags its payload with this type.
+  // Row drag/drop must ignore it so column sorting doesn't trigger row hover/drop.
+  const isColumnReorderDrag = (e: DragEvent<HTMLTableRowElement>) =>
+    Array.from(e.dataTransfer.types).includes('application/x-column-reorder');
+
   const onDragOverHandler = (e: DragEvent<HTMLTableRowElement>) => {
+    if (isColumnReorderDrag(e)) return;
     e.preventDefault();
     if (!isDraggedOver) {
       setIsDraggedOver(true);
@@ -115,6 +123,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   };
 
   const onDragLeaveHandler = (e: DragEvent<HTMLTableRowElement>) => {
+    if (isColumnReorderDrag(e)) return;
     // Only set drag over to false if we're actually leaving the row element
     if (!rowRef.current?.contains(e.relatedTarget as Node)) {
       setIsDraggedOver(false);
@@ -128,6 +137,7 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
   };
 
   const onDropHandler = (e: DragEvent<HTMLTableRowElement>) => {
+    if (isColumnReorderDrag(e)) return;
     e.preventDefault();
     setIsDraggedOver(false);
     if (rowEvents?.onDrop?.event) {
@@ -252,24 +262,101 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                   e.stopPropagation();
                   setIsDragging(true);
 
-                  // Create a custom drag image with styling
-                  if (rowRef.current && e.dataTransfer) {
-                    const dragImage = rowRef.current.cloneNode(true) as HTMLElement;
+                  if (e.dataTransfer) {
+                    const customPreview = rowEvents?.onDragStart?.preview;
+                    const previewOffset = rowEvents?.onDragStart?.previewOffset;
+                    // Anchor X at the grab point so the (full-width) row doesn't overflow
+                    // the page; only the Y axis is brought close to the cursor.
+                    const rowRect = rowRef.current?.getBoundingClientRect();
+                    const grabOffsetX = rowRect ? e.clientX - rowRect.left : 0;
+                    const grabOffsetY = rowRect ? e.clientY - rowRect.top : 0;
 
-                    // Apply default drag-image class and custom class if provided
-                    const dragImageClasses = ['drag-image'];
-                    if (rowEvents?.onDragStart?.className) {
-                      dragImageClasses.push(rowEvents.onDragStart.className);
+                    if (customPreview) {
+                      // Render the consumer-supplied preview into an off-screen container
+                      // and use it as the drag image (similar to react-dnd).
+                      const container = document.createElement('div');
+                      container.style.position = 'absolute';
+                      container.style.top = '-10000px';
+                      container.style.left = '-10000px';
+                      container.style.pointerEvents = 'none';
+
+                      const previewClasses = ['drag-image'];
+                      if (rowEvents?.onDragStart?.className) {
+                        previewClasses.push(rowEvents.onDragStart.className);
+                      }
+                      container.className = previewClasses.join(' ');
+
+                      document.body.appendChild(container);
+
+                      const root = createRoot(container);
+                      // flushSync ensures the preview is in the DOM before setDragImage reads it
+                      flushSync(() => {
+                        root.render(customPreview(rowInfo));
+                      });
+
+                      // X at the grab point; Y centered on the preview's real rendered
+                      // height so the cursor sits on the preview (no gap).
+                      e.dataTransfer.setDragImage(
+                        container,
+                        previewOffset?.x ?? grabOffsetX,
+                        previewOffset?.y ?? container.getBoundingClientRect().height / 2
+                      );
+
+                      // Clean up the temporary preview
+                      setTimeout(() => {
+                        root.unmount();
+                        document.body.removeChild(container);
+                      }, 0);
+                    } else if (rowRef.current) {
+                      // Default: clone the full row as the drag image.
+                      const rowClone = rowRef.current.cloneNode(true) as HTMLElement;
+
+                      // A bare <tr> outside a <table> loses table layout, so the cells
+                      // collapse together. Wrap the clone in a real table (matching the
+                      // source table's width/styles) to preserve column spacing.
+                      const sourceTable = rowRef.current.closest('table');
+                      const dragImage = document.createElement('table');
+                      dragImage.className = sourceTable?.className ?? '';
+                      dragImage.style.position = 'absolute';
+                      dragImage.style.top = '-10000px';
+                      dragImage.style.left = '-10000px';
+                      dragImage.style.borderCollapse = 'collapse';
+                      dragImage.style.backgroundColor = 'white';
+                      if (sourceTable) {
+                        dragImage.style.width = `${sourceTable.getBoundingClientRect().width}px`;
+                      }
+                      // Match the preview height to the actual row height (the off-screen
+                      // table otherwise loses the row height it gets from ancestor CSS).
+                      if (rowRect) {
+                        dragImage.style.height = `${rowRect.height}px`;
+                        rowClone.style.height = `${rowRect.height}px`;
+                      }
+
+                      const tbody = document.createElement('tbody');
+                      tbody.appendChild(rowClone);
+                      dragImage.appendChild(tbody);
+
+                      // Apply default drag-image class and custom class if provided
+                      const dragImageClasses = ['drag-image'];
+                      if (rowEvents?.onDragStart?.className) {
+                        dragImageClasses.push(rowEvents.onDragStart.className);
+                      }
+                      dragImage.className += ` ${dragImageClasses.join(' ')}`;
+
+                      document.body.appendChild(dragImage);
+                      // X at the left edge (cursor); Y at the grab point plus a nudge so the
+                      // preview hugs the cursor (compensates the browser's drag-image gap).
+                      e.dataTransfer.setDragImage(
+                        dragImage,
+                        previewOffset?.x ?? 0,
+                        previewOffset?.y ?? grabOffsetY + 16
+                      );
+
+                      // Clean up the temporary drag image
+                      setTimeout(() => {
+                        document.body.removeChild(dragImage);
+                      }, 0);
                     }
-                    dragImage.className += ` ${dragImageClasses.join(' ')}`;
-
-                    document.body.appendChild(dragImage);
-                    e.dataTransfer.setDragImage(dragImage, 0, 0);
-
-                    // Clean up the temporary drag image
-                    setTimeout(() => {
-                      document.body.removeChild(dragImage);
-                    }, 0);
                   }
 
                   rowEvents?.onDragStart?.event(e, rowInfo);

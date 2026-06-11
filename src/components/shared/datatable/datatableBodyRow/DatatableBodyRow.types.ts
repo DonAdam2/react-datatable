@@ -27,6 +27,13 @@ export interface DatatableRowEvents<T = Record<string, unknown>> {
     draggable?: boolean | BooleanFuncType<T>;
     event: (e: DragEvent, rowInfo: RowInfo<T>) => void;
     className?: string;
+    /**
+     * Customize the drag preview shown while dragging the row (similar to react-dnd).
+     * Return the content to render as the drag image. When omitted, the full row is cloned.
+     */
+    preview?: (rowInfo: RowInfo<T>) => ReactNode;
+    /** Offset of the drag preview relative to the cursor. Defaults to { x: 0, y: 0 }. */
+    previewOffset?: { x: number; y: number };
   };
 }
 

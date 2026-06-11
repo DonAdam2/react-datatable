@@ -153,23 +153,8 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
 
     setDraggedColumnIndex(columnIndex);
 
-    // Create a drag image that shows the entire column
-    const dragImg = document.createElement('div');
-    dragImg.style.position = 'absolute';
-    dragImg.style.top = '-10000px';
-    dragImg.style.left = '-10000px';
-    dragImg.style.backgroundColor = 'white';
-    dragImg.style.border = '2px solid #3b82f6';
-    dragImg.style.borderRadius = '6px';
-    dragImg.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
-    dragImg.style.opacity = '0.9';
-    dragImg.style.width = '200px';
-    dragImg.style.height = '300px'; // Fixed height to ensure it fits
-    dragImg.style.overflow = 'hidden';
-    dragImg.style.display = 'flex';
-    dragImg.style.flexDirection = 'column';
-
-    // Get the table element to find all cells in this column
+    // Build a drag image that mirrors the actual column: real column width,
+    // every rendered row, and full (untruncated) cell content.
     const table = (e.target as HTMLElement).closest('table');
     const headerCell = (e.target as HTMLElement).closest('th');
 
@@ -178,96 +163,69 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
       const headerRow = headerCell.parentElement;
       const domColumnIndex = headerRow ? Array.from(headerRow.children).indexOf(headerCell) : -1;
 
-      // Add header
+      // Match the real rendered column width so the preview looks like the lifted column
+      const columnWidth = headerCell.getBoundingClientRect().width;
+
+      const dragImg = document.createElement('div');
+      dragImg.style.position = 'absolute';
+      dragImg.style.top = '-10000px';
+      dragImg.style.left = '-10000px';
+      dragImg.style.width = `${columnWidth}px`;
+      dragImg.style.boxSizing = 'border-box';
+      dragImg.style.backgroundColor = 'white';
+      dragImg.style.border = '2px solid #3b82f6';
+      dragImg.style.borderRadius = '6px';
+      dragImg.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
+      dragImg.style.opacity = '0.9';
+      dragImg.style.overflow = 'hidden';
+      dragImg.style.display = 'flex';
+      dragImg.style.flexDirection = 'column';
+
+      // Clone the header cell, showing its full content
       const headerClone = headerCell.cloneNode(true) as HTMLElement;
+      headerClone.style.boxSizing = 'border-box';
+      headerClone.style.width = '100%';
       headerClone.style.padding = '6px 10px';
       headerClone.style.backgroundColor = '#f3f4f6';
       headerClone.style.fontWeight = '600';
       headerClone.style.borderBottom = '1px solid #e5e7eb';
       headerClone.style.fontSize = '13px';
-      headerClone.style.whiteSpace = 'nowrap';
+      headerClone.style.whiteSpace = 'normal';
       headerClone.style.overflow = 'visible';
-      headerClone.style.textOverflow = 'initial';
-      headerClone.style.width = 'auto';
-      headerClone.style.minWidth = 'fit-content';
+      headerClone.style.textOverflow = 'clip';
       dragImg.appendChild(headerClone);
 
-      // Add data cells to match the visible table height
+      // Clone every rendered data cell in this column with full content (no truncation)
       const tbody = table.querySelector('tbody');
       if (tbody && domColumnIndex >= 0) {
-        const allRows = Array.from(tbody.querySelectorAll('tr'));
-
-        // Calculate how many rows to show based on available space
-        // Show a reasonable number of rows that fits in the fixed drag image height
-        const visibleRowCount = allRows.length;
-        const maxRowsForPreview = 8; // Reduced to fit in 300px height
-        const minRowsForGoodPreview = 4;
-        const rowsToShow = Math.min(
-          Math.max(visibleRowCount, minRowsForGoodPreview),
-          maxRowsForPreview
-        );
-
-        // If we need to show more rows than exist, duplicate some rows for visual effect
-        const rows = [];
-        for (let i = 0; i < rowsToShow; i++) {
-          if (i < allRows.length) {
-            rows.push(allRows[i]);
-          } else {
-            // Duplicate rows cyclically to fill space
-            rows.push(allRows[i % allRows.length]);
-          }
-        }
+        const rows = Array.from(tbody.querySelectorAll('tr'));
         rows.forEach((row) => {
           const cells = row.querySelectorAll('td');
-          if (cells[domColumnIndex]) {
-            const cellClone = cells[domColumnIndex].cloneNode(true) as HTMLElement;
+          const sourceCell = cells[domColumnIndex];
+          if (sourceCell) {
+            const cellClone = sourceCell.cloneNode(true) as HTMLElement;
+            cellClone.style.boxSizing = 'border-box';
+            cellClone.style.width = '100%';
+            cellClone.style.maxWidth = 'none';
             cellClone.style.padding = '4px 10px';
             cellClone.style.borderBottom = '1px solid #f3f4f6';
-            cellClone.style.whiteSpace = 'nowrap';
-            cellClone.style.overflow = 'visible';
-            cellClone.style.textOverflow = 'initial';
-            cellClone.style.width = 'auto';
-            cellClone.style.minWidth = 'fit-content';
-            cellClone.style.maxWidth = 'none';
             cellClone.style.fontSize = '12px';
+            cellClone.style.whiteSpace = 'normal';
+            cellClone.style.overflow = 'visible';
+            cellClone.style.textOverflow = 'clip';
             dragImg.appendChild(cellClone);
           }
         });
-
-        // Add indicator if there are more rows than we're showing
-        if (visibleRowCount > rowsToShow) {
-          const moreIndicator = document.createElement('div');
-          moreIndicator.textContent = `... ${visibleRowCount - rowsToShow} more rows`;
-          moreIndicator.style.padding = '4px 12px';
-          moreIndicator.style.textAlign = 'center';
-          moreIndicator.style.color = '#6b7280';
-          moreIndicator.style.fontStyle = 'italic';
-          moreIndicator.style.fontSize = '11px';
-          moreIndicator.style.backgroundColor = '#f9fafb';
-          moreIndicator.style.borderTop = '1px solid #e5e7eb';
-          dragImg.appendChild(moreIndicator);
-        } else if (rowsToShow > visibleRowCount) {
-          const moreIndicator = document.createElement('div');
-          moreIndicator.textContent = `${visibleRowCount} total rows (preview)`;
-          moreIndicator.style.padding = '4px 12px';
-          moreIndicator.style.textAlign = 'center';
-          moreIndicator.style.color = '#6b7280';
-          moreIndicator.style.fontStyle = 'italic';
-          moreIndicator.style.fontSize = '11px';
-          moreIndicator.style.backgroundColor = '#f9fafb';
-          moreIndicator.style.borderTop = '1px solid #e5e7eb';
-          dragImg.appendChild(moreIndicator);
-        }
       }
+
+      document.body.appendChild(dragImg);
+      e.dataTransfer.setDragImage(dragImg, 10, 10);
+
+      // Clean up drag image after a short delay
+      setTimeout(() => {
+        document.body.removeChild(dragImg);
+      }, 100);
     }
-
-    document.body.appendChild(dragImg);
-    e.dataTransfer.setDragImage(dragImg, 10, 10);
-
-    // Clean up drag image after a short delay
-    setTimeout(() => {
-      document.body.removeChild(dragImg);
-    }, 100);
   };
 
   const handleDragOver = (e: DragEvent<HTMLElement>, columnAccessorKey: string) => {
