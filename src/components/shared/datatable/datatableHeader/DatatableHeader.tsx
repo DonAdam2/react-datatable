@@ -167,9 +167,6 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
       const columnWidth = headerCell.getBoundingClientRect().width;
 
       const dragImg = document.createElement('div');
-      dragImg.style.position = 'absolute';
-      dragImg.style.top = '-10000px';
-      dragImg.style.left = '-10000px';
       dragImg.style.width = `${columnWidth}px`;
       dragImg.style.boxSizing = 'border-box';
       dragImg.style.backgroundColor = 'white';
@@ -218,12 +215,29 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
         });
       }
 
-      document.body.appendChild(dragImg);
-      e.dataTransfer.setDragImage(dragImg, 10, 10);
+      // Wrap the styled preview in a transparent, transform-free wrapper so a gap between
+      // the cursor and the preview is honored (anchored at the cursor-side corner). In RTL
+      // the preview is mirrored to the left of the cursor.
+      const gap = 10;
+      const isRtl = getComputedStyle(headerCell).direction === 'rtl';
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'absolute';
+      wrapper.style.top = '-10000px';
+      wrapper.style.left = '-10000px';
+      wrapper.style.paddingTop = `${gap}px`;
+      if (isRtl) {
+        wrapper.style.paddingRight = `${gap}px`;
+      } else {
+        wrapper.style.paddingLeft = `${gap}px`;
+      }
+      wrapper.appendChild(dragImg);
+      document.body.appendChild(wrapper);
+
+      e.dataTransfer.setDragImage(wrapper, isRtl ? wrapper.offsetWidth : 0, 0);
 
       // Clean up drag image after a short delay
       setTimeout(() => {
-        document.body.removeChild(dragImg);
+        document.body.removeChild(wrapper);
       }, 100);
     }
   };

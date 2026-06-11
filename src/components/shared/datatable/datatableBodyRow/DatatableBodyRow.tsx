@@ -269,8 +269,11 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                     // comes first, then the element offset down/right. previewOffset
                     // overrides the default 5px gap on each axis.
                     const rowRect = rowRef.current?.getBoundingClientRect();
-                    const gapX = previewOffset?.x ?? 15;
-                    const gapY = previewOffset?.y ?? 15;
+                    const isRtl = rowRef.current
+                      ? getComputedStyle(rowRef.current).direction === 'rtl'
+                      : false;
+                    const gapX = previewOffset?.x ?? 10;
+                    const gapY = previewOffset?.y ?? 10;
 
                     if (customPreview) {
                       // Render the consumer-supplied preview into an off-screen container
@@ -303,12 +306,17 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
                         root.render(customPreview(rowInfo));
                       });
 
-                      // Inset the preview from the wrapper's top-left by the gap, then
-                      // anchor at (0,0) so the cursor sits at the corner and the preview
-                      // appears offset down/right by the gap.
-                      container.style.paddingLeft = `${gapX}px`;
+                      // Inset the preview by the gap and anchor at the cursor-side corner so
+                      // it's offset away from the cursor. In RTL the preview is mirrored to
+                      // the left of the cursor; in LTR it sits to the right.
                       container.style.paddingTop = `${gapY}px`;
-                      e.dataTransfer.setDragImage(container, 0, 0);
+                      if (isRtl) {
+                        container.style.paddingRight = `${gapX}px`;
+                        e.dataTransfer.setDragImage(container, container.offsetWidth, 0);
+                      } else {
+                        container.style.paddingLeft = `${gapX}px`;
+                        e.dataTransfer.setDragImage(container, 0, 0);
+                      }
 
                       // Clean up the temporary preview
                       setTimeout(() => {
@@ -363,12 +371,17 @@ const DatatableBodyRow = <T extends Record<string, any> = Record<string, unknown
 
                       dragImage.appendChild(previewTable);
                       document.body.appendChild(dragImage);
-                      // Inset the preview from the wrapper's top-left by the gap, then
-                      // anchor at (0,0) so the cursor sits at the corner and the preview
-                      // appears offset down/right by the gap.
-                      dragImage.style.paddingLeft = `${gapX}px`;
+                      // Inset the preview by the gap and anchor at the cursor-side corner so
+                      // it's offset away from the cursor. In RTL the preview is mirrored to
+                      // the left of the cursor; in LTR it sits to the right.
                       dragImage.style.paddingTop = `${gapY}px`;
-                      e.dataTransfer.setDragImage(dragImage, 0, 0);
+                      if (isRtl) {
+                        dragImage.style.paddingRight = `${gapX}px`;
+                        e.dataTransfer.setDragImage(dragImage, dragImage.offsetWidth, 0);
+                      } else {
+                        dragImage.style.paddingLeft = `${gapX}px`;
+                        e.dataTransfer.setDragImage(dragImage, 0, 0);
+                      }
 
                       // Clean up the temporary drag image
                       setTimeout(() => {
