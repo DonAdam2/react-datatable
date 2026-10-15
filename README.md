@@ -3,19 +3,21 @@
 [![React][badge_react]][react_link]
 [![SCSS][badge_scss]][scss_link]
 
-# React Datatable Component
+# React datatable component
 
-# Table of Contents:
+# Table of contents:
 - [Overview](#overview)
 - [Demo](#demo)
 - [Installation](#installation)
+- [Available scripts](#available-scripts)
 - [Usage](#usage)
-- [Datatable Props](#datatable-props)
-- [Configuration Options](#configuration-options)
-- [Features and Methods](#features-and-methods)
+- [Datatable props](#datatable-props)
+- [Configuration options](#configuration-options)
+- [Features and methods](#features-and-methods)
 - [Examples](#examples)
-- [TypeScript Support](#typescript-support)
+- [TypeScript support](#typescript-support)
 - [Styling](#styling)
+- [Feature guides](#feature-guides)
 - [Resources](#resources)
 
 ## Overview:
@@ -23,19 +25,20 @@
 Advanced and feature-rich datatable component designed to handle complex data visualization and interaction scenarios with maximum flexibility and performance.
 
 It supports the following:
-- **Local Data Handling**: Client-side sorting, filtering, and pagination
-- **Remote Data Handling**: Server-side operations with API integration
-- **Column Management**: Show/hide columns, custom column definitions
-- **Row Selection**: Single and multiple row selection with callbacks
-- **Advanced Pagination**: Customizable pagination with rows-per-page options
-- **Search Functionality**: Global search with local or remote filtering
-- **Sorting**: Multi-column sorting with custom sort indicators
-- **Actions**: Row-level and bulk actions with custom handlers
-- **Responsive Design**: Mobile-friendly with customizable layouts
-- **Loading States**: Built-in loading indicators and states
-- **Custom Styling**: Extensive theming and styling options
-- **TypeScript Support**: Full TypeScript integration with comprehensive type definitions
-- **Accessibility**: ARIA-compliant with keyboard navigation support
+- **Local data handling**: Client-side sorting, filtering, and pagination
+- **Remote data handling**: Server-side operations with API integration
+- **Column management**: Show/hide columns, custom column definitions
+- **Column ordering**: Drag and drop columns, with optional persistence to `localStorage`
+- **Row selection**: Single (radio) and multiple (checkbox) row selection with callbacks
+- **Advanced pagination**: Customizable pagination with rows-per-page options, custom pagination components, and URL deep linking
+- **Search functionality**: Global search with local or remote filtering
+- **Sorting**: Single-column sorting (local or remote) with custom sort icons
+- **Actions**: Row-level actions with custom handlers, tooltips, and conditional hiding/disabling
+- **Row events**: Click, double-click, drag and drop events with custom drag previews
+- **Responsive design**: Optional mobile layout below a configurable breakpoint
+- **Loading states**: Built-in loading indicators and states
+- **Custom styling**: CSS class hooks and custom icons
+- **TypeScript support**: Full TypeScript integration with comprehensive type definitions
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -44,15 +47,36 @@ It supports the following:
 Explore interactive examples in storybook by running `pnpm storybook`. It features:
 - Local datatable with full client-side functionality
 - Remote datatable with server-side operations
-- Column visibility controls
+- Column visibility and column ordering controls
 - Row selection examples
 - Custom actions and events
 - Search and filtering demonstrations
-- Pagination scenarios
+- Pagination scenarios (including custom pagination and deep linking)
+- Mobile layout
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
-## Available Scripts
+## Installation:
+
+### Requirements:
+
+- [Node.js](https://nodejs.org/) `>=22.18.0` (required by Babel 8, webpack-dev-server 6, and sass-loader 17)
+- [pnpm](https://pnpm.io/) `>=9.0.0`
+
+### Setup:
+
+```bash
+git clone https://github.com/DonAdam2/react-datatable.git
+cd react-datatable
+pnpm install
+pnpm start
+```
+
+**_Note:_** TypeScript 7 doesn't ship a programmatic API yet, so `typescript` is aliased to the TypeScript 6 compatibility package (`@typescript/typescript6`) for the tools that need it (`ts-loader`, `fork-ts-checker-webpack-plugin`, and `typescript-eslint`). TypeScript 7 is installed as `@typescript/native`, and `tsc` runs TypeScript 7.
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
+## Available scripts:
 
 In the project directory, you can run:
 
@@ -78,6 +102,8 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
+
+**_Note:_** The production build fails on any linting error.
 
 ### `pnpm build:serve`
 
@@ -106,12 +132,15 @@ Builds Storybook for production to the `storybook-static` folder.
 
 ## Usage:
 
-### Basic Local Datatable:
+### Basic local datatable:
 
 ```jsx
+import { useState } from 'react';
 import Datatable from './components/shared/datatable/Datatable';
 
 const App = () => {
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const columns = [
     {
       accessorKey: 'id',
@@ -138,14 +167,14 @@ const App = () => {
 
   const actions = [
     {
-      label: 'Edit',
-      onClick: (row) => console.log('Edit:', row),
       icon: <EditIcon />,
+      onClick: (event, { original }) => console.log('Edit:', original),
+      tooltip: { tooltipContent: 'Edit' },
     },
     {
-      label: 'Delete',
-      onClick: (row) => console.log('Delete:', row),
       icon: <DeleteIcon />,
+      onClick: (event, { original }) => console.log('Delete:', original),
+      tooltip: { tooltipContent: 'Delete' },
     },
   ];
 
@@ -169,9 +198,9 @@ const App = () => {
       }}
       selection={{
         mode: 'checkbox',
-        onSelectionChange: (selectedRows) => {
-          console.log('Selected:', selectedRows);
-        },
+        dataKey: 'id',
+        selectedData: selectedRows,
+        onSelectionChange: (rows) => setSelectedRows(rows),
       }}
       pagination={{
         enablePagination: true,
@@ -187,10 +216,10 @@ const App = () => {
 };
 ```
 
-### Remote Datatable with Server-side Operations:
+### Remote datatable with server-side operations:
 
 ```jsx
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Datatable from './components/shared/datatable/Datatable';
 
 const RemoteDataTable = () => {
@@ -224,8 +253,8 @@ const RemoteDataTable = () => {
     await fetchData({ searchTerm, page: 1 });
   };
 
-  const handleSort = async (column, order) => {
-    await fetchData({ sortColumn: column, sortOrder: order });
+  const handleSort = async (accessorKey, order) => {
+    await fetchData({ sortColumn: accessorKey, sortOrder: order });
   };
 
   return (
@@ -258,31 +287,31 @@ const RemoteDataTable = () => {
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
-## Datatable Props:
+## Datatable props:
 
 | Prop | Type | Default | Required | Description |
 |------|------|---------|----------|-------------|
-| columns | `ColumnDef<T>[]` | - | Yes | Array of column definitions |
+| columns | [`ColumnDef<T>[]`](#column-definition) | - | Yes | Array of column definitions |
 | records | `T[]` | - | Yes | Array of data records to display |
-| actions | `ActionDef<T>[]` | `undefined` | No | Array of action definitions for each row |
+| actions | [`ActionDef<T>[]`](#action-definition) | `undefined` | No | Array of action definitions for each row |
 | title | [TitleConfigInterface](#titleconfiginterface) | `undefined` | No | Title configuration object |
 | isLoading | `boolean` | `false` | No | Shows loading state when true |
 | dataTest | `string` | `undefined` | No | Data test attribute for testing |
 | noDataToDisplayMessage | `ReactNode` | `'No data to display'` | No | Custom message when no data is available |
 | columnVisibility | [ColumnVisibilityInterface](#columnvisibilityinterface) | `undefined` | No | Column show/hide functionality configuration |
+| columnOrdering | [ColumnOrderingInterface](#columnorderinginterface) | `undefined` | No | Column drag and drop ordering configuration |
 | search | [SearchConfigInterface](#searchconfiginterface) | `undefined` | No | Search functionality configuration |
 | sort | [SortConfigInterface](#sortconfiginterface) | `undefined` | No | Sorting functionality configuration |
 | selection | [SelectionConfigInterface](#selectionconfiginterface) | `undefined` | No | Row selection functionality configuration |
 | pagination | [PaginationConfigInterface](#paginationconfiginterface) | `undefined` | No | Pagination functionality configuration |
-| rowEvents | `DatatableRowEvents<T>` | `undefined` | No | Row interaction events configuration |
+| rowEvents | [`DatatableRowEvents<T>`](#row-events) | `undefined` | No | Row interaction events configuration |
 | ui | [UiConfigInterface](#uiconfiginterface) | `undefined` | No | UI appearance and behavior configuration |
+| mobileUiData | [MobileUiDataInterface](#mobileuidatainterface) | `undefined` | No | Mobile layout configuration |
 | ref | `Ref<DatatableRef>` | `undefined` | No | Reference to access datatable methods |
-
-**Note:** As of the latest version, `columnVisibility`, `search`, `sort`, `selection`, `pagination`, `rowEvents`, and `ui` are all top-level props alongside `records`, `columns`, and other main datatable properties.
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
-## Configuration Options:
+## Configuration options:
 
 ### UiConfigInterface:
 
@@ -300,6 +329,33 @@ const RemoteDataTable = () => {
 | ascendingSortIcon | `ReactNode` | `undefined` | Ascending sort icon |
 | descendingSortIcon | `ReactNode` | `undefined` | Descending sort icon |
 
+### ColumnVisibilityInterface:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| show | `boolean` | `true` | Show the column visibility toggle |
+| location | `'titleRow' \| 'searchRow' \| 'actionsColumn'` | `'actionsColumn'` | Where the toggle is rendered |
+| trigger | `ButtonInterface` | `undefined` | Custom trigger button (label, icon, variant, ...) |
+| defaultVisibleColumns | `string[]` | `undefined` | Accessor keys of the columns visible initially (all others are hidden) |
+| hiddenColumns | `string[]` | `undefined` | Accessor keys of the columns hidden initially (ignored when `defaultVisibleColumns` is set) |
+
+Columns with `enableHiding: false` are always visible. See [docs/COLUMN_VISIBILITY.md](docs/COLUMN_VISIBILITY.md) for details.
+
+### ColumnOrderingInterface:
+
+Column ordering is **enabled by default**: columns can be reordered by drag and drop (except the actions and selection columns). Set `enableOrdering: false` on a column to lock it, or `columnOrdering={{ enabled: false }}` to turn the feature off.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| enabled | `boolean` | `true` | Enable/disable column ordering |
+| onColumnReorder | `(fromIndex: number, toIndex: number, columnOrder: string[]) => void \| Promise<void>` | `undefined` | Called after a column is dropped, with the new order of accessor keys |
+| defaultColumnOrder | `string[]` | `undefined` | Initial column order (accessor keys) |
+| persistOrder | `{ enabled: boolean; key: string }` | `undefined` | Persist the order to `localStorage` under a stable `key` |
+| preview | `(column: ColumnDef) => ReactNode` | `undefined` | Custom drag preview (defaults to a clone of the column) |
+| previewOffset | `{ x: number; y: number }` | `{ x: 10, y: 10 }` | Gap between the cursor and the drag preview |
+| previewClassName | `string` | `undefined` | Class name for the default drag preview (ignored when `preview` is set) |
+
+See [docs/COLUMN_ORDERING.md](docs/COLUMN_ORDERING.md) for details.
 
 ### SearchConfigInterface:
 
@@ -314,7 +370,7 @@ const RemoteDataTable = () => {
 | searchPosition | `'start' \| 'end'` | `'end'` | Position of search input |
 | onUpdateFilteredRecordsCount | `(count: number) => void` | `undefined` | **Required for custom pagination** - Callback for filtered record count updates |
 
-#### ⚠️ Important: Custom Pagination Requirement
+#### ⚠️ Important: custom pagination requirement
 
 When using **custom pagination** (providing your own `paginationComponent`), you **must** include the `onUpdateFilteredRecordsCount` prop in your search configuration:
 
@@ -343,25 +399,45 @@ When using **custom pagination** (providing your own `paginationComponent`), you
 
 **Note:** This prop is **not required** when using the built-in pagination component.
 
-### SelectionConfigInterface:
+### SortConfigInterface:
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| mode | `'checkbox' \| 'radio'` | `undefined` | Selection mode |
-| onSelectionChange | `(selectedRows: T[]) => void` | `undefined` | Selection change handler |
-| isSelectAllDisabled | `boolean` | `false` | Disable select all functionality |
-| hidden | `boolean \| BooleanFuncType` | `false` | Hide selection for specific rows |
-| disabled | `boolean \| BooleanFuncType` | `false` | Disable selection for specific rows |
+| isLocalSort | `boolean` | `true` | Sort records on the client |
+| onSorting | `(accessorKey: string, order: 'asc' \| 'desc') => void \| Promise<void>` | `undefined` | Called when a column is sorted (use it with `isLocalSort: false` for server-side sorting) |
+
+Sorting is enabled per column with `enableSorting`. See [docs/SORT.md](docs/SORT.md) for details.
+
+### SelectionConfigInterface:
+
+| Property | Type | Default | Required | Description |
+|----------|------|---------|----------|-------------|
+| mode | `'checkbox' \| 'radio'` | - | Yes | Selection mode |
+| dataKey | `keyof T \| string` | - | Yes | Unique key used to identify selected rows |
+| selectedData | `T \| T[] \| null \| undefined` | - | Yes | Currently selected row (`radio`) or rows (`checkbox`) |
+| onSelectionChange | `(data: T \| T[]) => void` | - | Yes | Selection change handler |
+| disabled | `boolean \| BooleanFuncType<T>` | `false` | No | Disable selection for all or specific rows |
+| hidden | `boolean \| BooleanFuncType<T>` | `false` | No | Hide selection for all or specific rows |
+| selectAllCheckbox | `{ disabled?: boolean; hidden?: boolean }` | `undefined` | No | Disable or hide the "select all" checkbox |
+| className | `string` | `undefined` | No | CSS class for the selection inputs |
+
+`BooleanFuncType<T>` is `(rowInfo: RowInfo<T>) => boolean`. See [docs/SELECTION.md](docs/SELECTION.md) for details.
 
 ### PaginationConfigInterface:
+
+The pagination prop accepts one of three shapes: **local** (built-in pagination over `records`), **remote** (with `remoteControl`), or **custom** (with your own `paginationComponent`).
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | enablePagination | `boolean` | `true` | Enable/disable pagination |
-| rowsDropdown | [RowsDropdownInterface](#rowsdropdowninterface) | `undefined` | Rows per page configuration |
+| rowsDropdown | [RowsDropdownInterface](#rowsdropdowninterface) | `undefined` | Rows per page configuration (local and remote) |
 | remoteControl | [RemoteControlInterface](#remotecontrolinterface) | `undefined` | Remote pagination configuration |
-| deepLinking | `DeepLinkingConfig` | `undefined` | URL-based pagination state |
-| rangeSeparatorLabel | `string` | `'of'` | Separator text in pagination range (e.g., "1 of 10") |
+| deepLinking | [DeepLinkingConfig](#deeplinkingconfig) | `undefined` | Sync the active page (and page size) with the URL (local and remote) |
+| rangeSeparatorLabel | `string` | `'of'` | Separator text in pagination range (e.g., "1 - 10 of 30") |
+| paginationComponent | `ReactNode` | `undefined` | Custom pagination component (see [custom pagination](#custom-pagination-with-usepagination)) |
+| firstContentIndex | `number` | `undefined` | Index of the first record of the current page (custom pagination) |
+| lastContentIndex | `number` | `undefined` | Index after the last record of the current page (custom pagination) |
+| resetPagination | `() => { activePage: number; rowsPerPageNum: number } \| void \| Promise<void>` | `undefined` | Called when the datatable needs to go back to the first page, e.g. after a search (custom pagination) |
 
 ### RowsDropdownInterface:
 
@@ -369,7 +445,33 @@ When using **custom pagination** (providing your own `paginationComponent`), you
 |----------|------|---------|-------------|
 | enableRowsDropdown | `boolean` | `true` | Show rows per page selector |
 | rowsPerPage | `number` | `10` | Default rows per page |
-| optionsList | `DatatableRowsDropdownOption[]` | `[5, 10, 20, 30, 40]` | Available rows per page options |
+| optionsList | `DatatableRowsDropdownOption[]` | `[5, 10, 20, 30, 40]` | Available rows per page options (`{ value: number; displayValue: string }`) |
+
+### RemoteControlInterface:
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| onPaginationDataUpdate | `(currentPage: number, rowsPerPageNum: number) => void \| Promise<void>` | Yes | Called when the page or page size changes, fetch the new page here |
+| totalRecords | `number` | Yes | Total number of records on the server |
+
+### DeepLinkingConfig:
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| pageNumKey | `string` | Yes | URL search param for the active page (e.g. `page`) |
+| pageSizeKey | `string` | No | URL search param for the page size (e.g. `pageSize`) |
+
+```jsx
+pagination={{
+  deepLinking: {
+    pageNumKey: 'page',
+    pageSizeKey: 'pageSize',
+  },
+}}
+// => https://example.com/employees?page=2&pageSize=20
+```
+
+The page is restored from the URL on load, and the browser back/forward buttons update the table. See [docs/PAGINATION.md](docs/PAGINATION.md) for details.
 
 ### TitleConfigInterface:
 
@@ -382,39 +484,108 @@ When using **custom pagination** (providing your own `paginationComponent`), you
 | titleButtonsPosition | `'start' \| 'end'` | `'end'` | Buttons alignment |
 | titleButtonsLocation | `'titleRow' \| 'searchRow'` | `'titleRow'` | Buttons placement |
 
+### MobileUiDataInterface:
+
+When provided, the table switches to a mobile layout below `mobileBreakpoint`: the header is hidden and each row renders the `column` and `action` content instead of the regular cells.
+
+| Property | Type | Default | Required | Description |
+|----------|------|---------|----------|-------------|
+| column | `(row: T, index?: number) => ReactNode` | - | Yes | Content of the row in the mobile layout |
+| action | `(row: T, index?: number) => ReactNode` | - | Yes | Actions of the row in the mobile layout |
+| mobileBreakpoint | `number` | `768` | No | Width in px below which the mobile layout is shown |
+
+```jsx
+mobileUiData={{
+  column: (row) => (
+    <div>
+      <strong>{row.name}</strong>
+      <p>{row.email}</p>
+    </div>
+  ),
+  action: (row) => <RowActionsMenu row={row} />,
+}}
+```
+
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
-## Features and Methods:
+## Features and methods:
 
-### Column Definition:
+### Column definition:
 
 ```typescript
 interface ColumnDef<T> {
-  accessorKey: keyof T | string;
-  header: string | ReactNode;
-  enableSorting?: boolean;
-  enableHiding?: boolean;
-  cell?: (rowData: T) => ReactNode;
-  width?: number | string;
+  accessorKey: keyof T | string; // supports nested keys, e.g. 'subscription.status'
+  header?: ReactNode;
   className?: string;
+  enableSorting?: boolean;
+  enableHiding?: boolean; // default true, set to false to always show the column
+  enableOrdering?: boolean; // default true, set to false to lock the column position
+  cell?: (rowInfo: RowInfo<T>) => ReactNode;
+  width?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  noWrap?: boolean;
+  direction?: string;
+}
+
+interface RowInfo<T> {
+  original: T; // the row record
+  getValue: (key: string) => any; // read a (nested) value of the row
 }
 ```
 
-### Action Definition:
+### Action definition:
 
 ```typescript
 interface ActionDef<T> {
-  label: string;
-  onClick: (rowData: T, index: number) => void;
   icon?: ReactNode;
-  isHidden?: boolean | BooleanFuncType;
-  isDisabled?: boolean | BooleanFuncType;
+  onClick?: (event: MouseEvent<HTMLButtonElement>, rowInfo: RowInfo<T>) => void;
+  cell?: (rowInfo: RowInfo<T>) => ReactNode; // render custom content instead of an icon button
+  disabled?: boolean | BooleanFuncType<T>;
+  hidden?: boolean | BooleanFuncType<T>;
   tooltip?: ActionTooltipInterface;
+}
+
+interface ActionTooltipInterface {
+  tooltipContent: string; // can contain HTML, e.g. '<em>Edit</em>'
+  position?: TooltipPositionEnum;
+  trigger?: TooltipTriggerEnum;
+  color?: string;
+  backgroundColor?: string;
   className?: string;
+  messageClassName?: string;
+  isDisplayIndicator?: boolean;
 }
 ```
 
-### Programmatic Control:
+### Row events:
+
+```typescript
+interface DatatableRowEvents<T> {
+  onClick?: {
+    clickable?: boolean | BooleanFuncType<T>;
+    event: (e: MouseEvent, rowInfo: RowInfo<T>) => void;
+  };
+  onDoubleClick?: {
+    clickable?: boolean | BooleanFuncType<T>;
+    event: (e: MouseEvent, rowInfo: RowInfo<T>) => void;
+  };
+  onDragStart?: {
+    draggable?: boolean | BooleanFuncType<T>;
+    event: (e: DragEvent, rowInfo: RowInfo<T>) => void;
+    preview?: (rowInfo: RowInfo<T>) => ReactNode; // custom drag preview
+    previewOffset?: { x: number; y: number }; // default { x: 0, y: 0 }
+  };
+  onDrop?: {
+    droppable?: boolean | BooleanFuncType<T>;
+    event: (e: DragEvent, rowInfo: RowInfo<T>) => void;
+  };
+}
+```
+
+See [docs/ROW_EVENTS.md](docs/ROW_EVENTS.md) for details.
+
+### Programmatic control:
 
 The datatable exposes methods through refs for programmatic control:
 
@@ -424,7 +595,7 @@ interface DatatableRef {
 }
 ```
 
-**Usage Example:**
+**Usage example:**
 
 ```jsx
 import { useRef } from 'react';
@@ -448,11 +619,48 @@ const MyComponent = () => {
 };
 ```
 
+### Custom pagination with `usePagination`:
+
+The `usePagination` hook (`src/hooks/usePagination.ts`) powers the built-in pagination and can drive your own pagination component:
+
+```jsx
+import usePagination from '@/hooks/usePagination';
+
+const EmployeesTable = ({ employees }) => {
+  const [totalRecords, setTotalRecords] = useState(employees.length);
+  const paginationData = usePagination({ contentPerPage: 10, count: totalRecords });
+  const { firstContentIndex, lastContentIndex, navigateToFirstPage } = paginationData;
+
+  return (
+    <Datatable
+      columns={columns}
+      records={employees}
+      search={{ onUpdateFilteredRecordsCount: setTotalRecords }}
+      pagination={{
+        firstContentIndex,
+        lastContentIndex,
+        resetPagination: () => navigateToFirstPage(),
+        paginationComponent: <CustomPagination {...paginationData} />,
+      }}
+    />
+  );
+};
+```
+
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| contentPerPage | `number` | Yes | Rows per page |
+| count | `number` | Yes | Total number of records |
+| fetchData | `(page: number, perPage: number) => Promise<void>` | No | Called on page changes (remote data) |
+| deepLinking | [DeepLinkingConfig](#deeplinkingconfig) | No | Sync the page with the URL |
+
+It returns `activePage`, `totalPages`, `contentPerPage`, `paginationBlocks`, `firstContentIndex`, `lastContentIndex`, and the navigation methods `navigateToPage`, `navigateToNextPage`, `navigateToPrevPage`, `navigateToFirstPage`, `navigateToLastPage`, `navigateToNextPaginationBlock`, `navigateToPrevPaginationBlock`, and `updateCurrentRowsPerPage`.
+
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
 ## Examples:
 
-### Column Visibility Control:
+### Column visibility control:
 
 ```jsx
 <Datatable
@@ -477,7 +685,23 @@ const MyComponent = () => {
 />
 ```
 
-### Custom Row Events:
+### Column ordering:
+
+```jsx
+<Datatable
+  columns={columns}
+  records={data}
+  columnOrdering={{
+    defaultColumnOrder: ['email', 'name', 'id'],
+    persistOrder: { enabled: true, key: 'employees-table' },
+    onColumnReorder: (fromIndex, toIndex, columnOrder) => {
+      console.log('New column order:', columnOrder);
+    },
+  }}
+/>
+```
+
+### Custom row events:
 
 ```jsx
 <Datatable
@@ -512,7 +736,7 @@ const MyComponent = () => {
 />
 ```
 
-### Advanced Search Configuration:
+### Advanced search configuration:
 
 ```jsx
 <Datatable
@@ -532,7 +756,7 @@ const MyComponent = () => {
 />
 ```
 
-### Custom No Data Message:
+### Custom no data message:
 
 ```jsx
 <Datatable
@@ -553,17 +777,13 @@ const MyComponent = () => {
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
-## TypeScript Support:
+## TypeScript support:
 
 The datatable component is built with TypeScript and provides comprehensive type definitions:
 
 ```typescript
-import Datatable, { 
-  DatatableInterface,
-  ColumnDef,
-  ActionDef,
-  DatatableRef 
-} from './components/shared/datatable/Datatable';
+import Datatable from './components/shared/datatable/Datatable';
+import { ColumnDef, ActionDef } from './components/shared/datatable/Datatable.types';
 
 interface Employee {
   id: number;
@@ -573,7 +793,7 @@ interface Employee {
   salary: number;
 }
 
-const MyTypedDatatable: React.FC = () => {
+const MyTypedDatatable = ({ employees }: { employees: Employee[] }) => {
   const columns: ColumnDef<Employee>[] = [
     {
       accessorKey: 'name',
@@ -583,15 +803,15 @@ const MyTypedDatatable: React.FC = () => {
     {
       accessorKey: 'salary',
       header: 'Salary',
-      cell: (row) => `$${row.salary.toLocaleString()}`,
+      cell: ({ original }) => `$${original.salary.toLocaleString()}`,
     },
   ];
 
   const actions: ActionDef<Employee>[] = [
     {
-      label: 'Edit',
-      onClick: (employee) => editEmployee(employee.id),
-      isDisabled: (employee) => employee.department === 'HR',
+      icon: <EditIcon />,
+      onClick: (event, { original }) => editEmployee(original.id),
+      disabled: ({ original }) => original.department === 'HR',
     },
   ];
 
@@ -614,7 +834,7 @@ const MyTypedDatatable: React.FC = () => {
 
 ## Styling:
 
-### CSS Classes Available for Customization:
+### CSS classes available for customization:
 
 ```scss
 // Main datatable wrapper
@@ -650,38 +870,53 @@ const MyTypedDatatable: React.FC = () => {
 .datatable-pagination {
   // Custom styles
 }
+
+// Default column drag preview (always applied, see `columnOrdering.previewClassName`)
+.column-drag-image {
+  // Custom styles
+}
 ```
 
-### Custom Theme Example:
+### Custom theme example:
+
+The component doesn't expose theme variables. To theme it, pass a class through `ui.tableWrapperClassName` (or `ui.tableClassName`) and override the classes above:
 
 ```scss
 .my-custom-datatable {
-  .table {
-    --datatable-border-color: #e0e0e0;
-    --datatable-header-bg: #f8f9fa;
-    --datatable-row-hover: #f1f3f4;
-    --datatable-selected-bg: #e3f2fd;
-  }
-
   .table thead th {
-    background-color: var(--datatable-header-bg);
-    border-color: var(--datatable-border-color);
+    background-color: #f8f9fa;
+    border-color: #e0e0e0;
   }
 
   .table tbody tr:hover {
-    background-color: var(--datatable-row-hover);
+    background-color: #f1f3f4;
   }
 }
 ```
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
+## Feature guides:
+
+Detailed guides for each feature are available in the [docs](docs) folder:
+
+- [Column ordering](docs/COLUMN_ORDERING.md)
+- [Column visibility](docs/COLUMN_VISIBILITY.md)
+- [Pagination](docs/PAGINATION.md)
+- [Row events](docs/ROW_EVENTS.md)
+- [Search](docs/SEARCH.md)
+- [Selection](docs/SELECTION.md)
+- [Sort](docs/SORT.md)
+- [UI](docs/UI.md)
+
+<p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
+
 ## Resources:
 
-- [Storybook Documentation][storybook_link] - Interactive examples and component playground
-- [TypeScript Documentation][typescript_link] - Type definitions and interfaces
-- [React Documentation][react_link] - React best practices and patterns
-- [SCSS Documentation][scss_link] - Styling and theming guide
+- [Storybook](#demo) - Interactive examples and component playground (run `pnpm storybook`)
+- [TypeScript documentation][typescript_link] - Type definitions and interfaces
+- [React documentation][react_link] - React best practices and patterns
+- [SCSS documentation][scss_link] - Styling and theming guide
 
 <p dir="rtl"><a href="#table-of-contents">Back to top</a></p>
 
@@ -699,7 +934,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 [badge_typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white
 [badge_react]: https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB
 [badge_scss]: https://img.shields.io/badge/SCSS-CC6699?style=flat&logo=sass&logoColor=white
-[storybook_link]: #
+[storybook_link]: #demo
 [typescript_link]: https://www.typescriptlang.org/
-[react_link]: https://reactjs.org/
+[react_link]: https://react.dev/
 [scss_link]: https://sass-lang.com/
