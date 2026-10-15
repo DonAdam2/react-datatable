@@ -2,7 +2,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
   ChangeEvent,
@@ -62,6 +61,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     [showMenu, setShowMenu] = useState(false),
     [wrapperParentUpdated, setWrapperParentUpdated] = useState({ top: 0, left: 0 }),
     [isDropdownOnTop, setIsDropdownOnTop] = useState(false),
+    [wrapperWidth, setWrapperWidth] = useState<undefined | number>(undefined),
     [searchTerm, setSearchTerm] = useState(''),
     [activeSuggestion, setActiveSuggestion] = useState<string | number | null>(null),
     [filteredOptions, setFilteredOptions] = useState<OptionInterface[] | undefined>([]),
@@ -110,7 +110,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
 
   //add unselected option to filtered options if isMultiSelect
   const addUnSelectedOption = (optionValue: string) => {
-    let list = filteredOptions;
+    let list: typeof filteredOptions;
 
     if (isGroupedOptions) {
       //modify original options by appending the position to every group and option
@@ -315,10 +315,13 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
       timeoutRef.current = setTimeout(() => {
         setShowMenu(true);
       }, 10);
-    } else {
-      setShowMenu(false);
+      return () => clearTimeout(timeoutRef.current);
     }
   }, [isOpen]);
+
+  if (!isOpen && showMenu) {
+    setShowMenu(false);
+  }
 
   // Update menu height when loading state changes
   useEffect(() => {
@@ -335,6 +338,19 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     return () => {
       clearTimeout(timeoutRef.current);
     };
+  }, []);
+
+  //track the wrapper width (used as the menu width when the dropdown is full width)
+  useEffect(() => {
+    const wrapperElement = dropdownWrapperRef.current;
+    if (!wrapperElement) return;
+
+    const observer = new ResizeObserver(() => {
+      setWrapperWidth(wrapperElement.getBoundingClientRect().width);
+    });
+    observer.observe(wrapperElement);
+
+    return () => observer.disconnect();
   }, []);
 
   //update dropdown position (top, bottom) based on the current scroll position
@@ -356,7 +372,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
   const handleScroll = useDebounce(updateDropdownPosition, 1);
 
   //update menu position styles
-  const getStylesList = useMemo(() => {
+  const getStylesList = useCallback(() => {
     const defaultStyle = {
       top: 0,
       left: 0,
@@ -415,7 +431,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
   }, [isOpen, menuHeight, menuWidth, wrapperParentUpdated, updateDropdownPosition]);
 
   const updateStyles = useCallback(() => {
-    setStyles(getStylesList);
+    setStyles(getStylesList());
   }, [getStylesList]);
 
   const updateScrollableParentScroll = ({ target }: any) => {
@@ -509,7 +525,8 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
       controlledDropdown?.value.length > 0
     ) {
       if (controlledDropdown?.isMultiSelect) {
-        updateStyles();
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- DOM measurement requires effect
+        setStyles(getStylesList());
       } else if (!isDropdownOnTop) {
         const wrapperRect = dropdownWrapperRef.current.getBoundingClientRect();
         setStyles((prev) => ({
@@ -520,7 +537,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     }
   }, [
     isDropdownOnTop,
-    updateStyles,
+    getStylesList,
     isMulti,
     controlledDropdown?.isMultiSelect,
     controlledDropdown?.value,
@@ -570,12 +587,10 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
     }
   };
 
-  useEffect(() => {
-    if (!isOpen && activeSuggestion !== null) {
-      //reset active suggestion
-      setActiveSuggestion(null);
-    }
-  }, [isOpen, activeSuggestion]);
+  if (!isOpen && activeSuggestion !== null) {
+    //reset active suggestion
+    setActiveSuggestion(null);
+  }
 
   //animate scroll to active suggestion element if dropdown is searchable
   const animateScroll = useCallback(() => {
@@ -642,6 +657,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
           Array.isArray(controlledDropdown.value) &&
           controlledDropdown.value.length > 0
         ) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- filteredOptions is also updated imperatively by the add/remove option handlers
           removeSelectedOptionsFromMultiSelect(controlledDropdown.value);
         } else {
           setFilteredOptions(options);
@@ -1055,10 +1071,7 @@ const DropdownComponent = ({ wrapper, header, body }: DropdownComponentInterface
                         ? 'auto'
                         : 'unset',
                     visibility: showMenu ? 'visible' : 'hidden',
-                    width:
-                      dropdownWrapperRef.current && isFullWidth
-                        ? dropdownWrapperRef.current.getBoundingClientRect().width
-                        : 'auto',
+                    width: wrapperWidth !== undefined && isFullWidth ? wrapperWidth : 'auto',
                   }}
                   data-test={dataTest ? `${dataTest}-body` : undefined}
                 >

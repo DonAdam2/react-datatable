@@ -42,7 +42,8 @@ module.exports = (env, options) =>
     },
     plugins: [
       // enables fast refresh
-      new ReactRefreshWebpackPlugin(),
+      // keep in sync with devServer.client.overlay (errors are still logged in the console)
+      new ReactRefreshWebpackPlugin({ overlay: false }),
       new Dotenv({
         path: envDevelopmentPath,
         systemvars: true, //Set to true if you would rather load all system variables as well (useful for CI purposes)

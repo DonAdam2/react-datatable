@@ -125,48 +125,50 @@ export const BasicColumnOrderingDefault: Story = {
   ),
 };
 
+const ColumnOrderingWithCallbackStory = () => {
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
+
+  const handleColumnReorder = (fromIndex: number, toIndex: number, newOrder: string[]) => {
+    setColumnOrder(newOrder);
+    console.log('Column reordered:', { fromIndex, toIndex, newOrder });
+  };
+
+  return (
+    <div>
+      <StandardDatatableComponent
+        title={{
+          titleLabel: 'Employees (With Reorder Callback)',
+          titleLocation: 'titleRow',
+        }}
+        columnOrdering={{
+          onColumnReorder: handleColumnReorder,
+        }}
+      />
+      {columnOrder.length > 0 && (
+        <div
+          style={{
+            marginTop: '16px',
+            padding: '12px',
+            backgroundColor: '#f3f4f6',
+            borderRadius: '6px',
+          }}
+        >
+          <strong>Current Column Order:</strong>
+          <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+            {columnOrder.map((col, index) => (
+              <li key={col}>
+                {index + 1}. {col}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const ColumnOrderingWithCallback: Story = {
-  render: () => {
-    const [columnOrder, setColumnOrder] = useState<string[]>([]);
-
-    const handleColumnReorder = (fromIndex: number, toIndex: number, newOrder: string[]) => {
-      setColumnOrder(newOrder);
-      console.log('Column reordered:', { fromIndex, toIndex, newOrder });
-    };
-
-    return (
-      <div>
-        <StandardDatatableComponent
-          title={{
-            titleLabel: 'Employees (With Reorder Callback)',
-            titleLocation: 'titleRow',
-          }}
-          columnOrdering={{
-            onColumnReorder: handleColumnReorder,
-          }}
-        />
-        {columnOrder.length > 0 && (
-          <div
-            style={{
-              marginTop: '16px',
-              padding: '12px',
-              backgroundColor: '#f3f4f6',
-              borderRadius: '6px',
-            }}
-          >
-            <strong>Current Column Order:</strong>
-            <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
-              {columnOrder.map((col, index) => (
-                <li key={col}>
-                  {index + 1}. {col}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  },
+  render: () => <ColumnOrderingWithCallbackStory />,
 };
 
 export const ColumnOrderingWithDefaultOrder: Story = {

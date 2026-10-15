@@ -6,7 +6,15 @@ import {
   LocalControlledPaginationInterface,
   RemoteControlledPaginationInterface,
 } from './Datatable.types';
-import { useEffect, useMemo, useState, useCallback, useImperativeHandle, Ref } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useImperativeHandle,
+  useSyncExternalStore,
+  Ref,
+} from 'react';
 import { ColumnOrderType } from './datatableHeader/DatatableHeader.types';
 import LoadingIcon from '@/components/shared/LoadingIcon';
 import cloneDeep from 'lodash/cloneDeep';
@@ -59,7 +67,6 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   mobileUiData,
 }: DatatableInterface<T>) => {
   const uniqueId = useMemo(() => uuidv4(), []),
-    [isMobileView, setIsMobileView] = useState(false),
     [isSelectAllRecords, setIsSelectAllRecords] = useState(false),
     [isDragActive, setIsDragActive] = useState(false),
     [sorting, setSorting] = useState<{ accessorKey: string; order: ColumnOrderType }>({
@@ -171,16 +178,35 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
 
   // Detect mobile viewport for mobileUiData
   const mobileBreakpoint = mobileUiData?.mobileBreakpoint ?? DEFAULT_MOBILE_BREAKPOINT;
-  useEffect(() => {
-    const query = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`);
-    const handler = (e: MediaQueryListEvent) => setIsMobileView(e.matches);
-    setIsMobileView(query.matches);
-    query.addEventListener('change', handler);
-    return () => query.removeEventListener('change', handler);
-  }, [mobileBreakpoint]);
+  const mobileQuery = `(max-width: ${mobileBreakpoint}px)`;
+  const subscribeToMobileQuery = useCallback(
+    (onChange: () => void) => {
+      const query = window.matchMedia(mobileQuery);
+      query.addEventListener('change', onChange);
+      return () => query.removeEventListener('change', onChange);
+    },
+    [mobileQuery]
+  );
+  const isMobileView = useSyncExternalStore(
+    subscribeToMobileQuery,
+    () => window.matchMedia(mobileQuery).matches,
+    () => false
+  );
 
-  // Initialize column visibility state
-  useEffect(() => {
+  // Initialize column visibility state (re-initialized whenever the column props change)
+  const [prevVisibilityProps, setPrevVisibilityProps] = useState<{
+    columns: typeof columns;
+    defaultVisibleColumns: typeof defaultVisibleColumns;
+    hiddenColumns: typeof hiddenColumns;
+  } | null>(null);
+  if (
+    prevVisibilityProps === null ||
+    prevVisibilityProps.columns !== columns ||
+    prevVisibilityProps.defaultVisibleColumns !== defaultVisibleColumns ||
+    prevVisibilityProps.hiddenColumns !== hiddenColumns
+  ) {
+    setPrevVisibilityProps({ columns, defaultVisibleColumns, hiddenColumns });
+
     const initialVisibility: Record<string, boolean> = {};
 
     columns.forEach((column) => {
@@ -208,39 +234,40 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
     });
 
     setVisibleColumns(initialVisibility);
-  }, [columns, defaultVisibleColumns, hiddenColumns]);
+  }
 
   // Initialize column order state (including persisted order from localStorage when persistOrder is enabled)
-  useEffect(() => {
-    if (enableColumnOrdering && columnOrder.length === 0) {
-      const columnKeys = columns.map((col) => String(col.accessorKey));
-      let initialOrder: string[];
+  if (enableColumnOrdering && columnOrder.length === 0) {
+    const columnKeys = columns.map((col) => String(col.accessorKey));
+    let initialOrder: string[];
 
-      if (persistOrder?.enabled) {
-        try {
-          const storageKeyId = persistOrder.key;
-          const storageKey = `${COLUMN_ORDER_STORAGE_KEY_PREFIX}-${storageKeyId}`;
-          const stored = localStorage.getItem(storageKey);
-          if (stored) {
-            const parsed = JSON.parse(stored) as string[];
-            const validOrder = Array.isArray(parsed)
-              ? parsed.filter((key) => columnKeys.includes(key))
-              : [];
-            const newColumns = columnKeys.filter((key) => !validOrder.includes(key));
-            initialOrder = validOrder.length > 0 ? [...validOrder, ...newColumns] : columnKeys;
-          } else {
-            initialOrder = defaultColumnOrder || columnKeys;
-          }
-        } catch {
+    if (persistOrder?.enabled) {
+      try {
+        const storageKeyId = persistOrder.key;
+        const storageKey = `${COLUMN_ORDER_STORAGE_KEY_PREFIX}-${storageKeyId}`;
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          const parsed = JSON.parse(stored) as string[];
+          const validOrder = Array.isArray(parsed)
+            ? parsed.filter((key) => columnKeys.includes(key))
+            : [];
+          const newColumns = columnKeys.filter((key) => !validOrder.includes(key));
+          initialOrder = validOrder.length > 0 ? [...validOrder, ...newColumns] : columnKeys;
+        } else {
           initialOrder = defaultColumnOrder || columnKeys;
         }
-      } else {
+      } catch {
         initialOrder = defaultColumnOrder || columnKeys;
       }
+    } else {
+      initialOrder = defaultColumnOrder || columnKeys;
+    }
 
+    // guard against an empty order, which would re-trigger this initialization on every render
+    if (initialOrder.length > 0) {
       setColumnOrder(initialOrder);
     }
-  }, [enableColumnOrdering, defaultColumnOrder, columnOrder.length, columns, persistOrder]);
+  }
 
   // Filter and order visible columns
   const visibleColumnsData = useMemo(() => {
@@ -269,12 +296,15 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
   }, [columns, visibleColumns, enableColumnOrdering, columnOrder]);
 
   // Handle column visibility toggle
-  const handleToggleColumn = useCallback((columnKey: string) => {
-    setVisibleColumns((prev) => ({
-      ...prev,
-      [columnKey]: !prev[columnKey],
-    }));
-  }, []);
+  const handleToggleColumn = useCallback(
+    (columnKey: string) => {
+      setVisibleColumns((prev) => ({
+        ...prev,
+        [columnKey]: !prev[columnKey],
+      }));
+    },
+    [setVisibleColumns]
+  );
 
   // Handle column reordering
   const handleColumnReorder = useCallback(
@@ -303,7 +333,7 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
         }
       }
     },
-    [enableColumnOrdering, columnOrder, onColumnReorder, persistOrder, columns]
+    [enableColumnOrdering, columnOrder, onColumnReorder, persistOrder, columns, setColumnOrder]
   );
 
   const recordsData = useMemo(() => {

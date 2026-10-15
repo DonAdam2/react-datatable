@@ -420,9 +420,12 @@ const LocalControlledWithCustomPagination = () => {
 /&gt;
 `.trim();
 
-  useEffect(() => {
+  // Reset total records when the records array changes (search results can update it in between)
+  const [prevLocalPeopleLength, setPrevLocalPeopleLength] = useState(localPeople.length);
+  if (prevLocalPeopleLength !== localPeople.length) {
+    setPrevLocalPeopleLength(localPeople.length);
     setTotalRecords(localPeople.length);
-  }, [localPeople.length]);
+  }
 
   useEffect(() => {
     (async () => {

@@ -110,7 +110,8 @@ export default [
     settings: {
       'import/resolver': 'webpack',
       react: {
-        version: 'detect',
+        // 'detect' relies on context.getFilename(), which ESLint 10 removed
+        version: '19.3',
       },
     },
   },

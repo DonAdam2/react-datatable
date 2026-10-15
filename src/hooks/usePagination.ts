@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { getPaginationRange } from '@/constants/Helpers';
 
 // Define types for the hook parameters
@@ -96,8 +96,8 @@ function usePagination({
 
   const [activePage, setActivePage] = useState<number>(initialPage);
   const [contentPerPage, setContentPerPage] = useState<number>(initialPageSize);
-  const [paginationBlocks, setPaginationBlocks] = useState<(number | string)[]>([]);
-  const [pageCount, setPageCount] = useState<number>(0);
+  // number of pages in total (total items / content on each page)
+  const pageCount = Math.ceil(count / contentPerPage);
 
   // Track if we've initialized the URL
   const hasInitializedUrl = useRef<boolean>(false);
@@ -111,22 +111,26 @@ function usePagination({
   const initialPagesDisplayNum = 5;
 
   // Sync contentPerPage with prop when pageSizeKey is not provided
-  useEffect(() => {
+  const [prevPageSizeProps, setPrevPageSizeProps] = useState({
+    initialContentPerPage,
+    pageSizeKey: deepLinking?.pageSizeKey,
+  });
+  if (
+    prevPageSizeProps.initialContentPerPage !== initialContentPerPage ||
+    prevPageSizeProps.pageSizeKey !== deepLinking?.pageSizeKey
+  ) {
+    setPrevPageSizeProps({ initialContentPerPage, pageSizeKey: deepLinking?.pageSizeKey });
     if (!deepLinking?.pageSizeKey) {
       setContentPerPage(initialContentPerPage);
     }
-  }, [initialContentPerPage, deepLinking?.pageSizeKey]);
-
-  useEffect(() => {
-    // number of pages in total (total items / content on each page)
-    setPageCount(Math.ceil(count / contentPerPage));
-  }, [count, contentPerPage]);
+  }
 
   // Validate activePage when pageCount changes (for deep linking initialization)
   useEffect(() => {
     if (deepLinking && pageCount > 0 && activePage > pageCount) {
       // Active page from URL is invalid, adjust it
       const validPage = pageCount;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the URL (external system) is updated together with the state
       setActivePage(validPage);
 
       // Update URL with valid page
@@ -148,7 +152,7 @@ function usePagination({
       const totalBlocks = totalNumbers + 2;
 
       if (pageCount > totalBlocks) {
-        let pages: (number | string)[] = [];
+        let pages: (number | string)[];
 
         const leftBound = activePageNum - 1;
         const rightBound = activePageNum + 1;
@@ -180,26 +184,20 @@ function usePagination({
     [pageCount]
   );
 
-  // Helper function to update both activePage and paginationBlocks synchronously
+  // Helper function to update activePage (paginationBlocks are derived from it)
   const updatePageAndBlocks = useCallback(
     (newActivePage: number): void => {
       if (pageCount > 0) {
-        const newBlocks = getPaginationBlocks(newActivePage);
-        // Update both states in batch to prevent intermediate renders
         setActivePage(newActivePage);
-        setPaginationBlocks(newBlocks);
       }
     },
-    [pageCount, getPaginationBlocks]
+    [pageCount]
   );
 
-  // Update pagination blocks when pageCount changes
-  useEffect(() => {
-    if (pageCount > 0) {
-      const newBlocks = getPaginationBlocks(activePage);
-      setPaginationBlocks(newBlocks);
-    }
-  }, [pageCount, activePage, getPaginationBlocks]);
+  const paginationBlocks = useMemo(
+    () => (pageCount > 0 ? getPaginationBlocks(activePage) : []),
+    [pageCount, activePage, getPaginationBlocks]
+  );
 
   // Deep linking: One-time initialization only
   useEffect(() => {
@@ -232,6 +230,7 @@ function usePagination({
             finalPageSize = urlPageSize;
             updates[deepLinking.pageSizeKey] = urlPageSize.toString();
             if (urlPageSize !== contentPerPage) {
+              // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the URL (external system)
               setContentPerPage(urlPageSize);
               needsStateUpdate = true;
             }
@@ -319,6 +318,7 @@ function usePagination({
       if (pageFromUrl) {
         const urlPage = +pageFromUrl;
         if (urlPage >= 1 && urlPage <= pageCount && urlPage !== activePage) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the URL (external system)
           setActivePage(urlPage);
           stateChanged = true;
         }
