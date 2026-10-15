@@ -6,7 +6,7 @@ import DropdownContextProvider from '@/components/shared/dropdown/dropdownContex
 import ChevronDownIcon from '@/assets/icons/ChevronDownIcon';
 import Button from '@/components/shared/button/Button';
 
-const DatatableColumnVisibility = <T = Record<string, unknown>,>({
+const DatatableColumnVisibility = <T extends Record<string, any> = Record<string, unknown>>({
   columns,
   visibleColumns,
   onToggleColumn,
