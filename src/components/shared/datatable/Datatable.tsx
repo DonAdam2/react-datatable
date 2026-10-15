@@ -109,6 +109,9 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
       onColumnReorder,
       persistOrder,
       defaultColumnOrder,
+      preview: columnPreview,
+      previewOffset: columnPreviewOffset,
+      previewClassName: columnPreviewClassName,
     } = columnOrdering ?? {},
     {
       resetPagination,
@@ -515,6 +518,9 @@ const RootDatatable = <T extends Record<string, any> = Record<string, unknown>>(
                 }
                 enableColumnOrdering={enableColumnOrdering}
                 onColumnReorder={handleColumnReorder}
+                columnPreview={columnPreview}
+                columnPreviewOffset={columnPreviewOffset}
+                columnPreviewClassName={columnPreviewClassName}
               />
             )}
             <tbody>

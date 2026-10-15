@@ -81,3 +81,42 @@
     }
   }
 }
+
+// Default column drag preview styling. Override these (or pass
+// `columnOrdering.previewClassName`) to customize the default column preview.
+.column-drag-image {
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 2px solid $blue-500;
+  border-radius: 6px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.column-drag-image-header {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 10px;
+  background-color: #f3f4f6;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.column-drag-image-cell {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  padding: 4px 10px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 12px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}

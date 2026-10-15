@@ -3,10 +3,13 @@ import DescendingSortIcon from '@/assets/icons/DescendingSortIcon';
 import FilterIcon from '@/assets/icons/FilterIcon';
 import DragHandleIcon from '@/assets/icons/DragHandleIcon';
 import {
+  ColumnDef,
   DatatableHeaderInterface,
   RowInfo,
 } from '@/components/shared/datatable/datatableHeader/DatatableHeader.types';
 import { ChangeEvent, useEffect, useState, DragEvent } from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import DatatableIconButton from '../datatableIconButton/DatatableIconButton';
 import DatatableRadioInput from '@/components/shared/datatable/datatableRadioInput/DatatableRadioInput';
 import DatatableCheckbox from '@/components/shared/datatable/datatableCheckbox/DatatableCheckbox';
@@ -35,6 +38,9 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
   columnVisibilityToggle,
   enableColumnOrdering = false,
   onColumnReorder,
+  columnPreview,
+  columnPreviewOffset,
+  columnPreviewClassName,
 }: DatatableHeaderInterface<T>) => {
   const [sortingField, setSortingField] = useState(''),
     [sortingOrder, setSortingOrder] = useState('asc'),
@@ -153,8 +159,7 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
 
     setDraggedColumnIndex(columnIndex);
 
-    // Build a drag image that mirrors the actual column: real column width,
-    // every rendered row, and full (untruncated) cell content.
+    // Build a drag image for the dragged column.
     const table = (e.target as HTMLElement).closest('table');
     const headerCell = (e.target as HTMLElement).closest('th');
 
@@ -166,79 +171,88 @@ const DatatableHeader = <T extends Record<string, any> = Record<string, any>>({
       // Match the real rendered column width so the preview looks like the lifted column
       const columnWidth = headerCell.getBoundingClientRect().width;
 
-      const dragImg = document.createElement('div');
-      dragImg.style.width = `${columnWidth}px`;
-      dragImg.style.boxSizing = 'border-box';
-      dragImg.style.backgroundColor = 'white';
-      dragImg.style.border = '2px solid #3b82f6';
-      dragImg.style.borderRadius = '6px';
-      dragImg.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
-      dragImg.style.opacity = '0.9';
-      dragImg.style.overflow = 'hidden';
-      dragImg.style.display = 'flex';
-      dragImg.style.flexDirection = 'column';
-
-      // Clone the header cell, showing its full content
-      const headerClone = headerCell.cloneNode(true) as HTMLElement;
-      headerClone.style.boxSizing = 'border-box';
-      headerClone.style.width = '100%';
-      headerClone.style.padding = '6px 10px';
-      headerClone.style.backgroundColor = '#f3f4f6';
-      headerClone.style.fontWeight = '600';
-      headerClone.style.borderBottom = '1px solid #e5e7eb';
-      headerClone.style.fontSize = '13px';
-      headerClone.style.whiteSpace = 'normal';
-      headerClone.style.overflow = 'visible';
-      headerClone.style.textOverflow = 'clip';
-      dragImg.appendChild(headerClone);
-
-      // Clone every rendered data cell in this column with full content (no truncation)
-      const tbody = table.querySelector('tbody');
-      if (tbody && domColumnIndex >= 0) {
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        rows.forEach((row) => {
-          const cells = row.querySelectorAll('td');
-          const sourceCell = cells[domColumnIndex];
-          if (sourceCell) {
-            const cellClone = sourceCell.cloneNode(true) as HTMLElement;
-            cellClone.style.boxSizing = 'border-box';
-            cellClone.style.width = '100%';
-            cellClone.style.maxWidth = 'none';
-            cellClone.style.padding = '4px 10px';
-            cellClone.style.borderBottom = '1px solid #f3f4f6';
-            cellClone.style.fontSize = '12px';
-            cellClone.style.whiteSpace = 'normal';
-            cellClone.style.overflow = 'visible';
-            cellClone.style.textOverflow = 'clip';
-            dragImg.appendChild(cellClone);
-          }
-        });
-      }
-
-      // Wrap the styled preview in a transparent, transform-free wrapper so a gap between
-      // the cursor and the preview is honored (anchored at the cursor-side corner). In RTL
-      // the preview is mirrored to the left of the cursor.
-      const gap = 10;
+      // Wrap the preview in a transparent, transform-free wrapper so a gap between the
+      // cursor and the preview is honored (anchored at the cursor-side corner). In RTL the
+      // preview is mirrored to the left of the cursor.
+      const gapX = columnPreviewOffset?.x ?? 10;
+      const gapY = columnPreviewOffset?.y ?? 10;
       const isRtl = getComputedStyle(headerCell).direction === 'rtl';
       const wrapper = document.createElement('div');
       wrapper.style.position = 'absolute';
       wrapper.style.top = '-10000px';
       wrapper.style.left = '-10000px';
-      wrapper.style.paddingTop = `${gap}px`;
+      wrapper.style.paddingTop = `${gapY}px`;
       if (isRtl) {
-        wrapper.style.paddingRight = `${gap}px`;
+        wrapper.style.paddingRight = `${gapX}px`;
       } else {
-        wrapper.style.paddingLeft = `${gap}px`;
+        wrapper.style.paddingLeft = `${gapX}px`;
       }
-      wrapper.appendChild(dragImg);
-      document.body.appendChild(wrapper);
+
+      const draggedColumn = columns.find((col) => String(col.accessorKey) === columnAccessorKey);
+
+      let cleanup: () => void;
+
+      if (columnPreview && draggedColumn) {
+        // Render the consumer-supplied preview into an off-screen element
+        const inner = document.createElement('div');
+        wrapper.appendChild(inner);
+        document.body.appendChild(wrapper);
+
+        const root = createRoot(inner);
+        // flushSync ensures the preview is in the DOM before setDragImage reads it
+        flushSync(() => {
+          root.render(columnPreview(draggedColumn as ColumnDef));
+        });
+
+        cleanup = () => {
+          root.unmount();
+          document.body.removeChild(wrapper);
+        };
+      } else {
+        // Default: a clone of the column (header + cells) at its real width. The visual
+        // styling lives in the .column-drag-image* CSS classes so it can be overridden,
+        // and columnPreviewClassName is appended for per-table customization.
+        const dragImg = document.createElement('div');
+        dragImg.className = cx('column-drag-image', columnPreviewClassName);
+        dragImg.style.width = `${columnWidth}px`;
+
+        // Clone the header cell, showing its full content
+        const headerClone = headerCell.cloneNode(true) as HTMLElement;
+        headerClone.className = 'column-drag-image-header';
+        headerClone.style.width = '100%';
+        dragImg.appendChild(headerClone);
+
+        // Clone every rendered data cell in this column with full content (no truncation)
+        const tbody = table.querySelector('tbody');
+        if (tbody && domColumnIndex >= 0) {
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.forEach((row) => {
+            const cells = row.querySelectorAll('td');
+            const sourceCell = cells[domColumnIndex];
+            if (sourceCell) {
+              const cellClone = sourceCell.cloneNode(true) as HTMLElement;
+              cellClone.className = 'column-drag-image-cell';
+              // Override the cloned cell's inline width constraints
+              cellClone.style.width = '100%';
+              cellClone.style.minWidth = 'unset';
+              cellClone.style.maxWidth = 'none';
+              dragImg.appendChild(cellClone);
+            }
+          });
+        }
+
+        wrapper.appendChild(dragImg);
+        document.body.appendChild(wrapper);
+
+        cleanup = () => {
+          document.body.removeChild(wrapper);
+        };
+      }
 
       e.dataTransfer.setDragImage(wrapper, isRtl ? wrapper.offsetWidth : 0, 0);
 
       // Clean up drag image after a short delay
-      setTimeout(() => {
-        document.body.removeChild(wrapper);
-      }, 100);
+      setTimeout(cleanup, 100);
     }
   };
 

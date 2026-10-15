@@ -82,6 +82,20 @@ export interface DatatableColumnOrderingConfigInterface {
   /** Optional. When provided, both `enabled` and `key` are required. */
   persistOrder?: DatatablePersistOrderConfig;
   defaultColumnOrder?: string[];
+  /**
+   * Render a custom drag preview for the dragged column (similar to a row's
+   * `onDragStart.preview`). Receives the dragged column definition. When omitted,
+   * a clone of the column (header + cells) is used.
+   */
+  preview?: (column: ColumnDef) => ReactNode;
+  /** Gap between the cursor and the column drag preview. Defaults to { x: 10, y: 10 }. */
+  previewOffset?: { x: number; y: number };
+  /**
+   * Class name applied to the default column drag preview, for custom styling.
+   * Ignored when `preview` is provided. The preview also always carries the
+   * `column-drag-image` class, which can be targeted/overridden directly.
+   */
+  previewClassName?: string;
 }
 
 interface DatatableSearchConfigInterface {

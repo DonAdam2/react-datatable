@@ -50,6 +50,9 @@ export interface DatatableHeaderInterface<T = Record<string, unknown>> extends S
   columnVisibilityToggle?: ReactNode;
   enableColumnOrdering?: boolean;
   onColumnReorder?: (fromIndex: number, toIndex: number) => void | Promise<void>;
+  columnPreview?: (column: ColumnDef) => ReactNode;
+  columnPreviewOffset?: { x: number; y: number };
+  columnPreviewClassName?: string;
 }
 
 export interface ActionDef<T = Record<string, unknown>> {

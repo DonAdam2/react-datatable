@@ -5,6 +5,7 @@ import Datatable from '../Datatable';
 import { StandardDatatableComponent } from './Datatable.stories';
 import { fakeBackend, Person } from '@/constants/FakeBackend';
 import { getMyTeamsDatatableConfig } from '@/constants/MyTeamsDatatableConfig';
+import { ColumnDef } from '@/components/shared/datatable/Datatable.types';
 
 const meta: Meta<typeof Datatable> = {
   title: 'Components/Datatable/ColumnOrdering',
@@ -27,6 +28,85 @@ export const BasicColumnOrdering: Story = {
       columnOrdering={{}}
     />
   ),
+};
+
+export const ColumnOrderingWithCustomPreview: Story = {
+  render: () => (
+    <StandardDatatableComponent
+      title={{
+        titleLabel: 'Employees (Custom Column Drag Preview)',
+        titleLocation: 'titleRow',
+      }}
+      columnOrdering={{
+        // Render a custom preview for the dragged column instead of cloning it
+        preview: (column: ColumnDef) => (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 14px',
+              background: '#1f2937',
+              color: '#fff',
+              borderRadius: 8,
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.25)',
+              fontSize: 13,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span aria-hidden>⇄</span>
+            <span>Moving column: {column.header}</span>
+          </div>
+        ),
+        // Gap between the cursor and the preview
+        previewOffset: { x: 16, y: 16 },
+      }}
+    />
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Provide `columnOrdering.preview` to render a custom drag image for the dragged column. The callback receives the dragged column definition. `previewOffset` controls the gap from the cursor.',
+      },
+    },
+  },
+};
+
+export const ColumnOrderingStyledDefaultPreview: Story = {
+  render: () => (
+    <>
+      <style>{`
+        /* Two classes on the same element beat the base .column-drag-image specificity */
+        .my-column-preview.column-drag-image {
+          border-color: #16a34a;
+          box-shadow: 0 10px 30px rgba(22, 163, 74, 0.35);
+        }
+        .my-column-preview .column-drag-image-header {
+          background-color: #16a34a;
+          color: #fff;
+        }
+      `}</style>
+      <StandardDatatableComponent
+        title={{
+          titleLabel: 'Employees (Styled Default Column Preview)',
+          titleLocation: 'titleRow',
+        }}
+        columnOrdering={{
+          // Restyle the default column preview without replacing it
+          previewClassName: 'my-column-preview',
+        }}
+      />
+    </>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Use `columnOrdering.previewClassName` to restyle the default column drag preview. The preview always carries the `column-drag-image` class (with `column-drag-image-header` / `column-drag-image-cell` on its parts), which you can target/override directly.',
+      },
+    },
+  },
 };
 
 export const BasicColumnOrderingDefault: Story = {
@@ -117,30 +197,6 @@ export const ColumnOrderingDisabled: Story = {
   ),
 };
 
-export const ColumnOrderingUndefined: Story = {
-  render: () => (
-    <StandardDatatableComponent
-      title={{
-        titleLabel: 'Employees (columnOrdering undefined - should show icons)',
-        titleLocation: 'titleRow',
-      }}
-      // columnOrdering={undefined} // This should still show ordering icons due to enableOrdering on columns
-    />
-  ),
-};
-
-export const ColumnOrderingPerColumn: Story = {
-  render: () => (
-    <StandardDatatableComponent
-      title={{
-        titleLabel: 'Employees (Per-Column Ordering Control)',
-        titleLocation: 'titleRow',
-      }}
-      columnOrdering={{}}
-    />
-  ),
-};
-
 // Two datatables on the same page, each persists its own column order via localStorage (UUID per table = no conflicts)
 const PersistOrderTwoDatatablesComponent = () => {
   const [localPeople, setLocalPeople] = useState<Person[]>([]);
@@ -164,9 +220,10 @@ const PersistOrderTwoDatatablesComponent = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <p style={{ margin: 0, color: '#666' }}>
-        Drag column headers to reorder. Each table uses <code>persistOrder: &#123; enabled, key &#125;</code> so
-        order is saved in localStorage and survives page refresh. Table 1 and Table 2 use different
-        keys so their orders do not conflict.
+        Drag column headers to reorder. Each table uses{' '}
+        <code>persistOrder: &#123; enabled, key &#125;</code> so order is saved in localStorage and
+        survives page refresh. Table 1 and Table 2 use different keys so their orders do not
+        conflict.
       </p>
       <Datatable
         title={{
