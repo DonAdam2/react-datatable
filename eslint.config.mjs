@@ -1,6 +1,7 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import storybook from 'eslint-plugin-storybook';
 import js from '@eslint/js';
 import react from 'eslint-plugin-react';
@@ -13,6 +14,7 @@ import globals from 'globals';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 export default [
   // Allow linting of .storybook folder
@@ -111,7 +113,7 @@ export default [
       'import/resolver': 'webpack',
       react: {
         // 'detect' relies on context.getFilename(), which ESLint 10 removed
-        version: '19.3',
+        version: require('react/package.json').version,
       },
     },
   },

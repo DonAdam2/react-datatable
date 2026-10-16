@@ -19,9 +19,10 @@ module.exports = {
     //displayed in search engines at the top of URL
     siteName: 'App site name',
     //max 60 (recommended)
-    title: 'App title',
+    title: 'React datatable',
     //max 150 (recommended)
-    description: 'description',
+    description:
+      'A sleek, responsive DataTable built with React and TypeScript, styled in SCSS, and perfect for modern web interfaces. This DataTable is a great foundation for admin dashboards, project managers, or any data-intensive React app.',
     keywords: 'add you keywords',
     twitterCardType: 'summary', //summary - summary_large_image - app
   },
